@@ -1,295 +1,357 @@
+---
+author: "Jordan Foster (N0913799)"
+output: word_document
+path: "./COMP30151 - Project Planning Document - Jordan Foster (N0913799)"
+---
+
 # COMP30151 - Project Planning Document - Jordan Foster (N0913799)
 
 ## Table of Contents
 
-- 1 Introduction
-    - 1.1 General overview
-    - 1.2 Prior Literature
-    - 1.3 Relevant problems within project domain
-    - 1.4 Placing project within a wider context
-    - 1.5 General implications/assumptions
-- 2 Aims and Objectives
-- 3 Tasks and Deliverables
-    - 3.1 Tasks
-    - 3.2 Expected Outcomes
-    - 3.3 Expected Project Scope
-    - 3.4 Project Milestones
-- 4 Gantt Chart
-    - 4.1 Project Milestones
-    - 4.2 Project tasks/Deliverables
-    - 4.3 Other Milestones
-- 5 Resources
-    - 5.1 List of resources to be used
-    - 5.2 Sources of information required to conduct the project.
-- 6 Risks
-- 7 Legal, Social, Ethical and Professional Issues (LSEPIs)
-    - 7.1 Legal Issues
-    - 7.2 Social Issues
-    - 7.3 Ethical Issues
-    - 7.4 Professional Issues
+[TOC]
 
 ## 1 Introduction
 
 A Dead Man’s Switch is a safety mechanism that deactivates (in the case of a fail-safe) or activates (in the case of a fail-deadly device) in the instance that no human intervention occurs (Wikipedia, 2023). In the context of computer science, they have in the past been used in nuclear deterrence systems such as and - unfortunately - for criminal purposes, despite their ethical potential in safety systems as evidenced by their physically engineered equivalents in machinery. A common digital example of a Dead Man’s Switch would be a system set up to transmit a pre-drafted e-mail if the user does not log into the system every 7 days; an analogue equivalent could be as simple and benign as the emergency pull-stop clip on a treadmill for if the user falls off.
+
 Within the context of cybersecurity, DMS tools assume a threat model and primary adversary and therefore aim to assist with anti-forensic countermeasures as a result. Tools such as BusKill and USBKill through their fixed design and intended usage imply that this class of software can only ever be used as a part of an operational security plan for secure use of systems. This is not inherently bad - such practices are the expected norm in various high-assurance financial, military, intelligence and law enforcement work - but their past use as part of criminal operations work draws suspicion of illegality, and perhaps rightly so.
+
 This idea of fail-safe and fail-deadly systems being two sides of the same coin is partcularly present here, as the ‘safe’ outcome for one actor is necessarily the ‘deadly’ outcome for another; a fact that provides a significant ethical quandry, as reflected in the Cold-War era concept of Mutually Assured Destruction, enforced by systems such as Russia’s Perimeter/Dead Hand and the UK’s Letters of last resort - where the initial concept of an individual’s incapacitation is scaled all the way to incapacitation of the state itself.
+
 However the initial usage of a Dead Man’s Switch was rooted in the context of operator safety as a ‘Vigilance Device’. Machinery such as lawnmowers require them in the U.S. via legal mandate in the form of a switch that must be continually held down — see §1205.5 Walk-behind rotary power mower controls (Code of Federal Regulations) 2022 — and within public transport the use of Driver Safety Devices are commonplace. In these contexts their usage is entirely as a fail-safe, in contrast to their typical media-famous depictions as previously described; there is no metaphorical ‘sharp end’ that harms another upon activation, nor does the context indicate that morally the ‘actor’ shouldn’t be kept safe. As a result, such benign systems could be considered the primary — and possibly only unconditionally — ethical example of their implementation that currently exists.
+
 Despite this ubiquity, fail-safe systems involving a human operator do not appear to have been adopted significantly into computing environments (at least in their archetypical form of protecting against an incapacitated actor). The likely strongest hypothesis for why this might be the case is simply that where extremely high-assurance is required, the human element is removed or otherwise mitigated - Operational Technology primarily exists to hand over processes that would formerly be trusted to a fallible human operator.
-Within more typical workplaces however, human operators cannot be removed in their entirety; general computing environments heavily optimise human workflows but cannot supersede them entirely. Most of cybersecurity relies on mitigating this attack surface, but it is still a significant cause of issues. Amongst typical organizations, Verizon’s annual Data Breach Investigations Report (henceforth DBIR) has indicated in recent years that as many as 82% ([2022][@verizon2022DataBreach2022]) and 74% ([2023][@verizon2023DataBreach2023]) of breaches involve what they call ‘the human element’ - though the statistic has improved, it is still an alarming majority. This is not a recent issue either; access to data in previous decades is worse, but one journal ([Liginlal et al. 2009][@liginlalHowSignificantHuman2009]) states as many as 67% of breaches between January 2005 - January 2009 were specifically the cause of human error, while a later article ([Hughes-Lartey et al., 2021][@hughes-larteyHumanFactorCritical2021]) that checks a kaggle dataset (Archangell (pseud.), 2023) representative of HIPAA breaches from 2009-2017 indicates that over 75% of breaches could be directed some form of human factors issues. Regardless of industry, the trend is obvious that in general computing environments such as those in the workplace, reliance on people – and the attack surface it exposes - is likely to be something high-security workplaces will have to contend with for many years to come.
-The use of intensive technical controls means that the consequences of motoric or procedural errors can be comparatively minimized compared to the world of operator safety (where failing to perform an action could prove fatal). However, the more cognitively demanding nature of knowledge work leaves room for errors that do not follow a well-defined procedural path like in operator safety scenarios; controls against these kinds of ‘judgement’ errors seem comparatively minimal (perhaps due to their complexity). There have been some efforts within the space of behaviourism — specifically self-control — to implement solutions to these problems, and in some sense, they appear to work for some individuals.
+
+Within more typical workplaces however, human operators cannot be removed in their entirety; general computing environments heavily optimise human workflows but cannot supersede them entirely. Most of cybersecurity relies on mitigating this attack surface, but it is still a significant cause of issues. Amongst typical organizations, Verizon’s annual Data Breach Investigations Report (henceforth DBIR) has indicated in recent years that as many as 82% ([2022][@verizon2022DataBreach2022]) and 74% ([2023][@verizon2023DataBreach2023]) of breaches involve what they call ‘the human element’ - though the statistic has improved, it is still an alarming majority. This is not a recent issue either; access to data in previous decades is worse, but one journal ([Liginlal et al. 2009][@liginlalHowSignificantHuman2009]) states as many as 67% of breaches between January 2005 - January 2009 were specifically the cause of human error, while a later article ([Hughes-Lartey et al., 2021][@hughes-larteyHumanFactorCritical2021]) that checks a kaggle dataset (Archangell (pseud.), 2023) representative of HIPAA breaches from 2009-2017 indicates that over 75% of breaches could be cause by at least *some* form of human factors issues. Regardless of industry, the trend is obvious that in general computing environments such as those in the workplace, reliance on people --- and the attack surface it exposes --- is likely to be something high-security workplaces will have to contend with for many years to come.
+
+The use of intensive technical controls means that the consequences of motoric or procedural errors can be comparatively minimized compared to the world of operator safety (where failing to perform an action could prove fatal). However, the more cognitively demanding nature of knowledge work leaves room for errors that do not follow a well-defined procedural path like in operator safety scenarios; controls against these kinds of ‘judgement’ errors seem comparatively minimal (perhaps due to their complexity). There have been some efforts within the space of behaviourism — specifically self-control — to engineer desired outcomes in a *personal* context, and in some sense, they appear to work.
+
 To provide an example — the use of ‘social contracts’ via tools such as StickK and Beeminder push people to achieve their goals by putting in artificial ‘failure’ states in the form of a penalty fee if tasks are undone, focusing on one kind of use-case for a ‘dead man’s switch’–esque setup — that being a ‘fail-deadly’ system that activates if tasks aren’t done. Another form could be leveraging the concept of ‘precommitment’, where options to stray off task or away from an intended outcome are removed or otherwise neutered before starting a procedure (with the intent to be to prevent self-sabotage when willpower fails) — effectively acting as a ‘fail-safe’ system that restricts behaviour rather than punishing it.
-Such products within the space show that perhaps there might be room in the cybersecurity space for a reapplication of the dead man’s switch concept for the purposes of behavioural engineering - where the tendencies and biases of human beings are acknowledged and designed around in a way that may mitigate the chance for the ‘chain-of-event’ type errors to occur that our technical controls cannot directly account for in all instances. With the understanding that such ‘failure states’ will vary across organisations and industries, the aim of this project is thus to produce a configurable framework with which to set up both fail-safe and fail-deadly implementations that scales to different scopes of ‘actor’ at the individual, group and organizational level, alongside the investigation, discussion potential implementation of mock-up use cases of this software within different contexts at the different scales previously described.
 
-### 1.2 Prior Literature
-
-<!-- -->
-### 1.2.1 Proving that Human Factors are a 'weak link' in modern cybersecurity
-
-Evidence that the human factor is a signifcant cause of breaches is somewhat difficult to quantify with statistics, since the exact percentages differ across studies due to differences in datasets. Nonetheless, we will attempt to establish that a consenus exists across both academic circles and private security firms that this is the case.
-
-Amongst independent studies held by corporate entities, The *Data Breach Investigations Report* ([Verizon, 2023](https://www.verizon.com/business/resources/T6cd/reports/2023-data-breach-investigations-report-dbir.pdf)) - henceforth referred to as *DBIR* -  indicates that up to 74% of the breaches in its dataset involved what they refer to as "the human element" which encompasses social engineering, errors and misuse. This is significantly lower than prior estimates; The previous year's report ([Verizon, 2022](https://www.verizon.com/business/resources/Tb42/reports/dbir/2022-data-breach-investigations-report-dbir.pdf)) states that "this year, 82% of breaches in the DBIR involved the human element."
-
-The full PDF report of the 2022 edition offers the raw underlying data on GitHub ([Verizon, 2023](https://github.com/vz-risk/dbir/tree/gh-pages)) that their analysis is derived from in the form of an `.rda` file[^1]. Using this RDA file, the 2022 subfolder has a 'fact check' PDF ([Verizon, 2022](https://raw.githubsercontent.com/vz-risk/dbir/tree/gh-pages/2022/dbir_facts_rev2022_v1.pdf)) that shows some R 'unit tests' written to confirm facts from the dataset that is [also within the repository](https://raw.githubusercontent.com/vz-risk/dbir/tree/gh-pages/2022/dbir_figure_data_rev2022_v1.Rda). From this, we can verify their claim that "82% of breaches involves the human vector":
-
-![](./assets/vz-risk-social-eng-fact-check.png)
-
-It should be noted that both reports directly state in Appendix A that "all contributors received instruction to omit any information that might identify organizations or individuals involved" - meaning that we cannot really ascertain any geographical bias - and states throughout that all data was obtained through the *Vocabulary for Event Recording and Incident Sharing* (VERIS) framework, which thus implies a dataset that represents only the subsection of breached organizations that opt into its use.
-
-For a more geographically-bound set of data, some other (Ingham, L., 2018; Anon., 2018; Marshall, L., 2018; Jones, K., 2018) articles say as many as 88% of cases in the UK in 2018 were the cause of human error - citing a study by risk solution firm *Kroll*; though unfortunately the primary source cannot be found here. A *primary* source that uses the ICO's data includes CybSafe (2020) who claims that 90% of breaches reported to the ICO in 2019 were the cause of human error. Unfortunately, both of these sources cannot be verified directly since they use data from the ICO that has been acquired through Freedom of Information requests alongside public data; the former is only released to the organization(s) or individual(s) that request it, and reports on both statistics decline to provide indicators as to *where* the datasets can be found, so we have no choice but to admit that no UK-based studies backed by an accessible dataset can be found.
-
-Within academic literature, One journal article (Liginlal et al. 2009) states that 67% of all breaches recorded from January 2005 - June 2008 were via human error. However, accurate statistic analysis from this point is once more scattered; other articles such as *Human error: an overlooked but significant information security problem* (Wood, Banks 1993) allude to a *Computerworld* article written on 25 May 1987 that is supposedly based on a study performed by *Datapro Research Corp.*; unfortunately the reference provides little more information than this.
-
-However, another academic source is of far higher quality - a U.S. centric article published in Heliyon (Hughes-Lartey et al. 2021) analyses a Kaggle dataset (Archangell (pseud.), 2023) which contains the *United States Department of Health \& Human Services* (DHHS) records of HIPAA breaches from 2009-2017. The report contains rigorous explanation of the underlying maths behind the findings including models and equations used; for the purposes of brevity, it makes one distinct observation that matters for the argument that human factors significantly effect breach consequences (emphasis mine):
-
-> *"...in this case [Fig. 2], human factors that led to a breach, attributed 48.02% to a breach of theft and 27.11% to [Unauthorized Access/Disclosure], giving them a **combined share of 75.13%.**"*
-
-Within this same section the article's authors go on to show that the involvement of a human factor is statistically a predictor for a subset of breach types, namely those involving *Hacking/IT incidents* (HITi), *Improper Disposal* (ImD) and *Unauthorized Access/Disclosure* (UAD). Thus far, this is the strongest indicator that our hypothesis is true across a large timespan, though it should be noted that the scope of the dataset to HIPAA data by necessity means that this only represents the medical industry within the U.S.
-
-Throughout all of this, it should be noted that there is likely room for debate on whether certain breaches can be attributed primarily to user error, as opposed to insufficient organizational guardrails - the most comprehensive review on existing data breach papers that currently exists (Schlackl et al. 2022) notes that many reports that focus on these aspects are "often conceptual or descriptive in nature, narratively retelling how certain breaches occurred." Despite this, we can reasonably conclude that human factors at minimum significantly contribute to the likelihood of worse breach outcomes in cases where they are reported, and in some readings can be interpreted as the *main cause of breaches in the modern security landscape.*
-
-### 1.2.1 Current Models of Human Factors & Risk Analysis
-
-The *Generic Error-Modelling System* (GEMS) appears to be the scientific gold standard on categorizing various types of *human error* (Reason 1990) - with its originating work seeing significant mention across related papers in various fields. Given that it has been battle-hardened, it seems like as good a terminology as any to use as basis for our work. over time, it has been expanded to better fit 'human factors' rather than just errors - and thus we will follow such development so that we can understand current terms.
-
-in Chapter 2 of his book, Reason (1990) begins by categorising errors in one of three 'performance' levels; *skill-based* ('slips' and 'lapses' [of memory]), *rule-based* errors, and *knowledge-based* errors. Table 3.2 in the same section attempts to summarise the distinctions between these, though the relevant takeaways are that skill-based errors typically occur as part of the routine, whereas rule and knowledge-based errors happen within the unknown as part of the problem-solving process.
-
-Carayon et al. (2005) attempts to expand upon this by acknowledging the difference between *unintended* and *intended* actions, expanding the model from one of 'human error' into one of 'human factors' within a risk-management context. Unintended actions include skill-based errors and rule-based errors[^2], wherein the latter involves the misapplication or lack thereof of a *good* rule, or correct application of a poorly-designed rule. Within intended actions, they make note of knowledge-based *Mistakes* - wherein an error is made as a result of a novel action wherein there is "no procedure or rule in place to serve as a guide" - and *Violations*, which include malicious compliance through security-relevant actions; applications of relevant action that no not correspond with relevant policy or procedure, and deliberate acts of sabotage.
-
-Finally, Pollini et al. (2022) - in an attempt to apply human factors to cybersecurity - further categorises unintended and intended actions by whether they were 'intentional' or 'unintentional' *violations* of a security rule - some result in *unintentional* violations of security as a result of a *non-deliberate* (skill-based 'slips' and 'lapses') or *deliberate* (rule or knowledge-based 'mistakes') action, whereas *intentional* violation of procedure includes that *due to incompetence* ('Violations') and that due to *intentional malice* ('Malicious Violations').
-
-Given the differences in terminology used across these sources and the application of this model under differing contexts, the following table summarizes how GEMS has evolved into a usable form for cybersecurity:
-
-|                 "Incorrect security actions" (Pollini et al., 2022)                  | "Actions" (Carayon et al., 2005) | "Performance level" (Reason, 1990) | Taxonomy (Pollini et al., 2022; Reason, 1990) |                                                                                                                                                   Description (Pollini et al., 2022; Carayon et al., 2005)                                                                                                                                                    |
-| :----------------------------------------------------------------------------------: | :------------------------------: | :--------------------------------: | :-------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| *"Accidental and non-deliberate actions determining a violation of a security rule"* |       "Unintended actions"       |         skill-based level          |                     Slips                     |                                                              *"Incorrect actions in tasks that are routine and require only occasional conscious checks; these errors are related to the attention of the individual [performing actions relevant for security/performing the security action]"*                                                              |
-|                                          -                                           |                -                 |                 -                  |                    Lapses                     |                                                                                                          *"Memory failures in security actions, such as omitting a planned action, losing one's place, or forgetting security-relevant intentions"*                                                                                                           |
-|     *"Deliberate actions determining an unwanted violation of a security rule"*      |        "Intended actions"        |          rule-based level          |             Mistakes (rule-based)             |                                                                       *"Application of a bad rule relevant for security"*, *"Inappropriate application of a good rule relevant for security"* (Pollini et al., 2022) or *"Failure to apply good security rule"* (Carayon et al., 2005)                                                                        |
-|                                          -                                           |                -                 |       knowledge-based level        |          Mistakes (knowledge-based)           | *"Intentional act involving faulty conceptual knowledge, incomplete knowledge, or incorrect action specification, leading to the unwanted violation of a security policy or procedure"* (Pollini et al., 2022), *"related to performing a novel security action for which there is no procedure or rule in place to serve as a guide"* (Carayon et al., 2005) |
-|      *"Deliberate violations of a security procedure with no malicious intent"*      |                -                 |       Not originally defined       |                  Violations                   |                               *"Intentional deviation from security policies or procedures due to underestimation of security consequences (can be either routine or exceptional)"* (Pollini et al., 2022) or *"Security-relevant actions that are inconsistent with security policies and procedures"* (Carayon et al., 2005)                                |
-|       *"Deliberate violations of a security procedure with malicious intent"*        |                -                 |       Not originally defined       |             Malicious Violations              |                                                                                                                            *"Intentional deviation from security policies or procedures for the purpose of sabotaging the system"*                                                                                                                            |
-
-#### 1.2.1.1 Which types of Human Factors can be mitigated through the use of technology?
-
-Current research on this area tends to converge on two types of solution; the use of vigilance systems in order to 'check' that a worker is not so fatigued so as to not be able to perform operations (colloquially known as our 'Dead Man's Switch') is the typical -  and older - of the two. Modern work seems to focus more on the idea that we can 'measure' fatigue by continually 'polling' for signs of fatigue on the part of the human operator - both of these are typically employed through the lens of machinery that by necessity must have a 'weak link' in the form of an operator, and we will assess current work and attempt to reframe it in the context of secure computer use and the issues surrounding security fatigue.
-
-One article (Sethu et al., 2022) focusing on the mitigation of human factors issues in nuclear power plants (NPPs) is fairly ambitious with the breadth of 'scope' to which technology can be applied to human factors issues, since it posits use of artificial intelligence as a method for evaluating and validating NPP operator actions through their use in Operation Validation Systems, alongside for real-time monitoring what they define as 'Fitness for Duty' amongst NPP operators by observing cognitive factors that indicate fatigue. Notably the article affirms that where possible. The latter however is merely an extension of the concept already employed by vigilance devices within machinery in various industries. 
- 
-
-
-### 1.2.2 Evaluation of current countermeasures to 'slips' and 'lapses' as defined in GEMS
-
-#### 1.2 Option 1 - Behavioural Self-Control
-
-The main identifiable usecase is to discourage someone from bad or undesired behaviour, or the termination of consistent desired behaviour. Such mechanisms exist for use in a civilian context in the form of a [Commitment Device](https://en.wikipedia.org/wiki/Commitment_device), which encourage the 'locking in' of a future action or set thereof by rewarding 'triggering' of the good behaviour or punishing recognition of the bad behaviour. There are many bits of software that are already designed for this purpose, but can be considered somewhat 'bespoke' due to their fixed punishments or attestation systems:
-
-- [StickK](https://stickk.com) relies on human 'referees' to confirm that a contract has been fulfilled.
-- [Beeminder](https://beeminder.com) instead takes data from various API endpoints to programmatically determine what has been fulfilled.
-    - This limits the user to certain platforms for their progress that may be unsuitable for the goal at hand...
-        - Or poorly programmed such that they can be easily gamed by a technically competent individual.
-
-Most of these systems rely on fiscal punishment, which - although adjustable - may be ineffectual for wealthier users and inaccessible to the poorest. A system that can be tweaked for specific use may allow for more effectual systems to be produced, such as those that provide positive reinforcement over negative reinforcement <!-- see research rabbit for citations -->.
-
-Given that the scope of uses is vast, an accessible and extensible framework upon which to build such software systems upon seems to be the best starting point. This however presents other potential issues, which will be discussed later.
-
-### Option 2 - Enforcement of OPSEC by workers in security contexts
-
-The primary 'weak link' of a fully-fledged security plan in high assurance environments is the human element; adversaries will tend towards social engineering practices; sufficiently funded APTs (Advanced Persistent Threats) will often use tactics such as blackmail and general social pressure as a form of social engineering.
-
-As such, OPSEC is a [primary point of concern](https://www.npsa.gov.uk/security-campaigns) in national infrastructure protection efforts in the UK. Many systems in place require that the user read and acknowledge some *Security Operating Procedures* (SyOPs) before using them, but rarely require the user to continually perform an action during use, such as reauthenticating or re-reading said SyOPs.
-
-This can leave a potential gap for exploitation in several aspects.
-
-Firstly, not implementing a 'vigilance device' style setup in a computer system could leave opportunity for unauthorised access if the initial user is not at their desk, or is otherwise rendered absent.
-
-Secondarily (and perhaps more likely), a human operator not being continually reminded of their obligations during device usage may make them more inclined to a lapse of judgement in certain scenarios that may lead to a successful social attack.
-
-Since the nature of a SyOP may differ wildly depending on environment, systems in use, and project sensitivity, a system that is configurable might be the best option for these scenarios. Typically a systems administrator would be responsible for managing company-wide parts of working at a specific assurance level, and a scripting language such as Python might be a more familiar fit here.
-
-However, these tools could also be put in effective use by DevOps engineers that might seek to use such a tool to set 'reminders' for developers to prevent accidental damage if parts of infrastructure are deemed to require changes to meet deadlines. Any scenarios where a person acting quickly may make mistakes or oversights that would be costly to security would be a good fit for such a use case.
-
-### 1.2 Prior Literature <!-- 1b. Demonstrate familiarity with the background literature. -->
-
-https://heinonline.org/HOL/LandingPage?handle=hein.journals/unilllr2016&div=13&id=&page=
-
-https://www.sciencedirect.com/science/article/abs/pii/S0160791X17300921
-
-https://ieeexplore.ieee.org/abstract/document/10049917
-
-https://heinonline.org/HOL/LandingPage?handle=hein.journals/lmulr4&div=5&id=&page=
-
-https://www.jstor.org/stable/26041775 
-
-### 1.3 Relevant problems within project domain <!-- 1c. Identify a problem(s) which is relevant to the topic -->
-
-TBC
-
-#### 1.3.1 Robustness against tampering or sabotage
-
-Software-based implementations of dead-man's switches are inherently vulnerable to potential runtime changes that may encourage exceptions or unknown program states that may disable, inadvertantly *enable* the switch or otherwise result in unintended functionality. As such, development of these tools requires special considerations that may not necessarily be made for the average software project. Issues faced may include:
-
-- Exploits of weak code:
-    - [Memory Safety](https://en.wikipedia.org/wiki/Memory_safety) issues that are easily exploited
-        - [Stack Overflows](https://en.wikipedia.org/wiki/Stack_overflow) and [Buffer Overflows](https://en.wikipedia.org/wiki/Buffer_overflow)
-        - [Use-after-free](https://en.wikipedia.org/wiki/Dangling_pointer) Errors
-    - [Memory Leaks](https://en.wikipedia.org/wiki/Memory_leak) that occur as a result of unsafe programming
-    - If concurrency is involved, the intentional invocation of:
-        - [Deadlocks](https://en.wikipedia.org/wiki/Deadlock)
-        - [Race Conditions](https://en.wikipedia.org/wiki/Race_condition)
-        - [Synchronization](https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FSynchronization_%28computer_science%29) issues that may cause any of the above or any 'problem'-style manifestations thereof such as the [*readers-writer problems*](https://en.wikipedia.org/wiki/Readers%E2%80%93writers_problem)
-
-Most of these issues can be solved by using known *memory safe* programming languages, and undertaking [Defensive Programming](https://en.wikipedia.org/wiki/Defensive_programming) measures.
-
-- Modification, Deletion or Creation of external resources
-    - Removal of dependencies, such as software libraries or frameworks
-    - Disabling of OS functionality crucial to triggering or resetting of the DMS
-        - Network stacks, filesystems, Process schedulers, Drivers, other software tools that are executed on failure or reset state, etc.
-            - This would include interrupt signals such as SIGINT, SIGTERM or SIGKILL for UNIX systems
-        - Kernel modules also apply.
-        - Any tampering with hardware would propagate to the DMS through the OS.
-
-##### 1.3.1.1 Exploitation by initial user of software to undermine prior intent
-
-This scenario only applies in instances where a user that initially set the device to act as a form of precommitment (see §1.4) may later attempt to use an oversight in its design to sabotage their own aims. In such instances, the user should be considered an adversary on the same level as a malicious actor for the purposes of threat modelling and defensive measures. If anything, we may assume that the user attempting to disarm their prior armed payload in an 'illegitimate' manner will have more understanding of the presumed state of the software than an outsider.
-
-Given the intended configurability of our software, to some extent we must relent against certain classes of 'exploitation' by a user (such as intentional weak programming of their 'observation' or 'payload' code to include backdoors) and trust that when arming the device they were operating under a more rational state that anticipated later attempts to 'stop' the DMS in this sense, if used as a commitment device.
-
-#### 1.3.1 Robustness against incidental changes to program state, particularly as a result of [Software Aging](https://en.wikipedia.org/wiki/Software_aging)
-
-<!-- For long-term deployments of a Dead Man's Switch we must consider various -->
-
-#### 1.3.2 Reliance on external interactions in complex scenarios
-
-#### 1.3.3 Lack of standardization across computing environments
-
-#### 1.3.4 Handling permanent 'activations' that otherwise obstruct a trigger scenario
-
-### 1.4 Placing project within a wider context <!-- 1d. Place the topic in a wider context. -->
-
-<!-- To justify our creation of a device capable of malicious usage we must first provide some justifiable contexts where it can be of legitimate use. The primary ethical, civilian usecase of such a device is as a [Commitment Device](https://en.wikipedia.org/wiki/Commitment_device) -->
-
-### 1.5 General Implications/assumptions <!-- 1e. Identify any general implications for the project. -->
+Such products within the space show that perhaps there might be room in the cybersecurity space for a reapplication of the dead man’s switch concept for the purposes of *behavioural engineering* - where the tendencies and biases of human beings are acknowledged and designed around in a way that may mitigate the chance for the ‘chain-of-event’ type errors to occur that our technical controls cannot directly account for in all instances. With the understanding that such ‘failure states’ will vary across organisations and industries, the aim of this project is thus to produce a configurable framework with which to set up both *fail-safe* and *fail-deadly* implementations that scales to different scopes of ‘actor’ at the individual, group and organizational level, alongside the investigation, discussion and potential implementation of mock-up use cases of this software within different contexts at the different scales previously described.
 
 ## 2 Aims and Objectives
 
-This project aims to produce an extensible framework for producing vigilance and dead man's switch devices as a means to assess what potential usecases are available for the technology outside of the context of antiforensics. The primary usecase that will be focused on throughout this project is a 'nudge device' to reinforce human behaviour, both within a self-improvement and OPSEC context.
+### 1.1 Project Aims
 
-To facilitate this, it is intended that a flexible 'library' that allows various 'triggers' and 'payloads' to be designed shall be developed in Python and able to be demonstrated via an example use-case in line with the above.
+The main aim of this project is to produce a flexible toolset and framework that allows various 'triggers' and 'payloads' to be designed and tied together concurrently.
 
-## 2.2 Objectives
+Secondarily through use of the above tool, another aim is to determine whether the implementation of *dead-man's switch*-style technology to lower-stakes, general/personal computing contexts would be viable, both through analysing current research and any existing products available on the market that could be adapted to the format, such as commitment devices --- and whether the tool produced as a result of a project could be easily adapted to those purposes, or what changes or additions would be required if not (and the viability thereof).
 
-    
+### 2.2 Objectives
+
+1. Assess the current state of usage of *Dead Man's Switches* (or similar mechanisms) in contexts relevant to their usage in general computing environments and their efficacy; noting any research findings or real-life failure-state incidents that require consideration.
+2. Identify any existing issues within the computing and cybersecurity space that could be potentially improved with the implementation of such a device, including (but not strictly limited to) security issues involving human factors and the current limits on human-computer interaction that may be a cause.
+3. Note and discuss (if applicable) any potential ethical or legal concerns that may arise as a result of implementing a solution in the chosen area with the framework, using the BCS Code of Conduct as a basis.
+4. Test, design and develop a prototype of the framework that meets the needed requirements for an MVP to be deployed in this context. If any additional requirements that can be generalized as part of the framework are realised, these should be noted in the report at this point of the project.
+5. Given the success of the initial prototype, evaluate any potential risks from the perspective of potential red-team attacks against the software that attempt to disarm, disable or otherwise sabotage the base components of the framework. Include any potential increase in attack surface through implementing additional requirements as part of analysis.
+6. Having considered the significance and relevance of any risks identified, consider the addition of countermeasures as security-based requirements. Implement these requirements according to prior analysis, prioritising requirements as time dictates.
+7. Report the outcome of the project, bringing particular notice to any risks left unaddressed and any potential ethical or legal considerations to be made in further work.
+
 ## 3 Tasks and Deliverables
 
 ### 3.1 Tasks
 
-1. Evaluate what the current usecases of these devices are and in what aspects of their implementation could be adapted for an ethical purpose in the context of use in a computer system.
-2. Given an accurate definition of what these systems have in common, investigate what issues within ethical problem spaces could be partially or fully solved by implementation of such a solution. refer to existing solutions within the space where relevant, and use the BCS Code of Conduct as a reference when determining whether the implementation would be ethical and legal.
-3. Understand what issues within the problem space might affect the viability of the solution provided. Generate a set of additional requirements on top of the generic 'framework' requirements outlined in the PPD if necessary.
-4. Define a set of functional and non-functional requrirements based on a given 'example' scenario based on the problem space.
-    * The following **functional** test types (requirements defined as **MUST**) are deemed applicable:
-        * User Acceptance tests in line with *feature-based* requirements.
-        * Smoke tests in line with *stability* requirements.
-        * During development, we will define *sanity* tests for any defects that are noted during implementation of a unit.
-            * Our regression testing will be performed after the 'design-development' cycle of each unit. To continue onto the next requirement, the following must be true:
-                1. **All** existing unit tests for **functional** testing must pass.
-                2. **All** new unit tests for 'sanity' testing must pass.
-    * The following **non-functional** test types (requirements defined as **MAY**) are deemed applicable:
-        * *Portability* testing across several desktop computing environments.
-        * *Security* testing for any *known* CVEs that might affect the project, or 'adversarial' failure scenarios such as tampering.
-        * *non-functional* tests do **not** need to pass to continue onto the next requirement, but any that are *not ultimately implemented* should be noted and the reasoning for their removal should be discussed in the report's 'Results and Discussion' section.
-5. Define a set of *Gherkin* test scenarios in line with *Behaviour Driven Development* according to previously written requirements.
-  * This will cover *User Acceptance Testing* as we define them in accordance with meeting our requirements.
-6. Implement an initial 'skeleton' for these test scenarios in the form of unit tests.
-7. For each requirement, undergo design work that defines how the unit will work at a high level.
-8. Implement the backend for the relevant test scenarios according to design, such that these unit tests pass.
-    * Define any 'sanity' unit tests for defects discovered during the implementation process and ensure that these pass also.
-9. Document and report on:
-    1. Research findings on this project, steps 1-3
-    2. Implmentation of this project:
-        * Tests, 4-6
-        * Design & Implementations, 7-8
+#### 3.1.1 Research
+
+1. Collect existing research or resources on implementations of 'devices considered to trigger based on incapacitation or failure of an operator or dependant process.'[^1]
+
+2. Identify collated references and evaluate their relevance for discussion according to the following:
+   - Availablity of information on the *design* of the system itself, so that potential faults can be noted and countermeasures/fixes evaluated if replication of similar issues is possible in the delivered project.
+   - Availability of information pertaining to the *quality* of implementation (or lack thereof).[^2]
+   - For experimental research, the measured outcome of the implemented device (does it improve the situation beyond margin-of-error)?[^3]
+
+3. Having considered potential *general* implementation issues that may be encountered, begin looking at potential areas where the system can be employed to help provide a solution to the problem. Out of the areas chosen, note the following:
+   - Any specific challenges related to the problem space that may be applicable to the implementation of the system.
+     - Where prior research or study into the problem space exists, note any prototype or commercial solutions provided that are *not* comparable to the use of a DMS system and the efficacy of the solution provided.[^4]
+   - How a specific configuration of the intended project outcome could improve this situation, preferably backed up with evidence (where similar prior work may exist).
+
+4. Identify any potential ethical or misuse concerns that may arise with *this* specific solution demonstrated via the DMS framework - in particular:[^5]
+   - Could the solution provided cause harm to another? If so, why - and does the risk caused fall within boundaries of lawful society (for example, to detect an intruder, or for defence purposes)?
+   - What attack surfaces could be potentially exposed for use by a malicious actor, and in the context of its deployment, does the responsibility for protecting against these issues fall within the scope of the project?
+     - Could the target of the payload be changed in an unauthorized manner?
+     - Could the observer responsible for triggering the payload be modified to check for a different, undesired trigger?
+     - Could the DMS system itself be rendered inert somehow?
+
+5. For each concern identified, evaluate whether it is an issue that is dependant on *context-of-use* (external to the software itself) or as a result of any potential implementation issues?
+   - Issues considered dependant on *context-of-use* should be discussed alongside potential countermeasures.
+     - By necessity, some issues will likely need to be considered 'out-of-scope' for what a developer can reasonably engineer against, and in such cases policy will have to step in.
+   - Issues as a result of implementation issues *must* be considered for inclusion into the requirements.
+
+#### 3.1.2 Design \& Testing
+
+1. Note any additional requirements that have arisen as a result of prior research or work, and re-evaluate any requirements that may now be considered of a lower priority (i.e., *MUST* → *SHOULD*) or out of the realm of feasibility in the project development timeframe.
+   - Add these onto the table defined in [Expected Outcomes](#32-expected-outcomes).
+
+2. For each requirement, determine what kind of test is best suited to assess its completion:
+   - Where applicable, we will write a Gherkin language test script to tie directly as a form of unit testing via the `behave` module.
+   - If this is somehow not applicable (such as for edge-cases), an acceptable alternative might be to fall back to standard unit tests, but we should prefer to define such edge-cases outright if at all possible.[^6].
+   - High-level requirements (acceptance tests) may not be coverable via unit tests and thus may require manual scripting. Depending on implementation, a decision should be made as to whether this is scripted before development of the system (or relevant units) or after completion thereof.
+
+#### 3.1.3 Implementation of functional requirements
+
+1. Going through the functional (*MUST*) requirements as deemed applicable, implement each unit, **beginning with the underlying DMS system first.**. A test unit can satisfy several requirements at once, given that it makes sense to do so.
+   - Identify which requirements successful implementation of this unit should satisfy.
+   - For low-level requirements, begin writing unit tests based on the Gherkin test scripts provided.
+   - Begin implementing the basic skeleton for the test units in a manner that will make them initially fail without an implementation.
+
+2. Begin implementing code to make the test unit succeed according to the original requirement and/or test script.
+   - Show any relevant design diagrams necessary for understanding of the implementation (if applicable).
+      - The report will be written as a Literate Program; codeblocks will generally be left out of the submitted report in favour of high-level explanation, except for where circumstances dictate otherwise.
+        - Doing this allows us to couple the report and project closely enough to allow for explanations for any needed deviations from the PPD (either due to time, technical barrier or other blocker).
+   - Write code to satisfy the unit test that has been created within the Report, alongside a high-level overview of what changes have been made. Where relevant, show the underlying code that proves that the resultant work will pass the unit.
+     - If for whatever reason the the test cannot be passed and the Gherkin Script or requirements must be modified, state why this is the case and the changes that have been made to the project going forward.
+
+3. Continue the above loop (steps 1-4) such that an 'ongoing log' of progress is defined within the report as part of agile development process.[^7]
+
+#### 3.1.4 Implementation of non-functional and security Requirements
+
+1. After initial production of the FYP, identify any potential attack vectors for the *generic DMS system* upon which the example use-case is built.
+2. Identify any potential attack vectors for the scenario-specific observer and payload threads that are created for use.
+3. Discuss the significance of any vectors theorized, what potential countermeasures would be, and (if relevant) whether these countermeasures are to be added as additional *SHOULD* requirements to be implemented.
+4. For each non-functional (*COULD*) and security (*SHOULD*) requirement, go through the same unit testing and implementation process explained in Sections [3.1.2](#312-design--testing) and [3.1.3](#313-implementation-of-functional-requirements).
+   - For any requirements left unimplemented by the end of the process, explain why this is the case and display any existing high-level work that may be done on it (to be discussed as part of *Results and Discussion*).
 
 ### 3.2 Expected Outcomes
 
-The expected outcome of this project is to produce a python-based commandline utility that allows the setup and teardown of various types of vigilance control scenarios through the use of a framework. The intent is that for a MVP this can be activated through Python's integrated REPL utility as a bare minimum, though a desired extension of this would allow configuration via a commandline utility such that it can be used with existing OS tools, particularly within a UNIX ecosystem.
+The expected outcome of this project is to produce a python-based commandline utility that allows the setup and teardown of various types of vigilance control scenarios through the use of a framework. The intent is that for a MVP the system would allow configuration via a commandline utility such that it can be used with existing OS tools, particularly within UNIX ecosystems.
 
-Given that we require an example scenario for demonstration purposes and evidence that this tool has potential for ethical or benign use, part of the MVP is that we do as such using our developed tooling. Our intended example is the use of a dead-man's switch to encourage and enforce proper OPSEC for a hypothetical system via such science-based tricks.
+Given that we require an example scenario for demonstration purposes and evidence that this tool has potential for ethical or benign use, part of the MVP is that we do as such using our developed tooling.
 
-Our set of MVP requirements are defined thus:
+Our *baseline* set of project requirements for the *underlying DMS system* are defined thus, and use the following terms:
+
+- *MUST* requirements are the minimum acceptable for the MVP to be functional.
+- *SHOULD* requirements are expected for secure usage of the end-product, but their lack of implementation **should not affect progress towards MVP.**
+- *COULD* requirements are **considered to be feature extensions,** and their lack of fulfilment **should not affect the functional security of the project in any meaningful way, or affect MVP progression.**
 
 |     ID      |                Description                 |
-| :---------: | :----------------------------------------: |
-| `DMS-LLR-1` | The *Dead Man's Switch* MUST make use of a |
+| :---------: | :----------------------------------------- |
+| `DMS-REQ-1` | The DMS *MUST* provide a commandline utility that allows the 'loading' of serialized functions from a file. |
+| `DMS-REQ-2` | The observer thread *MUST* communicate any trigger signals to the payload process. |
+| `DMS-REQ-3` | The payload thread *MUST* acknowledge any received trigger signals for sender confirmation purposes. |
+| `DMS-REQ-4` | The payload thread *MUST* communicate the outcome of any trigger attempts to all relevant components of the DMS. |
+| `DMS-REQ-5` | The termination of the payload or observer threads *SHOULD* be observable by other components of the DMS via the lack of a heartbeat signal. |
+| `DMS-REQ-6` | The DMS *SHOULD* support the signing of pre-made functions to ensure code trust is verified before execution. |
+| `DMS-REQ-7` | The DMS *SHOULD* allow the user to view the underlying source code of a pre-made function before choosing to load it to prevent malicious code execution. |
+| `DMS-REQ-8` | The DMS *COULD* allow the individual components of the system to be setup across systems through use of networking protocols. |
+| `DMS-REQ-9` | The DMS *SHOULD* support some level of anti-tampering functionality against external sources. |
+| `DMS-REQ-10` | The DMS *COULD* support resuming the state of the system in the event of a **planned** system shutdown by recording the state of processes. |
+
+These are not set in stone due to the nature of the project and will likely be expanded upon to some extent to accomodate the specific demonstration scenario chosen, but any changes are expected to be thoroughly documented in the Report due to the outlined process (see [Tasks](#31-tasks)).
 
 ### 3.3 Expected Project Scope
 
-Our Minimum Viable Product is to produce a Python module that is capable of interoperation with current tooling to allow the multithreaded setup of various 'dead-man's switches' (defined by the connection of an 'observer' thread identifying a 'trigger' event and thus activating an associated 'payload' thread). The underlying assumption is that these threads will be tied together through a base class written expressly for this purpose, and that the end-user for an MVP scenario will be familiar enough with Python and the REPL to write their own custom classes to set up a scenario. 
+Our Minimum Viable Product is to produce a Python module that is capable of interoperation with current tooling to allow the multithreaded setup of various 'dead-man's switches' (defined by the connection of an 'observer' thread identifying a 'trigger' event and thus activating an associated 'payload' thread). The underlying assumption is that these threads *may*[^8] be tied together through a base class written expressly for this purpose, and that the end-user for an MVP scenario will be familiar enough with Python and the REPL to write their own custom classes to set up a scenario. Desired expansions of this would include the expansion of this into a commandline utility that allows the usage of '*pickled*' (serialized) classes to be loaded, allowing a setup to be loaded by someone other than the initial developer (such as a system administrator). Given that unpacking serialized classes is considered inherently insecure due to its potential for arbitrary code execution, we may also decide to make use of HMAC hashing with the associated `hmac` module as recommended in the `pickle` module's documentation.
 
-Our demonstrable end-product will be written as an example scenario. Desired expansions of this would include the expansion of this into a commandline utility that allows the usage of '*pickled*' (serialized) classes to be loaded, allowing a setup to be loaded by someone other than the initial developer (such as a system administrator). Given that unpacking serialized classes is considered inherently insecure due to its potential for arbitrary code execution, we may also decide to make use of HMAC hashing with the associated module as recommended in the `pickle` module's documentation.
+![Figure 1. Early draft design of overarching DMS runtime design](assets/dms-design.drawio.svg)
 
-Given the open-ended nature of such a project, some barriers must be defined that restricts the direction development will go, based on feasibility:
+The architecture of a given DMS setup itself is intended to consist of three threads that handle different functions; the 'observer' thread checks for a context-specific outcome, and notifies the main controller (`dmsClass`) and the 'payload' thread of the trigger condition[^9]. The 'payload' thread is designed such that once triggered it requires no further intervention from other threads. Further extension might allow the disarming or interruption of the payload from the 'signal' thread, but allowing configurability after initial arming of the device is *not* intended to be part of the MVP. The 'signal' class is intended to primarily act as a logging server to which `dmsClass`, the observer, and the payload report - though it may optionally support configuration or resetting of the device, this is also intended as a potential avenue of expansion; in the event that it would be explored we would likely limit the scope of such to the following:
 
+- Changing of initial parameters of the *thread function* itself[^10].
+- 'Resetting' of the observer thread to its initial state (for example with 'multiple-strike' failure systems).
+- The ability to disarm a payload in progress, given that this functionality has been coded into the payload itself by the author.
+
+For the purposes of preventing scope creep however, the ability for the 'signal' controller to interact with other parts of the system beyond receiving messages from `dmsClass` is considered a possible extension and not part of the MVP. Similarly, the movement from standard I/O pipes to networking sockets is considered as a possibility that would allow the DMS to be deployed in a distributed manner, but adds enough complexity that this is considered a stretch goal only if time absolutely allows.
+
+#### 3.3.1 Scope of Security Enforcing Functions \& Requirements
+
+Being written in Python, the underlying DMS framework will necessarily be running as a userland (*Ring 3*) application. This helps keep the tool portable, but limits the scope of what attacks can be fought against, as it will be subject to the Host OS' process scheduler. The tool may be able take appropriate anti-tamper measures against interference from other processes and (some) interrupt signals from the process scheduler, but any critical hardware, driver or OS-level failure events **cannot be defended against.** Thus, the following assumptions are made about the deployment envionment:
+
+1. The system that the DMS is running on is free of any malware that operates at a level *lower than ring 3* (userland).[^11]
+2. Sufficient system hardening measures have been taken, such that it is unlikely that an attacker has achieved privilege escalation via **known** exploits or the usage of stolen credentials in the event they gain *remote access* to the system.
+3. The risk of the host system suffering a power outage or system failure has been mitigated via external means such as use of a battery or *Uninterruptible Power Supply* (PSU).
+4. At time of activation, the device running the *payload* process is not in a sleep or hibernation state, or otherwise unable to carry out its task.
+5. If the functionality implemented by `DMS-REQ-5` (heartbeats) is not enabled, the device running the *observer* process is not in a state whereupon it is unable to contact the *payload* process (sleep or hibernation) upon triggering.
+6. It is assumed that any attackers do not have *physical access* to the device running the DMS. If `DMS-REQ-5` (heartbeats) and `DMS-REQ-8` (distributed setup) are implemented and enabled, this aspect only applies to the system running the *payload* thread.
+
+Other assumptions about a threat model may need to be made as requirements are approached in the project report. These will be explicitly defined where relevant.
 
 ### 3.4 Project Milestones
 
+The following milestones are intended to be reached:
+
+1. Ethics application submission (RP1)
+2. Submission of PPD
+3. Established scenario for implementation
+   - Get this checked with supervisor
+4. Completion of Initial Test Scripts
+5. Prototype 1 (Review Point 2, MVP)
+   - Report (and by extension, code) state discussed with supervisor at this point
+6. Prototype 2 (*Security* requirements)
+7. Prototype 3 (*non-functional* requirements)
+8. Showcase Entry and Review Point 3
+9. Report, First Draft
+10. Project Submission
+11. Project Showcase
+
 ## 4 Gantt Chart
 
-### 4.1 Project Milestones
-
-### Project Tasks/Deliverables
-
-### Other Milestones
+```mermaid
+gantt
+    title October 2023 - April 2024 Gantt Chart
+    dateFormat  YYYY-MM-DD
+    section COMP30151/52 Final Year Project
+    COMP30151 - Project Planning Document :ppd, 2023-10-01, 27d
+    COMP30151 - Existing Implementations Research :existingImpl, after ppd, 14d
+    COMP30151 - Implementation Scenario :impl, after existingImpl, 14d
+    COMP30151 - Completion of Initial Test Scripts :tscripts, after existingImpl, 21d
+    COMP30151 - Prototype 1 (MVP) :p1, after tscripts, 28d
+    COMP30151 - Review Point 2 :milestone, rp2
+    COMP30151 - Prototype 2 (Security requirements) :p2, after p1, 28d
+    COMP30151 - Review Point 3 :milestone, rp3
+    COMP30151 - Prototype 3 (non-functional requirements) :p3, after p2, 28d
+    COMP30151 - Results and Discussion :RnD, after p3, 14d
+    COMP30151 - Conclusions & Future Work :CnFW, after RnD, 19d
+    COMP30151 - Report, First Draft :milestone, 1stD
+    COMP30151 - Finalizing Report :FinD, after CnFW, 29d
+    COMP30151 - Project Submission :milestone, psub
+    section COMP30251 Security in Practice
+    COMP30251 - Presentation/Poster :sipPoster, 2023-11-13, 9d
+    COMP30251 - Report :sipReport, 2024-03-07, 7d
+    section COMP30202 Digital Investigations
+    COMP30202 - Report :diReport, 2023-12-09, 7d
+    COMP30202 - Evidence Analysis Report :diEAReport, 2024-04-17, 10d
+    section ITEC30161 Internet of Things
+    ITEC30161 - IoT Report :iotReport, 2024-04-08, 10d
+    section ISYS30391 Adv Topics in Cyber Security
+    ISYS30391 - Research Paper/Report :actsReport, 2024-03-16, 28d
+    ISYS30391 - Presentation Slides :atcsSlides, 2024-04-06, 2d
+    ISYS30391 - Presentation Week :atcsDemo, after atcsSlides, 5d
+```
 
 ## 5 Resources
 
-### 5.1 List of Resources to be used
+### 5.1 Research Resources
 
-### 5.2 Sources of information required to conduct the project
+- Zotero is an open-source reference manager for use in academic contexts. It will be used to store and annotate papers, books and other resources during research, and to generate style-accurate citations and references.
+  - `scite-zotero-plugin` is a Zotero plugin provided by scite.ai, an online service to evaluate discussion surrounding a paper. In the context of Zotero it is used to list the number of supporting/disputing citations and to access the scite.ai report itself (which does not require a paid subscription).
+- Google Scholar will be used to search for and obtain papers related to the project.
+- Given that a lot of literature on vehicular safety is quite old, *WorldCat* will be sometimes used to find an equivalent book or document (such as a reprint) when the cited book cannot be directly sourced.
+- NTU's Library OneSearch will be used to access papers or request interlibrary loans when an open-access version of a resource cannot be found.
+
+### 5.2 Implementation Resources
+
+- The main report will be initially written using `lmt`, a small program written in Go that allows for markdown files to be used for Literate Programming. This will be used to couple the report process to the development cycle for reasons outlined in earlier sections.
+- `pandoc` will be used alongside manual editing to convert the markdown file into the university-templated `.docx` report to be submitted.
+- The DMS system itself will make use of Python 3, and *may* use the following modules:
+  - `subprocess`/`threading` (preferably the former)
+  - `os`
+  - `abc`
+  - `pickle`/`shelve`
+  - `argparse`
+  - `hmac` (or some other digest/signature mechanism to *authenticate/verify serialized functions*)
+
+### 5.3 Testing Resources
+
+The following Python 3 modules will be used to facilitate the testing process:
+
+- `pytest` will be used as the primary unit testing framework.
+  - This will likely be primarily used for low-level requirements.
+- the `pytest-bdd` module will be used for Integration and End-to-End tests, and will be written in a manner following *Behaviour Driven Development.*
+  - It will likely be employed mostly to satisfy high-level requirements.
+
+The main reference for following *Behaviour-Driven Development* practices will be Automation Panda's *BDD 101* series (Knight, A., 2023). It provides reference on using `pytest-bdd` and advice on how best to write Gherkin scripts for features, among other things.
 
 ## 6 Risks
 
-## 7 Legal, Social, Ethical and Professional Issues (LSEPIs)
+To evaluate potential risks to the project, we will be using a *Risk Matrix*, following a blogpost by Asana (2022) as a guideline. Risks are identified by type, severity, likelihood, and impact. Risk *Types* that will be used are as follows[^12]:
 
-### 7.1 Legal Issues
+- Strategic risks, relating to potential errors in decision, such as tools used or evaluated timelines.
+- Operational risks,  such as mistakes in planning or communication.
+- Technical risks, such as loss of data or property damage.
 
-### 7.2 Social Issues
+Risks themselves are rated on a scale of 1-5 on severity and likelihood, and the resultant risk impact is a value of 1-25 calculated by the product of both.
 
-### 7.3 Ethical Issues
+It is as follows:
 
-### 7.4 Professional Issues
+| Risk ID | Risk Type | Risk Description | Severity, 1-5 $(S)$| Likelihood, 1-5 $(L)$ | Risk Impact $(S\times{I})$ | Countermeasure(s) |
+| :-: | :-: | :-- | :-: | :-: | :-: | :-- |
+| 1 | *Technical* | Source*-code and other deliverables could be lost, setting the project back.  | 5 | 2 | 10 | All project code and documents are regularly committed to a private *GitHub* repository. |
+| 2 | *Operational* | Project completion could become difficult due to scope creep, either by the choice of scenario or due to subsequently identified non-functional and security requirements. | 3 | 3 | 9 | A *critical path* is to be identified at each stage of requirement fulfilment (functional -> security -> non-functional). These requirements are to be implemented first and *in defined order* before other requirements are implemented (or their absence is to be explained to the reader). |
+| 3 | *Strategic* | The overhead of the *Literate Programming* process may extend the time for tasks longer than expected. | 2 | 2 | 4 | The use of `lmt` means that at any point, existing code may be 'tangled' from the report into their respective source files, and development can *continue independently* from the report. |
+| 4 | *Strategic* | The overhead of unit testing and writing of *Gherkin* test scripts may extend the time for tasks longer than expected. | 2 | 2 | 4 | *Gherkin* scripting can be dropped in favour of manual acceptance testing, with screenshots and explanation. |
+| 5 | *Strategic* | Insufficient information on prior implementations of *Dead Man's Switches* may be found to significantly affect the trajectory of the project. | 2 | 5 | 10 | The research focus of the report will shift to give more weight to any *new* applications of a *Dead Man's Switch*. Any additional requirements will be entirely evaluated on the requirements of the scenario chosen, and additional time may be allocated to this task to compensate. |
+| 6 | *Strategic* | No potential applications of the *Dead Man's Switch* in new fields are found that *would be viable to use as a scenario* within the timeline allotted. | 5 | 2 | 10 | In the event this occurs, a meeting will be arranged with the project Supervisor as soon as possible with the intent to find a scope-appropriate application from research done. As an alternative, the possibility of taking an existing known or thought-of application - with citation provided - and elaborating upon it to a level appropriate for project scope. (*Note: this is extremely unlikely as early research taken before starting term indicates that there are at least two fields that may act as candidates.*) |
+| 7 | *Strategic* | The only viable scenario options for the *Dead Man's Switch* are those not related to the degree being studied (BSc Computer Systems (Cyber Security)). | 2 | 1 | 2 | It may be agreed upon to focus more on the robustness of the underlying *Dead Man's Switch* framework through the addition of more security requirements. Effort relating to scenario-specific requirements outside of the MVP will be entirely directed towards security requirements and any non-functional requirements whose fulfilment has necessary security implications that require addressing. More time will be spent evaluating the potential attack surface of the end product at both the scenario and framework-level to help produce these requirements. |
+| 8 | *Operational* | The state of the project misaligns with the desired deliverables and outcomes due to lack of communication with the project supervisor. | 2 | 4 | 8 | As suggested in lectures, weekly contact with the supervisor will be aspired to. This may be in the form of updates or arranged meetings, depending on whether discussion is required. |
+| 9 | *Operational* | Tasks take longer to fulfil than their stated timeframe on the Gantt Chart. | 2 | 2 | 4 | Tasks are rescheduled according to circumstance and other commitments may be rescheduled or dropped as required. |
+| 10 | *Technical* | Libraries chosen for development are unsuitable for fulfilling certain requirements. | 1 | 2 | 2 | Due to the development methodology being followed this should be caught when attempting to implement the requirement. It will be noted at that point in the report and any changes made in libraries used or implementations will be noted. |
 
-# Footnotes
+## 7 Career Aspirations
 
-[^1]: Behaviourism a subfield of *psychology* which investigates the behaviour of humans and animals (Wikipedia, 2023). Across other fields the concept that behaviour can be measured and affected through external devices has been investigated through concepts such as behavioural economics and game theory.
+## 8 Legal, Social, Ethical and Professional Issues (LSEPIs)
 
-[^2]: StickK itself is based on the concept of loss aversion ([StickK, 2023][@StickKTour2023]). Loss aversion itself as a concept is not without its criticisms, but general arguments for its existence indicate skepticism but not outright denial within academia ([Wikipedia, 2023][@WikipediaLoss2023]).
+### 8.1 Legal Issues
 
-[^11]: Unfortunately as of time of writing, the raw data behind 2023's report has not been committed.
-[^22]: It should be noted that Carayon et al. (2005) seem to bundle what Reason (1990) considers as 'slips' (motoric errors) and 'lapses' (cognitive or recall-based errors) under one umbrella of 'slips', and instead uses 'lapse' to refer to what Reason considers a 'rule-based error'.
-  Considering that later work that references Carayon *and* Reason (Pollini et al., 2022) follows Reason's *initial* taxonomy, and that the use of 'lapse' in this context appears to be an obstruction to understanding, **we will elect to follow the original taxonomy as defined by Reason and maintained by Pollini et al.**
+#### 8.1.1 Potential for the project's use as an 'article' for an offence committed under section 3A of The Computer Misuse Act, 1990
 
-  
-# References
+Given the intended configurability of the system, there is the possibility that a user could feasibly create a set of 'observer' and 'payload' functions for use that could be employed using the DMS framework as a *logic bomb* or *time bomb* installed as part of unauthorized access to a system with a payload that could cause damages to an individual or organization.
+
+Due to the potential for a given configuration of the DMS to be considered a potential cyberweapon, UK legislation must be consulted. The original form of the *Computer Misuse Act 1990* itself does not contain a section relevant to this, but a subsequent (*Police and Justice*) Act passed in 2006 adds (c. 37) *Section 3A* to the act, and another (*Serious Crime*) Act passed in 2015 amends section 3A to include section 3ZA (c. 9), defined within the same Act.
+
+For the purposes of complete legal analysis, we will assume that any user that has used the tool in a malicious manner has committed a crime under all sections mentioned (Section 1, 3 and 3ZA). Given that we have defined which textual amendments are relevant, we may now directly quote the revised, digital edition of the *Computer Misuse Act 1990* (*legislation.gov.uk, 2023*); emphasis mine in all cases.
+
+Throughout the Act the term 'article' is used; Section 3A(4) defines the term thus:
+
+> In this section “ article ” includes any program or data held in **electronic form.**
+
+Section 3A(1) is the first of relevant passages:
+> *A person is guilty of an offence if he makes, adapts, supplies or offers to supply any article **intending** it to be used to commit, or to assist in the commission of, an offence under [section 1, 3 or 3ZA].*
+
+The Project Planning Document should show that the author's intent is not to provide a cyberweapon in any form as part of the project itself; to be unambiguous about this **the demonstration scenario chosen should not represent such a use case.**[^13] These checks may be made as part of an additional ethics sign-off form.
+
+Section 3A(2) continues as follows:
+
+> *A person is guilty of an offence if he supplies or offers to supply any article **believing that it is likely to be used to commit, or to assist in the commission of, an offence** under [section 1, 3 or 3ZA].*
+
+The *Crown Prosecution Service* offers legal guidance (2023) to prosecutors attempting to leverage the *Computer Misuse Act 1990* in their cases. On Section 3A(2) it notes the following:
+
+> 'Likely' is not defined in the CMA but, in construing what is 'likely', prosecutors should **look at the functionality of the article and at what, if any, thought the suspect gave to who would use it.**
+> ...In the offence under Section 3A(2), the **relevant mens rea is 'belief' and mere suspicion is not enough.**
+
+It should stand to reason that the mere production of a Project Planning Document that considers LSEPIs is more than enough evidence that the author has had to deeply consider potential issues of use. The functionality of the 'article' could be admittedly contentious due to its configurability; though it should be noted that any malicious payload would have to be explicitly *written* by the user, or provided to them by *another user* that serialized the functions - the DMS framework would have an undeniable hand in 'linking' the components together, but this in itself is benign enough that it wouldn't be *directly* responsible for a violation of Sections 1, 3 or 3ZA. Regarding 'belief', it stands to reason that neither the University or its employees - as source-code submission is required for the module - will use the program for a CMA offence.
+
+It also asks prosecutors to consider a series of factors when evaluating the strength of a case dependant on 3A(2). We will answer them in the context of this project now:
+
+> - Has the article been developed primarily, deliberately and for the sole purpose of committing a CMA offence (i.e. unauthorised access to computer material)?
+
+No. For the production of the DMS framework itself, its would be written neither for the primary *or* sole purpose of commiting a CMA offence, and any misuse of it for the purpose would be an outcome explicitly acknowledged as possible, but not deliberately designed for. The idea of attempting to audit that *what* the DMS framework is running is *legal* is something impossible to implement with technical controls in a manner that is robust to circumvention efforts.
+
+In addition, as stated prior, any malicious payload would have to be explicitly written by *a* user of the program, rather than the author - whether the leveraging of the DMS framework would legally be considered as the author's contribution to such misuse is uncertain. The only sentencing case involving a successful charge under Section 3A[^14] - R v Martin (2013) - was appealed, with the transcription of the court's decision to reject the appeal - [2013] EWCA Crim 1420 - stating the following:
+
+> 22. Finally, counts 12 and 13 concerned software called Jaindos, which is a program that can be used to instigate DOS attacks and Cyber Ghost, both of which were on the appellant's computer equipment.
+
+Attempting to find out more about Jaindos was unsuccessful (likely for good reason); however as the court states that the IP address involved in the DOS attack "appeared to be based in the United States", it might be a reasonable guess to assume 'Cyber Ghost' is referring to the VPN service of the same name. Given that the company that provides the service was not also prosecuted under Section 3A(2) - despite VPNs being commonly used in cybercrime, even in 2013 - and the CPS' explicit requirements for *mens rea* to be established, it stands to reason that a situation where a bad actor uses a piece of software for a CMA offence that was *not initially provided for that purpose* might have some form of legal precedent in favour of the software vendor.
+
+> - Is the article available on a wide scale commerical basis and sold through legitimate channels?
+
+Any commercialisation of the project would be explicitly outside of the scope of what would be produced as part of a final year project. This project is not being created in collaboration with a client, either. In the event that it ever was, it would be done so through legitimate channels and with respect to the law - but the principle point here is that this is a null factor for any consideration of legality within the project itself.
+
+> - Is the article widely used for legitimate purposes?
+
+In the context of the final year project, the only use of this tool would be in a manner that is presumably legitimate as a result of it requiring sign-off from the university. As stated before, the University may desire additional reassurance on this front, and discussion of any potential issues in this regard with the project supervisor have been ongoing and will continue.
+
+> - Does it have a substantial installation base?
+
+Although it would be preferred to be able to display the final year project code as part of a portfolio (for example on GitHub), the aforementioned legal concerns are likely to restrict this, in which case the only 'installation base' would be the single device used for the demonstration, and any potential prospective employers that might request to see the project work directly.
+
+To summarize, the author **does not believe the proposed project, in the scope of its production or its distribution thereof for marking purposes, would be likely to constitute an offence under the Computer Misuse Act 1990.** This analysis has only been undertaken in an attempt to exhaustively prove such a point and allay any concerns.
+
+#### 8.1.2 Additional Considerations for the University
+
+The report itself, being part of a Literate Program, could also theoretically count as an 'article' under the legal definition provided under Section 3A(4), if it is in a digital format. Given that the rights to the submitted report are surrendered to Nottingham Trent University, however, the institution is by all means able (and encouraged) to redact parts of the report as seen fit if they intend to use it for other purposes.
+
+It is assumed that the university as an organization would have a very strong legal defence against any potential allegations under Section 3A of the Act, as it would presumably not distribute the report to any parties with the intent to faciliate a crime, and would also not distribute the report to anyone believing it could be used for criminal purposes (thus *mens rea* cannot be established).
+
+It should also be noted that a printed copy of the report could be reasonably argued to be a type of *data* or a format of a *program*, given that it is encoded information, but it would not be in an electronic form - and so *might* not legally be considered an 'article' under the definition provided by Section 3A(4). Perhaps at worst a weak argument could be made that a printed copy is a representation of an electronic form and thus is equivalent - but there is no legal precedence for such a case in the UK, and a transcribed copy created with a typewriter or through writing would counter this argument. This point is raised to note that the distribution of any printed copies of the report may possibly enjoy a more robust legal defence.[^15]
+
+### 8.2 Social Issues
+
+### 8.3 Ethical Issues
+
+### 8.4 Professional Issues
+
+## References
 
 - §1205.5 Walk-behind rotary power mower controls (Code of Federal Regulations) (United States) Order 2023 S.I. 2023/1205
 
@@ -298,3 +360,21 @@ Given the open-ended nature of such a project, some barriers must be defined tha
 [@liginlalHowSignificantHuman2009]: zotero://select/library/items/7KWGGTMW
 [@hughes-larteyHumanFactorCritical2021]: zotero://select/library/items/T7WYW4CZ
 [@StickKTour2023]: zotero://select/library/items/INT5MCK7
+
+## Footnotes
+
+[^1]: We use this somewhat broad definition due to a wide range of terms (*Dead Man's Switch* is an infrequent label); most well-known terminology mainly refers to manned devices, yet many similar - and thus potentially relevant - existing implementations in computer systems may not involve a human operator at all. Where possible, we will note and link any specific terminology used by sources.
+[^2]: Particularly regarding any *issues* encountered that can neutralise, redirect or inappropriately trigger the DMS system, whether an external force or actor is required or not.
+[^3]: Outcomes that are ineffective *and* irrelevant to a software implementation may be removed from citation in the report, *unless* its inclusion is worthy for discussion or otherwise noteworthy.
+[^4]: We should prefer academic-quality research on this, but where this is not available (for example, for some small-scale commercial or open-source solutions) the efficacy of the solution should be derived from user feedback and/or theoretical evaluation of any issues that might render this an inadequate solution for the space.
+[^5]: Evaluating the ethics of the underlying DMS system *itself* should be noted under [Legal, Social, Ethical and Professional Issues](#8-legal-social-ethical-and-professional-issues-lsepis). The specific solution decided to be used as example may also require additional sign-off from the University (from the perspective of potential malicious use by another actor, as all testing will be done in a simulated environment).
+[^6]: Naturally, some edge-cases or low-level requirements may only be identified during development. We intend to use `lmt` to define the code within the report itself as part of a Literate Program (see [Resources](#5-resources)), and if such requirements or edge-cases are to be identified they should preferably be added as soon as possible, with appropriate test script defined.
+[^7]: The author acknowledges that the structure of the report is such to potentially encourage a more structured development approach akin to *waterfall* methodologies or equivalent, but as there will not be perfect information regarding coursework and workloads from other modules by the deadline of PPD submission, some amount of uncertainty must be admitted; and plans may alter as a result. Thus an agile methodology is being leaned towards, with the hope that the combination of writing the report as a Literate Program alongside the 'containment' of Agile's less structured nature to Section 4 (Implementation) will keep the report readable to examiners while ensuring accuracy to the actual dev process.
+[^8]: The possibility of the removal of `dmsClass` as a middleman beyond the initial set-up is considered, leaving the way for direct communication between observer, signal and payload threads. Doing so would reduce the possibility for a 'livelock' style situation to occur where one of the threads crashes and thus the entire system is rendered inert.
+[^9]: The 'trigger' of an observer may signal multiple times to allow for 'multiple-strike' scenarios, but the handling of any given trigger signal is left to the payload implementation.
+[^10]: This would necessitate a reset of the thread in any case.
+[^11]: To protect against tampering at a lower level than this would require development of a device driver or kernel module. This is not an easy (or familiar) task and certainly not doable to an acceptable standard within the timeline of the project, though would be an area for further work.
+[^12]: The Asana blogpost provided notes that financial risks are also to be considered, but given that the project is to be built using existing devices, software and tooling and requires no specialist hardware in this instance, this are to be considered out of scope. Similarly, external risks are those relating to the likes of natural disasters - although they would pad out the risk matrix nicely, they show little indication of project-related foresight and thus will be excluded for brevity's sake.
+[^13]: Not to mention that such a demonstration would directly undermine the working theory that such tools can be applied in ways that are ethical and outside of the context of being used as a cyberweapon or antiforensic measure.
+[^14]: Seemingly, according to the CPS webpage on the *Computer Misuse Act 1990* (2023).
+[^15]: It is unknown whether any judge would look to case law in any other jurisdictions as guidance for any case involving legal gray areas with no precedence; but it should be noted that in a similar vein, this concept was tried through the export of the PGP cryptosystem's source code as a hardback book to counter export controls in the United States. Charges were never levied, and subsequent rulings confirmed that this was legal (Wikipedia, 2023), though the manner in which it was done may not translate to the UK well (First Amendment rights, of which it has no equivalent).
