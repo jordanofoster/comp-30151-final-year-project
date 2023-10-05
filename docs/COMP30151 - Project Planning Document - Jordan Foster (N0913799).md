@@ -266,7 +266,7 @@ It is as follows:
 
 | Risk ID | Risk Type | Risk Description | Severity, 1-5 $(S)$| Likelihood, 1-5 $(L)$ | Risk Impact $(S\times{I})$ | Countermeasure(s) |
 | :-: | :-: | :-- | :-: | :-: | :-: | :-- |
-| 1 | *Technical* | Source*-code and other deliverables could be lost, setting the project back.  | 5 | 2 | 10 | All project code and documents are regularly committed to a private *GitHub* repository. |
+| 1 | *Technical* | Source-code and other deliverables could be lost, setting the project back.  | 5 | 2 | 10 | All project code and documents are regularly committed to a private *GitHub* repository. |
 | 2 | *Operational* | Project completion could become difficult due to scope creep, either by the choice of scenario or due to subsequently identified non-functional and security requirements. | 3 | 3 | 9 | A *critical path* is to be identified at each stage of requirement fulfilment (functional -> security -> non-functional). These requirements are to be implemented first and *in defined order* before other requirements are implemented (or their absence is to be explained to the reader). |
 | 3 | *Strategic* | The overhead of the *Literate Programming* process may extend the time for tasks longer than expected. | 2 | 2 | 4 | The use of `lmt` means that at any point, existing code may be 'tangled' from the report into their respective source files, and development can *continue independently* from the report. |
 | 4 | *Strategic* | The overhead of unit testing and writing of *Gherkin* test scripts may extend the time for tasks longer than expected. | 2 | 2 | 4 | *Gherkin* scripting can be dropped in favour of manual acceptance testing, with screenshots and explanation. |
@@ -279,19 +279,31 @@ It is as follows:
 
 ## 7 Career Aspirations
 
+The completion of this project will require notably more consideration of LSEPIs than others may within the same space. The tech industry considers these aspects at all times, but sometimes the realm of ethics may not be one that is as considered as others. Being able to critically think about a project's ethical implications is one that I believe is important to a career looked back upon with pride - rather than regret - and particularly within the context of the UK Defence industry, which I worked in as part of my Industrial Placement with BAE Systems Digital Intelligence and may return to upon graduation.
+
+This factor may not only be significant from purely an ethics standpoint in such a case; it may also be important from the perspective of an individual responsible for the keeping of potentially sensitive knowledge, work and information which - on pain of the 'need to know' principle - may necessarily be vague in its application. Knowing whether a given project or development of technology is morally palatable to me requires me to be able to consider the potential uses of my work without a specific use-case in mind - something I have to consider with this project also. 
+
+Being able to see this in advance and avoid projects or pieces of work that might weigh on my conscience is a significant factor that contributes to the trustworthiness of a person to hold a security clearance, and failure to do so properly in some cases could have real career consequences in this space, such as a loss of or inability to gain clearance (and thus, the effective ending or halting of my career in any industry that requires a security clearance).
+
+From the perspective of the tech industry in general, it must be admitted that Python is very much a 'comfort zone' language for me, and one that I have partially chosen in order to be able to meet the project deadlines. In this respect not much is being learned, and to some extent a lack of experience with various languages is a point of concern for my career readiness. I had originally wanted to play with the idea of learning Steel Bank Common Lisp for this project to investigate the idea of a Domain-Specific Language for the observer and payload functions - but part of good project management is to realize when to stick to what you know compared to integrating new tech due to potential overhead. 
+
+My familiarity with Python and its modules fits well for the open-ended nature of the demonstration scenario in this instance, so I have instead decided to leverage my familiarity with the language to pick up and experiment with various software development practices - not all of these will be used in many positions (*Literate Programming* is particularly one that sees minimal use), but for all of this I will pick up a significant amount of transferrable skills: the method of development will allow me to better translate requirements into features; write good tests both as a software and test engineer; get better at writing documentation by putting it 'first' and get better at operating with 'chunks' of work in respect to Agile (which is popular in many organizations). 
+
+All of these are somewhat harder to learn through simply reading documentation (unlike a language) and are best picked up through immersion - this project acts as a good excuse to do exactly that.
+
 ## 8 Legal, Social, Ethical and Professional Issues (LSEPIs)
 
 ### 8.1 Legal Issues
 
-#### 8.1.1 Potential for the project's use as an 'article' for an offence committed under section 3A of The Computer Misuse Act, 1990
+#### 8.1.1 Potential for the project's use as an 'article' as defined under section 3A of The Computer Misuse Act, 1990
 
 Given the intended configurability of the system, there is the possibility that a user could feasibly create a set of 'observer' and 'payload' functions for use that could be employed using the DMS framework as a *logic bomb* or *time bomb* installed as part of unauthorized access to a system with a payload that could cause damages to an individual or organization.
 
-Due to the potential for a given configuration of the DMS to be considered a potential cyberweapon, UK legislation must be consulted. The original form of the *Computer Misuse Act 1990* itself does not contain a section relevant to this, but a subsequent (*Police and Justice*) Act passed in 2006 adds (c. 37) *Section 3A* to the act, and another (*Serious Crime*) Act passed in 2015 amends section 3A to include section 3ZA (c. 9), defined within the same Act.
+Due to the potential for a given configuration of the DMS to be considered a cyberweapon, UK legislation must be consulted. The original form of the *Computer Misuse Act 1990* itself does not contain a section relevant to this, but a subsequent (*Police and Justice*) Act passed in 2006 adds (c. 37) *Section 3A* to the act, and another (*Serious Crime*) Act passed in 2015 amends section 3A to include section 3ZA (c. 9), defined within the same Act.
 
 For the purposes of complete legal analysis, we will assume that any user that has used the tool in a malicious manner has committed a crime under all sections mentioned (Section 1, 3 and 3ZA). Given that we have defined which textual amendments are relevant, we may now directly quote the revised, digital edition of the *Computer Misuse Act 1990* (*legislation.gov.uk, 2023*); emphasis mine in all cases.
 
-Throughout the Act the term 'article' is used; Section 3A(4) defines the term thus:
+Throughout the Act the term 'article' is used; Section 3A(4) defines it thus:
 
 > In this section “ article ” includes any program or data held in **electronic form.**
 
@@ -315,7 +327,7 @@ It also asks prosecutors to consider a series of factors when evaluating the str
 
 > - Has the article been developed primarily, deliberately and for the sole purpose of committing a CMA offence (i.e. unauthorised access to computer material)?
 
-No. For the production of the DMS framework itself, its would be written neither for the primary *or* sole purpose of commiting a CMA offence, and any misuse of it for the purpose would be an outcome explicitly acknowledged as possible, but not deliberately designed for. The idea of attempting to audit that *what* the DMS framework is running is *legal* is something impossible to implement with technical controls in a manner that is robust to circumvention efforts.
+No. For the production of the DMS framework itself, it would be written neither for the primary *or* sole purpose of commiting a CMA offence, and any misuse of it for the purpose of cybercrime would be an outcome explicitly acknowledged as possible, but not deliberately designed for. The idea of attempting to audit that *what* the DMS framework is running is *legal* is something impossible to implement with technical controls in a manner that is robust to circumvention efforts.
 
 In addition, as stated prior, any malicious payload would have to be explicitly written by *a* user of the program, rather than the author - whether the leveraging of the DMS framework would legally be considered as the author's contribution to such misuse is uncertain. The only sentencing case involving a successful charge under Section 3A[^14] - R v Martin (2013) - was appealed, with the transcription of the court's decision to reject the appeal - [2013] EWCA Crim 1420 - stating the following:
 
@@ -329,15 +341,15 @@ Any commercialisation of the project would be explicitly outside of the scope of
 
 > - Is the article widely used for legitimate purposes?
 
-In the context of the final year project, the only use of this tool would be in a manner that is presumably legitimate as a result of it requiring sign-off from the university. As stated before, the University may desire additional reassurance on this front, and discussion of any potential issues in this regard with the project supervisor have been ongoing and will continue.
+In the context of the final year project, the only use of this tool would be in a manner that is presumably legitimate as a result of it requiring sign-off from the university. As stated before, the University may desire additional reassurance on this front through additional documents and forms, and discussion of any potential issues in this regard with the project supervisor have been ongoing and will continue.
 
 > - Does it have a substantial installation base?
 
-Although it would be preferred to be able to display the final year project code as part of a portfolio (for example on GitHub), the aforementioned legal concerns are likely to restrict this, in which case the only 'installation base' would be the single device used for the demonstration, and any potential prospective employers that might request to see the project work directly.
+Although it would be preferred to be able to display the final year project code as part of a portfolio (for example on GitHub), the aforementioned legal concerns are likely to restrict this, in which case the only 'installation base' would be the device(s) used for development, the device used for the demonstration. Any potential prospective employers that might request to see the project work would likely be in direct violation of copyright law if they were to use the project themselves (assuming it has not been published on GitHub), and thus it can be reasonably safe to assume that they do not count as users for this purpose.
 
 To summarize, the author **does not believe the proposed project, in the scope of its production or its distribution thereof for marking purposes, would be likely to constitute an offence under the Computer Misuse Act 1990.** This analysis has only been undertaken in an attempt to exhaustively prove such a point and allay any concerns.
 
-#### 8.1.2 Additional Considerations for the University
+#### 8.1.2 Additional Considerations for The University
 
 The report itself, being part of a Literate Program, could also theoretically count as an 'article' under the legal definition provided under Section 3A(4), if it is in a digital format. Given that the rights to the submitted report are surrendered to Nottingham Trent University, however, the institution is by all means able (and encouraged) to redact parts of the report as seen fit if they intend to use it for other purposes.
 
@@ -347,9 +359,75 @@ It should also be noted that a printed copy of the report could be reasonably ar
 
 ### 8.2 Social Issues
 
+Referencing section 1 of the *British Computer Society's Code of Conduct*, members of the organization must follow a set of requirements relating to the public interest, among which is the following:
+
+> a. [You shall] have due regard for public health, privacy, security and wellbeing of others and the environment.
+> ...
+> d. [You shall] promote equal access to the benefits of IT and seek to promote the inclusion of all sectors in society wherever opportunities arise.
+
+The intent for this project as a flexible framework to allow the implementation of a 'Dead Man's Switch' style device is to allow the free exploration of new applications of the technology that may benefit society at large, rather than to act as a tool that may instead undermine society or allow individuals to break the social contracts we agree to as a collective. This is particularly affirmed by the idea of using the Dead Man's Switch as a form of commitment contract; though typically contracts are between two entities, there would be nothing in the framework that would prohibit such a concept from scaling to an agreement amongst a set of parties.
+
+One proposed usage that may benefit a community or society at large is to use the framework as a form of accountability, either amongst the collective or against an asymmetric power. One example might use the Dead Man's Switch to track whether an auditing or standards authority has been keeping up with its stated responsibilities (the 'observer'), with the 'payload' being an automated post on social media (such as twitter) that tags or is addressed to the relevant government account(s) to prompt an explanation of any seen lapse in duties. Another amongst a community with a common goal might observe whether all parties have upheld any responsibilities that exist as a result of agreements or pledges - this might be to see that everyone in a cycling club has shown up consistently (for a low-stakes example).
+
+There are many situations where an automated 'watcher' with its functions and underlying codebase being permissively licensed and accessible to collaboration could be a great public good; in addition, the transparency afforded by openly usable code in an accessible language could help directly counter the problem of 'who watches the watchers' that is sometimes raised with organizational bodies that require funding (and are thus prone to influence).
+
+One argument may be made for accessibility that only a certain subsection of society will have the ability to program in Python to the standards required to use the tool to its fullest extent; solving this problem would be another task entirely, possibly involving a low or no-code solution, and so considered outside of the scope of this particular body of work. However this is a worthwhile point, and it will hopefully be discussed as part of future work.
+
 ### 8.3 Ethical Issues
 
+As has been discussed in Section 8.1 (Legal Issues), a proper analysis of the ethics of this project cannot be undertaken without the consideration that it may venture into legal ambiguity.[^16] Regardless of law, however, it must be acknowledged that some may leverage the tool for malicious purposes that are in and of themselves unethical. The only true solution to this would be to create a bespoke solution for a pre-defined, 'ethical' scenario - which the author firmly believes would undermine the hypothesis that such technology has greater ethical uses beyond its use in mechanical safety systems, and the intent to support exploration of this through the project's end result.
+
+That being said; to show that we have an interest in exploring this aspect we should set forth some guidelines that prevent the project from straying into unethical territory. We will use sections 1a., 1b., and 1c of the BCS Code of Conduct as reference:
+
+> a. [You shall] have due regard for **public health, privacy and wellbeing** of others and the environment.
+> b. [You shall] have due regard for the **legitimate rights of Third Parties.**
+> c. [You shall] conduct your professional activities **without discrimination** on the grounds of sex, sexual orientation, marital status, nationality, colour, race, ethic origin, religion, age or disability, or of any other condition or requirement.
+
+The proposed guidelines to ensure the project progresses ethically are as follows:
+
+1. The chosen demonstration scenario will not involve an unconsenting external party, either for the purposes of 'observation' or as a target for a 'payload'; and in the case of a consenting party, the demonstration must be assured and evidenced not to cause harm, be it of a bodily, mental, financial, social or legal nature.
+2. The chosen demonstration scenario should not disproportionately affect individuals or demographics in a *negative manner*, and scenario options that could have this risk may not be chosen unless there can be a significant argument made that:
+   i. The risk presented to a demographic is a result of wider societal misuse of a technology that - were it not for unethical application by an end-user - does not perpetuate harm in and of itself.[^17]
+   ii. That the production of the *scenario-specific* observer and payload code for this purpose would not perpetuate any existing unethical actions caused by other uses of similar technology, either by making it more accessible or by deepening the extent of harm possible.
+   iii. That there is a viable application of the related technology as a *Dead Man's Switch* scenario that could provide a societal or ethical good (or at *absolute* minimum, be considered benign), proven by the scenario itself and not undermined by any subsequent implementation.
+3. Any *positive affect* on a demographic by the chosen demonstration scenario should not be such that it provides an advantage, benefit or other boon such that a resultant *power asymmetry* is created or perpetuated that could result in discrimination via comparative deprivation at the societal, organizational, educational, or legal levels.[^18]
+  
 ### 8.4 Professional Issues
+
+The relevant sections in the BCS Code of Conduct here are Sections 3 (*Duty to Relevant Authority*[^19]) and 4 (*Duty to the Profession*). They will be treated separately for the purposes of analysis.
+
+#### 8.4.1 *Duty to Relevant Authority* (Nottingham Trent University)
+
+   Sections 3a, 3c and 3d of the BCS Code of Conduct correspond to Nottingham Trent University's *Student Charter* (2023), though some sections are explicitly covered by separate documents that Students are obliged to adhere to as part of the charter.
+
+   Section 3a refers to the proper carrying out of professional responsibility with "due care and diligence", which would be part of the responsibilites set out in the charter itself.
+
+   Section 3c, covering acceptance of "professional responsibility", would fall under the University's *Academic Integrity Policy*, which would be Section 17C, Part E (Regulations) of the associated *Quality Handbook.* (Nottingham Trent University, 2023). Compliance with this policy would involve the pledge to not commit any form of academic irregularity, nor to assist any other students with the process; this is something that the University as an authority would ensure as part of regular academic procedure when submitting work.
+
+   Section 3d refers to the concept of the misuse of confidential information relating to the authority, excluding when compelled to be legislation or when permission is given. From a student perspective, this would be primarily covered by adherence to the *Computer Use Regulations* (Nottingham Trent University, 2023). The demonstration of the Dead Man's Switch scenario may brush up against these regulations, specifically section 7.5:
+
+   > You must not install software on a University computer, or system, without gaining the prior approval of Digital Technologies Service Desk, by [...]
+
+   It is assumed that to some extent there is due process for demonstration of a final year project on University computers, but some additional measures for assurance's sake may need to be undertaken by *Digital Technologies* to check that the demonstration of the chosen scenario does not violate any other sections of the policy.
+
+   Finally, section 3b notes the avoidance of a "conflict of interest" between a member and their relevant authority. Given approval this should not be the case, but as outlined in section 8.1.2 (*Additional Considerations for The University*) there may be some legal aspect of the project report due to its use as a Literate Program that could constitute a conflict of interest in accepting the submitted document, if its potential legal definition as an 'article' under the relevant (*Computer Misuse*) Act could induce risk for the University. It may unfortunately be the case that this specific programming practice cannot be followed as a result of that, but this remains to be seen.
+
+   Section 3e of the BCS Code of Conduct has been considered largely irrelevant to the context of the final year project, but its adherence could be proven by the attempt at transparency at the potential capabilities of this project and any resultant issues as part of this document.
+
+#### 8.4.2 *Duty to the Profession*
+
+The first set of relevant sections (4a and 4c) of the BCS Code of Conduct refer to the upholding of the reputation of the profession and BCS respectively:
+
+> a. [You shall] accept your personal duty to uphold the reputation of the profession and not take any action which could bring the profession into disrepute.
+> c. [You shall] uphold the reputation ad good standing of BCS, the Chartered Institute for IT.
+
+The reputation and good standing of both the profession and the BCS should be upheld through the demonstration and continued upholding of relevant standards of work through this document and the associated report.
+
+Section 4b, on the other hand, is related to professional development:
+
+> b. [You shall] seek to improve professional standards through participation in their development, use and enforcement.
+
+The implementation of *Literate Programming*, *Behaviour Driven Development* and Agile methodology as part of the development process - as defined in Section 3 (Tasks and Deliverables) - indicates that there is a vested interest in working with these software development standards by using them in a project as a means to become a better engineer.
 
 ## References
 
@@ -378,3 +456,7 @@ It should also be noted that a printed copy of the report could be reasonably ar
 [^13]: Not to mention that such a demonstration would directly undermine the working theory that such tools can be applied in ways that are ethical and outside of the context of being used as a cyberweapon or antiforensic measure.
 [^14]: Seemingly, according to the CPS webpage on the *Computer Misuse Act 1990* (2023).
 [^15]: It is unknown whether any judge would look to case law in any other jurisdictions as guidance for any case involving legal gray areas with no precedence; but it should be noted that in a similar vein, this concept was tried through the export of the PGP cryptosystem's source code as a hardback book to counter export controls in the United States. Charges were never levied, and subsequent rulings confirmed that this was legal (Wikipedia, 2023), though the manner in which it was done may not translate to the UK well (First Amendment rights, of which it has no equivalent).
+[^16]: Though the concept of something being 'Ethical' transcends whether it is legal to do or not, the legality of something is still somewhat intertwined with its ethics, as many well-established laws have come about as a result of society collectively deeming something unethical and thus worthy of punishment under the justice system.
+[^17]: In more simplified terms, this **must not** be a **weapon or tool of destruction or oppression that could affect a demographic in manners related to the body, mind, quality of life, social perception or property.**
+[^18]: A demonstration scenario could, for example, help close a gap in equality between a less fortunate or able demographic and those in a better position, but it may not in the process create a new inequality or opportunity for one thereof in line with the aforementioned stipulations.
+[^19]: The 'authority' in this case being Nottingham Trent University.
