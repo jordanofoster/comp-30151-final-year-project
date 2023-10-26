@@ -22,7 +22,24 @@ Working Title: 'An Extensible Dead-Man's Switch'
 
 ## 2 Context
 
+### 2.1 Existing research on technical countermeasures
+
+### 2.2 Non-technical considerations to the solution provided
+
 ## 3 New Ideas
+
+### 3.1 Scenario to which the DMS will be applied
+
+#### 3.2 Threat Modelling
+#### 3.2.1 Operational Security (OPSEC)
+##### 3.2.1.1 Critical Information
+> What do we want to protect?
+
+##### 3.2.1.2 Threat Information
+
+| Adversary | Capabilities | Limitations | Intent |
+
+##### 3.2.1.3 Vulnerability Analysis
 
 ## 4 Implementation
 
@@ -31,6 +48,8 @@ Working Title: 'An Extensible Dead-Man's Switch'
 ## 6 Conclusions and Future Work
 
 ## 7 References
+
+Range Commanders Council White Sands Missile Range United States, 2011. Operations Security (OPSEC) Guide (p. 0098).
 
 ## 8 Bibliography
 
