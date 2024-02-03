@@ -266,7 +266,7 @@ To properly model TFDA-based threats to the victim however, defining abuser capa
 
 Perhaps because of its more invisible nature, Afrouz notes that in contrast to what is typically ascribed for dealing with online harassment - just 'logging off' or removing one's presence online - many victims tend to keep in contact with abusers; having a consistent line of communication means that they can more accurately assess mood and actions and prepare accordingly (effectively, a form of counterintelligence). Simply 'cutting off' the abuser is difficult in an online context as (like in the real world) they can simply relay information or contact through the mesosystem. Due to the hyperconnectivity the internet provides, the victim may perhaps have to isolate themselves more deeply in the digital world than the physical world (see Section 2.1.2.4.5) to achieve the same effect of safety - something that assists the abuser in establishing the feeling of 'omnipresence' (as used by Afrouz) over the victim, remotely affecting their mental state.
 
-It should not, however, be assumed that in a context where the abuser can 'only' use TFDA (for example, in the context of *post-separation abuse*) that their capacity for harm is purely over the digital medium; existing legal, state and organizational apparatus can be used in combination with intelligence to enact harm, and with enough recent PII collected on the victim, the abuser can make moves to once again establish *physical* presence in the victim's life, allowing for typical methods of *Intimate Partner Violence* (IPV) to occur. Sometimes the abuser does not even have to carry the stick themselves; in the adjacent context of cyberbullying often law enforcement is leveraged via actions such as 'swatting' - making a fake call and pretending that an incident requiring armed response is occurring at the victim's address - is a problem frequently faced by people that are 'digitally public', such as influencers (Jaffe 2016).
+It should not, however, be assumed that in a context where the abuser can 'only' use TFDA (for example, in the context of *post-separation abuse*) that their capacity for harm is purely over the digital medium; existing legal, state and organizational apparatus can be used in combination with intelligence to enact harm, and with enough recent PII collected on the victim, the abuser can make moves to once again establish *physical* presence in the victim's life, allowing for typical methods of *Intimate Partner Violence* (IPV) to occur. Sometimes the abuser does not even have to carry the stick themselves; in the adjacent context of cyberbullying often law enforcement is leveraged via actions such as 'swatting' (making a fake call and pretending that an incident requiring armed response is occurring at the victim's address) being a problem frequently faced by people that are 'digitally public', such as influencers (Jaffe 2016).
 
 TFDA tends to escalate after separation, becoming the primary means of abuse according to Afrouz, and often abusers partaking in TFDA are more technologically savvy than their victims, to the point where some lacking in technical skills struggled with identification of TFDA (see Freed et al., 2017). This extends to those that might potentially help, as Afrouz also identifies; some frontline workers assisting in mitigting TFDA are lead to give advice without significant enough confidence on how best to address the issue (see Freed et al., 2018). The legal system appears to lack enough knowledge of the issue to know how to make such law applicable, and in some cases this has made prosecution difficult (see Henry et al., 2020).
 
@@ -342,7 +342,7 @@ However it should be noted that sometimes advocacy and services backfire for the
 
 In addition, it should be noted that the services and types of approach that victims or survivors require differ dependant on demographic. For those not typically part of the heteronormative narrative on DV, cultural and identitarian barriers can mean that a different approach is required; for example, one study focusing on support services for Asian male DV victims (Cheung et al., 2009) suggests that feelings of shame and expected roles of masculinity are factors for a lack of self-reporting amongst male victims, and cites the importance of anonymous usage of services in such cases. A meta-analysis focusing on Same-Sex Intimate Partner Violence, or *SSIPV* (Santoniccolo et al., 2023) notes that victims in such cases often end up seeking informal sources of help over formal ones, with sources noting that the latter were often unhelpful, or had barriers to usage such as 'low awareness and knowledge of the phenomenon [of same sex DV]'. The underlying message is that formal theory cannot be universally applied to all cases, and that understanding of what is needed for demographic minorities of abuse is crucial.
 
-If the DMS is used as a means to keep the victim 'connected' with the outside world, it might be worth consideration as to whether those connections might actually harm progress for the victim. These cannot be necessarily mitigated within the DMS, but a different context of use might be a better fit that allows shelters and other formal services to keep their niche. As indicated in Cheung's work and discussed prior, perhaps the ability of technology to provide anonymity can be a help in this regard, and the DMS can provide an anonymous 'safeguarding' system that simultaneously keeps the link from professional services present while allowing for autonomy.
+If the DMS is used as a means to keep the victim 'connected' with the outside world, it might be worth consideration as to whether those connections might actually harm progress for the victim. These cannot be necessarily mitigated within the DMS, but a different context of use might be a better fit that allows shelters and other formal services to keep their niche. As indicated in Cheung et al.'s work and discussed prior, perhaps the ability of technology to provide anonymity can be a help in this regard, and the DMS can provide an anonymous 'safeguarding' system that simultaneously keeps the link from professional services present while allowing for autonomy.
 
 ###### 2.1.2.7.3 Informal communities
 
@@ -362,17 +362,17 @@ One percieved flaw present with this modelling perspective might be the comparat
 
 ###### 2.1.2.7.4 Retaliatory, Violent and Self-Preservative Measures
 
-Violent reprisal by DV victims, as one might expect, is often done in situations where it is perceived that there is no other option. In Walker (1989)'s work on the subject (which appears to act as an original 'starting point' of research), she observes that the typical 'case study' of a 'battered woman' (in her feminist-centric terminology, befitting of the time) is, importantly, one that believes only 'they' can change their situation - as previously observed in Section 2.1.2.6's study of Lempert (1996) - and that doing so is possible. 
+Violent reprisal by DV victims, as one might expect, is often done in situations where it is perceived that there is no other option. In Walker (1989)'s work on the subject (which appears to act as an original 'starting point' of research), she observes that the typical 'case study' of a 'battered woman' (in heteronormative terminology, befitting of the time) is, importantly, one that believes only 'they' can change their situation - as previously observed in Section 2.1.2.6's study of Lempert (1996) - and that doing so is possible. 
 
 Victims that committed homicide had partners that used violence frequently of brutal fashion that was constantly worsening over time, including death threats and commands to either kill the abuser themselves or to commit suicide. In essence, the circumstances that appear to result in homicide appearing as a viable option are the worst-case scenario for a victim, and may be representative of wider systemic failure to combat the DV issue as a whole.
 
-Whereas in previous sections reviewing DV literature the heteronormative bias of samples used has been noted as a shortcoming, regarding homicide the physical differences in strength between those assigned male at birth and those assigned female must be noted to be an unavoidable factor in understanding the nature of such actions; most women, Walker observes, ended up utilising weapons and means of violence that mitigated or removed the physiological disadvantage that was presumably at play - 75% used firearms, though Walker writes that "in many of these cases, the woman did not choose to use a gun but shot the abuser after he threw a gun at her, in some cases ordering her to shoot him before he shot her." Some women hired contract killers to do the job on their behalf; given the circumstances, though, it might be considered that Walker only observes this high prevalence of arms usage because those that did *not* use weapons against their abuser in a crisis situation likely died during the confrontation.
+Whereas in previous sections reviewing DV literature the heteronormative bias of samples used has been noted as a shortcoming, regarding homicide the physical differences in strength between those assigned male at birth and those assigned female must be noted to be an unavoidable factor in understanding the nature of such actions; most women, Walker observes, ended up utilising weapons and means of violence that mitigated or removed the physiological disadvantage that was presumably at play - 75% used firearms, though Walker writes that "in many of these cases, the woman did not choose to use a gun but shot the abuser after he threw a gun at her, in some cases ordering her to shoot him before he shot her." Some women hired contract killers to do the job on their behalf; given the circumstances, though, it might be considered that Walker only observes this high prevalence of arms usage because those that did *not* use weapons against their abuser in a crisis situation likely died during the confrontation, or failed to commit homicide.
 
 Whether these same dynamics apply in relationships where both parties (by being assigned the same sex at birth, or otherwise being of more similar musculoskeletal frame due to early-life hormonal treatment than sexual dimorphism would typically allow) seems an area seemingly unresearched, depsite its area for use by defence or prosecution-led argumentation in a court of law; Ahumada & Milena (2012) produce the closest approximation through viewing the application of Walker's theories and the subsequent use of *Battered Woman Syndrome* (BWS) via the lens of lesbian and gay couples, but, perhaps due to lack of case law, limited research appears to exist on how this issue applies in general, and none on queer couples outside of the realm of homosexuality. Ahumada & Milena note that there are at least some 'common threads' between BWS in heterosexual and homosexual couples, but see the gendered nature of BWS as enough of a barrier to proper viewing of the issue to call for a new, neutrally-gendered approach.
 
 Regardless of issues described prior, the undeniable power differential in Walker's demographic of abuse (male-on-female, heterosexual) means that even existing self-defence legislation can be harsh; Hubble (1997) observes in an article on this issue that in some cases, retaliation occurs in 'non-confrontational settings', such as when the abuser is asleep or otherwise not posing an active threat, falling afowl of the requirements in some legislation that 'necessity' of the homicide is *reasonably* required (terminology that is loose, but workable), alongside that the belief must also be *genuinely* held - something subjective enough that proving as such is difficult.
 
-Some feminist writers, according to Hubble, seek to have the definition of 'necessity' of homicide be *objectively* defined by the law rather than subjectively so. Hubble (perhaps rightly) refrains from injecting opinion into his analysis, but perhaps this is a 'loosening of the belt' that acts an extension of the (as seen in Section 2.1.2.3, perhaps rightful) distrust in systemic process that has lead to the homicide in the first place, and such advocacy that this is a good first step contains nihilism that legal systems can ever prevent heavily violent abuse cases from reaching this point, and that self-defence is the only option.
+Some feminist writers, according to Hubble, seek to have the definition of 'necessity' of homicide be *objectively* defined by the law rather than subjectively so. Hubble (perhaps rightly) refrains from injecting opinion into his analysis, but perhaps this is a 'loosening of the belt' that acts an extension of the (as seen in Section 2.1.2.3, and again, perhaps rightful) distrust in systemic process that has lead to the homicide in the first place, and such advocacy that this is a good first step contains nihilism that legal systems can ever prevent heavily violent abuse cases from reaching this point, and that self-defence is the only option.
 
 From the perspective of the DMS' design, at least, to accept this would be to admit that the technology itself would be entirely useless in preventing such an outcome, and that if threat of death is involved, no 'fail-deadly watchguard' can prevent the outcome in the first place; something clearly false, if its use as a 'fail-deadly' device by whistleblowers - persons that might be attacked with organizational, not personal, might (see Zetter, 2013) - is clearly seen.
 
@@ -380,7 +380,7 @@ It is considered, then, that (voluntary) surveillance (or proxy thereof) that in
 
 ###### 2.1.2.7.5 Technological Countermeasures
 
-It known that TFDA (See section 2.1.2.5.3) is easily facilitated by abusers, and that it has effects the victim's ability to use technology itself - under high levels of risk and stress, they struggle to identify UI details, privacy/security features, and acting upon instructions, as noted by Slupska & Tanczer (2021). Quite a few DV victims, then, particularly those in the 'escape' and 'life apart' phases of IPV as defined by Matthews et al (2017) and later adapted by Slupska & Tanczer (2021), appear to disconnect from use of technology - at least in Matthews et al (2017)'s sample; In less extreme cases by deleting accounts and having less of an online presence, but in more severe cases by destroying devices, or removing internal components (such as batteries and SD cards) and hiding them on their person.
+It is known that TFDA (See section 2.1.2.5.3) is easily facilitated by abusers, and that it has affects the victim's ability to use technology itself - under high levels of risk and stress, they struggle to identify UI details, privacy/security features, and acting upon instructions, as noted by Slupska & Tanczer (2021). Quite a few DV victims, then - particularly those after the 'physical control' phase and in the 'escape' and 'life apart' phases of IPV as defined by Matthews et al (2017) and later adapted by Slupska & Tanczer (2021) - appear to disconnect from use of technology, at least in Matthews et al (2017)'s sample; In less extreme cases by deleting accounts and having less of an online presence, but in more severe cases by destroying devices, or removing internal components (such as batteries and SD cards) and hiding them on their person.
 
 Such measures appear to be fuelled by fear and low technical expertise; Freed et al (2018) notes in their study that the establishment of abuser 'omnipresence' (through spyware) resulted in what the authors refer to as belief in the abuser being "magical" (to disambiguate, having the perceived untracable/undefinable ability of the abuser to find them). Cybersecurity experts familiar with threat modelling might consider such countermeasures as excessive in all threat models except for state-targeted whistleblowers, but rather than dismiss this as paranoia, a common thread is identfiable between the (perceived) threat model of the unexpertised IPV victim and (actual model of) the whistleblower on-the-run; that being lack of knowledge regarding adversarial 'reach' (what can the adversary compromise), meaning they must fall back to 'undeniable truths' based on expertise. One that works for both would be 'broken technology is unusable', for example.
 
@@ -392,7 +392,7 @@ Perhaps a more applicable context where a DMS can assist is by allowing for secu
 
 Other technologies, such as those that are already enjoyed in a general sense for enhanced security (such as password managers and 2-factor authentication) and those used for rehabilitation of abusers (such as virtual reality) are also mentioned, but Kouzani concludes that AI-based solutions for detecting ongoing abuse (digital and physical) appear to be the most effective as of current, and are often used *in conjunction* with other solutions, technical and otherwise; though Kouzani also warns that "the limited availability of large datasets poses a risk in accurate predictions [that reduce accuracy in combination with dataset and/or algorithmic biases]". Combining metrics from the likes of ambient sensors, communications and smartphones, then, might allow for a 'normalisation' of error in such a case.
 
-Though Kouzani's work establishes there is still room for technology to assist in the *pre-separation* phase or abuse where the abuser has physical control, the main problem with such solutions is that they are designed and written for a specific usecase in mind, and can rely on expensive technologies that may be inaccessible for those with little socioeconomic power (something acknowledged in the review itself). This is further excacerbated by ethical, privacy and security concerns - as previously noted by Matthews et al (2017) - that may exist in the technology, and are already latent in the victim, especially where cultural barriers exist.
+Though Kouzani's work establishes there is still room for technology to assist in the *pre-separation* phase of abuse where the abuser has physical control, the main problem with such solutions is that they are designed and written for a specific usecase in mind, and can rely on expensive technologies that may be inaccessible for those with little socioeconomic power (something acknowledged in the review itself). This is further excacerbated by ethical, privacy and security concerns - as previously noted by Matthews et al (2017) - that may exist in the technology, and are already latent in the victim, especially where cultural barriers exist.
 
 Integration that makes sense for victim countermeasures thus appears difficult, because available technologies - which endpoints the victim uses, their trustworthiness - both in a cybersecurity sense and due to the impact of 'omnipresence', see as previously discussed using Freed et al (2018) - and the availability of external, supporting actors such as communities, individuals, services and the state all affect what *makes sense* to use as a solution. For example - a device that uses machine learning to detect signs of violence and contacts police will never be used by a victim that has had bad prior experiences calling them manually.
 
@@ -514,9 +514,230 @@ Propose a NEW method, technique, algorithm or system to eliminate or reduce exis
 -->
 ### 3.1 Creation of a flexible DMS system to allow for robustness to changes in environment and context
 
-### 3.2 Use of the DMS concept to use the 'reach' of digital networks to ensure the safety of real-world abuse victims with no local support
+The literature review on current DMS systems shows that in all cases, a bespoke implementation is provided that is specified exactly to purpose. Rationale for this is easily apparent in many cases, as they deal with physical and embedded systems that are unique in nature; libraries for creating DMS systems are apparently minimal due to a combination of factors; in commercial systems, including those that are pre-computation, differences in design of the systems the DMS is intended to work with shapes its development - the systems are implemented first and the DMS after, which partly might be considered unavoidable for complex projects.
 
-## 4 Implementation & Investigation
+In the space where hardware and software intersect on equal terms, however - such as in the Internet of Things (IoT), or in industrial systems - standardized protocols and hardware seems to be default, as we see standardized microcontrollers in play due to the low-specificity of requirements in some cases. There is already evidence to show that embedded systems can be built around software protocols such as MQTT when there is room to play with implementation like this, and so it might be thought that the same could apply to the DMS concept; implementation of a functional DMS in software is not itself difficult (if-then constructs and while loops do exactly this, in the *absolute* loosest sense), but doing so in a way that (in terms of the fundamental trigger -> reaction procedure) is *robust*, *secure* and *flexible* to new inputs and outputs, and can be deployed in varying contexts appears to be something not done before to any significant extent.
+
+In the more rigid context of the trigger scenario for a DMS being representative of incapacitation of a human operator, various implementations of sofware-based Dead Man's Switches are present (Altfield, M., 2023; Kescher, J., 2023; Haoda, W., 2023; Walker, A., 2023; hephaesto0s (pseud.), 2023; Tails Development Team (pseud.), 2023), though this has typically been within varying contexts of antiforensics and 'track-covering' activities in a cybersecurity context, or as a hobby project.
+
+Of note is that all of these are written for a specific use-case, be it to monitor processes, the insertion or removal of an unknown USB device, or whether an SMS message is left unreceived, despite the aforementioned hardware design limitations being loosened significantly in a general computing environment, which might allow for some sort of homogenization of implementation and thus allow for larger amounts of trust (within the scope of what well-written, well-reviewed computer software can mitigate against). Why this might not have been done is difficult to ascertain, due to the variety of reasons for their development; hobbyists might simply have not wanted to take their projects in that direction, while persons who needed high assurance might have found themselves writing their dead man's switches independently to ensure trustworthiness, assuming their own competence (and thus, we cannot cite them as sources). In the further context of antiforensics, current software DMSs take a coercive stance by projecting a cost to incapacitation by 'threat of dire consequence' - a symptom of the restrictive threat models such persons self-operate under.
+
+There is clearly a gap in the area of DMS systems in availability and assured quality; producing and configuring one requires significant technical competence at minimum, and they are often written as one-off, fit-for-purpose (but not retrofittable) solutions. This is problematic from several angles; persons who might benefit from the protection of a DMS but are not minded towards software development and security must find analogue alternatives, which are even costlier to set up, maintain, and ensure robustness, for one. Systems themselves (due to their bespoke nature) are not modular in the slightest, meaning that consistencies between all permutations of a DMS (as said before, the trigger -> reaction procedure and securing against its subversion) are not leveraged to the extent that they should be. DMS use cases vary wildly by their very nature, but the cost of 'change' in this instance can be made cheaper in terms of time and security by modularizing constituent parts and ensuring their individual soundnesss and robustness.
+
+#### 3.1.1 Breaking the DMS concept down into modular components to allow for retrofittability
+
+#### 3.1.2 Ensuring the security of any given component of the DMS
+
+#### 3.1.3 Ensuring the security of inter-component signalling
+
+### 3.2 Providing a technical solution for safe usage of victim devices that is usable regardless of ability
+
+Even in the context of technical professionals, the best security tools are those designed to be as difficult to use incorrectly as possible. the solutions provided by Kouzani (2023) in many instances imply some capacity for configuration by the victim, something that seems inherently exclusionary towards some demographics of victims that - for whatever reason - might struggle with such tasks. Although it might be understood amongst cybersecurity professionals that removing a USB stick or doing a 'hard shutdown' on a device is typical protocol, conveying these ideas to people not well-versed in the mechanics of how computers work is an unreasonable expectation - systems that do not behave according to user expectation or understanding are not good security products, since they widen the attack surface of the human element by introducing room for error.
+
+Abstractions allowable by current technology such as facial recognition systems facilitate the extension of human-computer-interfaces to meet the *user's* natural faculties of communication, rather than requiring that the user meet the system halfway. In the context of safe computer usage this, at face value, can only be a good thing - anything that prevents undesired usage of the system according to requirements helps reduce the possibility of 'tool failure' - where the falliability of the system compromises operations, often to a heavy extent. The concept of compartmentization is thrown about quite significantly within the context of operations, information and communications security (abbreviated OPSEC, INFOSEC and COMSEC respectively) as collorary to this; tool failure is viewed as an inevitability and the consequences dire, so risk is reduced by limiting how many assets are protected by one countermeasure. Such concepts originate in military and intelligence work and have gradually transferred to the playbooks of subversive actors; the underyling line is that no solution produced can be wholly protective of the victim, and that sadly for a victim at high enough risk, works that have adapted this theory to help civilians such as the Electronic Frontier Foundation's *threat modelling resources* (2023) are arguably unavoidable required reading.
+
+On the part of developers of security solutions, then, the best that can be done is design of the system around a *specific* threat model, and outlining *what* the solution *cannot* protect against by scope. Examples of this exist thoroughly across many products, such as ProtonVPN (2023), Whonix (2023) and Tails (2023). Unfortunately most documentation of threat models assume the line of illegality, which is unapplicable to a victim of DV in the cases outlined by Stark (2009)'s *coercive control theory* - such adversarial behaviours only tend to manifest in contexts where the abuser *lacks impunity* due to the illegality of their actions and so must conceal the violence; the victim should - in theory - have the advantage of being supported by the system here (though in practice this doesn't always work, as covered in our literature review see sections 2.1.2.3 and 2.1.2.4). In addition, their documentation assumes familiarity with the technology and security literature by method of phrasing - these things need to be abstracted in the direction of perhaps being *over* cautious to be helpful to less technically-inclined demographics.
+
+Tools such as facial recognition and other computer vision-based technologies can reduce the possibility for human factor-based failure. This is at the cost of increased risk of tool failure, but assuming an adversary that is not technical (*unlike* the adversaries modelled by our previous examples) means that tool failure is perhaps not quite *as* catastrophic. Failure of a tool within this threat model should be complete and fail-safe for the victim at minimum; but the *size of failure* required for a non-technical abuser to realise what is going on is far larger than the threat models proposed by other tools (which model against adversaries of activists and journalists - namely the state and political opponents).
+
+Using computer vision tools, we can use more understandable and immediate signs of the victim's safe use of the computing device no longer being assurred that don't require intentionality in input from the user - signs such as not looking at the screen, body language that suggests interruption, or even the presence of another being in the room can all provide signs to 'shut down' that can be used when the victim is caught unawares.
+
+The decision to use the DMS concept as a form of endpoint security over the initial idea discussed in the PPD ('alerting' confidants if the victim has not used the device/been in contact in a while) has been reached as a result of becoming more informed about the nature of issues victims face; although maintaining contact and control over the mesosystem is a crucial matter in fighting against DV, for pre-separation victims especially (those support services tend to reach the *least*) autonomy has been established as a heavy need in order to allow victims trying to escape to begin subversive action on *their own terms* - the initial decision to leverage the support of the mesosystem and/or contacts was made upon the assumption that in order to help the victim, they themselves necessarily *had to pass trust to someone outside of the abuser's immediate influence* (much like support services assume in their capacity to help) in a way that severely limits freedom of discretion; it is this issue of discretion that limits adoption of theoretically helpful services such as support shelters, the law and the justice system to those safe enough in life and mind to be candid about their victimhood, past or present. Providing options to victims in this manner can help close the gap between pre-separation and ongoing/post separation phases of recovery, as the 'leap of faith' required to cross that gap currently appears to be a significant factor. The concept of the DMS and other security/privacy based tooling can be one of many supportive options that the pre-separation victim can engage - and, importantly, *disengage* - with as their threat model requires.
+
+#### 3.3 Establishing threat model of the proposed solution
+
+##### 3.3.1 Case Study
+
+In establishing this case study, several fictional characters will be created. Naming conventions will be adopted from the fields of cybersecurity and cryptography (see Wikipedia, 2023) in line with Slupska and Tanczer (2021)'s recommendations for the fields of sociology and security to collaborate regarding technical countermeasures to DV.
+
+Given the origin of these naming conventions in evaluating the security of cryptosystems, current usage of such archetypes intentionally focus more on the *role* of each participant to fit the generic requirement of secure communication, and so some elaboration is required. When a statement is made about an actor, it will be in regards to what prior review indicates is consensus around archetypical DV situations, and so it will be qualified with a relevant citation.
+
+![](./assets/dv_case_study.jpg)
+
+**Alice** is a victim of domestic violence in the situation this report has previously referred to as the 'pre-separation' phase, also known as the invisibility (see Lempert 1996; Øverlien & Holt, 2019) or physical control, 'beginning escape' (see Matthews et al., 2017; Sluspka and Tanczer, 2021) phase. **Mike** (`TA01`) is her abuser, and is actively using tactics of *Economic, Mesosystemic and Technological* abuse (see sections 2.1.2.5.1, 2.1.2.5.2 and 2.1.2.5.3) and has made efforts to keep her *socially and physically isolated* from peers (see section 2.1.2.5.4) through the former. Mike and Alice are in a society where domestic abuse is considered culturally and legally unacceptable, and so Stark (2009)'s *coercive control theory* can be thought to apply, and Mike **wants to keep the situation unknown to others.**
+
+Mike has almost complete control over Alice's use of devices, having destroyed devices of hers in the past (see Matthews et al., 2017); they have a shared PC that Alice is monitored through, but Mike is a *UI-bound adversary* (see Freed et al., 2018) and so is **incapable of monitoring what Alice does outside of what is observable via a UI interface.** Mike has no objections to attempting to break into devices or accounts of Alice's and will pressure her into divlulging information about things he thinks she knows about that he doesn't. To avoid ambiguity, it is assumed that **Mike *will* eventually gain access to any account of Alice's that he knows about** (see Matthews et al., 2017). Mike historically has been more knowledgable about technology than Alice (see Afrouz 2023), and has used this leverage as control in installing tools such as spyware (see Matthews et al., 2017).
+
+Due to Mike's pervasive control over her use of technology, Alice has had to learn quickly about its use after various incidents (see Matthews et al., 2017), with the help of a few confidants. **Bob** (`A04`) is a real-life friend that knows Alice's situation and is on her side, as Mike has had a history of doing this. **He has not reported things to police on her request, on the agreed-upon stipulation that he will break said promise if he thinks she is in severe danger** - something Alice is worried about, but ended up accepting out of a need for help. He is somewhat technically minded and so has given her an external hard drive (`A01`) with a live operating system on it, and taught her how to use it so that it can be used on the shared PC. This hard drive also contains a *secure password database* (`A02`) that she stores some credentials on. Both assets are unknown to Mike, and must stay that way - at best he would destroy the hard drive, but at worst he would gain access to the password database - and potentially put some of Alice's contacts at risk.
+
+Through Bob's efforts, Alice has been able to regain online contact with **Wendy** (`A03`), an old friend that has known her before Mike's abusive nature started becoming apparent. Wendy has met **Chuck** (`TA02`), which concerns Alice. Chuck is a friend of Mike's, but barely knows Alice; and so Chuck likely believes whatever Mike says to him. Alice isn't sure whether Chuck and Wendy talk still, and so cannot fully trust her at the moment - despite potentially needing her help in the future to escape Mike.
+
+Faythe (`A05`) is a volunteer counselor at a mental health support service that Alice has been trying to use covertly to better understand her situation. Alice mostly trusts Faythe socially, since she has no relation to her current mesosystem of Mike, Chuck, Wendy and Bob, but is careful about what she talks about around her in case she is legally obligated to disclose something to **Walter** or **Judy** (*the police and/or a prosecutor/judge, respectively*), or otherwise inadvertantly creates risk. There are also some nuances in the situation that Faythe doesn't fully understand (see section 2.1.2.7.2; McDermott and Garofalo 2004), and this means that conversations with Faythe are not *always* a safe space for her.
+
+Alice's concerns regarding the involvement of Walter and Judy are less to do with treating them as adversaries but moreso as factors that would make the situation worse; Walter has shown up to the property before when a neighbour made a call, and it resulted in a later incident from Mike; Walter was unable to make an arrest at the time due to lack of criteria, and so he had to check things were alright by asking the neighbour that made the initial call (see Danis 2003). Alice is also terrified of the idea of the matter ending up in court, as she does not wish to testify about the situation to in court at this point in time. In general, she views the involvement of law enforcement and the courts to be an unacceptable outcome.
+
+Finally, perhaps the most valued confidant Alice currently has is **David** (`A06`), an online friend she met on a pseudonymous forum where domestic violence victims and survivors talk about experiences and support one another (see Hurley et al., 2007). She can talk freely on this forum and to David without concerns of it affecting her real life too heavily, though she still feels some need to redact some information out of concern that Mike or another, unknown adversary could link her online identity to her real one. She also feels comfortable with the idea that if she ever feels unsafe interacting on the forum or with David, she can simply abandon the pseudonym - there are few other places where she feels as socially free, and so it is of great importance to her that she protects this 'online' mesosystem of hers that is free from Mike's influence (see section 2.1.2.7.3).
+
+Given that Alice's main means of contact is via a shared device that she and Mike use - herself via the LiveOS - she wants to be absolutely sure that at minimum, Mike never knows about the password database, and at absolute best, does not know that she is using a LiveOS by catching her in the act. She has some amount of operational precautions she takes against this, but is aware they fail and would like some form of technical failsafe in place.
+
+##### 3.3.2 Defining a threat model for Alice
+
+Threat modelling techniques have typically existed for the securing of organizational-scale operations or projects, and so tend to focus on the idea of 'secure development' of a project. For example, The UK's *National Cyber Security Centre* (2023) provides one four-question process based upon the *Threat Modelling Manifesto* (2023) that defines objective, risk, countermeasures and evaluation. This, however, raises concerns as to whether this applies to small groups or individuals. Due to the classified nature of 'known-adversary' operations that work on this scale (such as those within intelligence and security agencies), citing organizational resources is difficult. Frequently within security and cybersecurity however, we often see presentations from former criminals ('black hats' in hacker terminology) on their methodology in a manner that is fairly battle hardened, and from a mix of this and case studies on 'OPSEC failures' we can see what works and what doesn't at the individual level. One presentation by a former darknet vendor (Bent, 2022) cites a similar 5-step methodology they used that appeared to be quite successful (based on difficulty of initial prosecution), adapted for individual work as follows:
+
+1. What do we want to accomplish?
+2. What are we building (what do we need to do it?)
+3. What can go wrong?
+4. What are we going to do about it?
+5. Did we do a good job?
+
+The main distinction between Bent's methodology and the NCSC's is one of objective - since the latter does not ask the question of "what do we want to accomplish", instead omitting it in favour of "what is being built". In the latter context of a secure project, the thing being built *is the objective* - whereas in the former, the construction of scaffolding is purely to facilitate the execution of the operation itself (and for no other reason). In the DV context, this order of focusing on the specifics of the end goal followed by the tools to do it is preferred, since Alice's goal is to escape Mike regardless of means. The idea, though, is that implementation of a well-designed DMS system can be a reliable countermeasure for some threat models.
+
+The main problem with this strategy is that it is entirely focused on the idea of 'doing something or building something' and protecting operational assets alone. This type of model alone is unrealistic for Alice, since she will also have pre-existing assets that she will want to defend from Mike (such as her wellbeing, or the safety of her contacts). Thus, it will need to be combined with threat modelling procedures that focus on the *continued security of existing assets.* A threat model that considers *information security* (INFOSEC) is likely somewhat laterally applicable here, since only the means of attack and defence change against digital assets (rather than the nature of models themselves).
+
+Given that INFOSEC is the primary concern of most IT organizations defending against cyberattacks, there are a variety of approaches to each individual component, and varying methodologies for each segment, focusing mostly on securing IT systems. Unfortunately, this means they aren't really applicable to Alice's context, and trying to retrofit them for this purpose would likely give an inaccurate model; attacks on computer systems are predictable and categorical, unlike attacks on operations or individuals or their non-informational assets. In the context of digital privacy, however, the context of 'asset-based' threat modelling for the individual has been considered by various sources (carrotcypher, 2023; Privacy Guides, 2023; Electronic Frontier Foundation, 2023), and this can be reasonably applied to any asset an individual might hold:
+
+1. What do we want to protect?
+2. Who do we want to protect it from?
+3. How likely is it that we need to protect it?
+4. How bad are the consequences if we fail?
+5. How much trouble are we willing to go through to prevent these consequences?
+
+It can be clearly seen that there is some amount of overlap between the steps taken to protect assets and the steps taken to protect an operation or project. Alice benefits from both models, but doing them both separately would cause an unnecessary amount of overlap and potentially overcomplicate the threat model upon which the requirements of the DMS would be considered. A 'hybrid' model for an actor that needs to operate while protecting assets unrelated to the operation can be constructed as follows:
+
+1. What do we want to accomplish?
+2. What do we need to do it?
+3. What do we need to protect?
+4. Who are we protecting it from and what are their motives, resources and methods?
+5. What can go wrong?
+6. How likely is it to happen?
+7. How bad are the consequences?
+8. What are we going to do about it?
+
+Taking this 'high-level' approach to things helps construct an understanding of the situation aligned from the victim's perspective rather than an engineering perspective, and subsequently helps avoidance of unnecessary scope screep via overly-paranoid countermeasures against Alice's adversaries. In addition, it is recognised that only a subset of Alice's threat model is assisted by a technical countermeasure, and defining the entire model helps limit scope. Her threat model is subsequently defined in later sections.
+
+###### 3.3.2.1 What does Alice want to accomplish, and what does she need to do it?
+
+1. What does Alice want to accomplish?
+   - Alice wants to escape Mike's abuse by being **physically separate from him.**
+2. What does she need to do it?
+   - Access to shelter/accomodation that Mike *is not aware of.*
+   - Ability to travel without reliance on Mike.
+   - Financial independence from Mike to afford basic amenities.
+   - Trusted social contacts that can assist with the above and act as a 'collective barrier' against Mike.
+   - Independent access to the internet, a trusted computing device and communications infrastructure that Mike is not aware of.
+   - Separate, secure and independant credentials to services, online and offline, that Mike is not aware of.
+
+###### 3.3.2.2 What does she need to protect that is relevant to scope?
+
+3. What does she need to protect?
+   - Knowledge of existence of the following by potential adversaries:
+     - Stored finances independent from Mike (fiat/banking/etc.)
+     - Means, patterns and times of travel.
+     - Any shelters/safehouses she may need to use.
+     - Any assets that enable her to engage with formal support (shelters/police/the law) on her own terms.
+     - Any assets that enable her to communicate with others without Mike's knowledge.
+   - Her continued, unknown and safe access to the internet, a computer, and means of communication, as stated in #2.
+     - By extension, her continued, unknown and safe access to independant credentials to services (online and offline), as stated.
+   - Her physical and mental health & safety.
+   - Any autonomy she currently has under Mike, since further measures of control could make it harder to escape.
+     - (Sources of autonomy not reliant on Mike's mercy are naturally preferred and obtaining and keeping them safe is more important).
+   - Her contacts (from manipulation by Mike)
+   - Her ability to autonomously interact with the following based on safety:
+     - Formal services and the law (in regards to her situation).
+     - Police officers
+     - Informal systems, such as friends and online communities
+
+It is at this point that the first set of scope restrictions can be applied, based on what a DMS system can reasonably protect against, what it cannot, and what it might jeopardize.
+
+Protecting against adversarial knowledge can be considered as a form of data protection, and thus is better considered as part of INFOSEC. While a DMS could potentially be a physical control against unauthorized access to this information, other methods such as encryption are likely to be more effective initial countermeasures.  The DMS might be combined with these to prevent access to a *trusted device* as part of defence-in-depth, however, and so this concept of endpoint protection is the primary consideration in design. In this vein, many of the resources Alice requires to escape from Mike (social, financial, etc.) cannot be directly provided or protected by the DMS - but any indirect, digital assets that maintain access to these resources (such as credentials, communications channels and internet access) might be a fair scope in which to place the solution.
+
+Alice's physical and mental health are not assets that the DMS can realistically protect against in entirety. What can be acknowledged is that a false positive *or* negative from the DMS may carry heavy consequences in this regard, and this will be something acknowledged in risk management. In accordance with this, Alice's current autonomy is something that is better suited to OPSEC countermeasures in how Alice goes about her escape plan rather than relying on the DMS, and is thus considered out of scope for protection by the solution.
+
+A partial caveat to this however is the protection of Alice's contacts, both from manipulation from Mike and as a method to increase her autonomy. As noted with protection of digital resources, some requirements of the DMS might be considered under the context that this is something that Alice desires. Autonomous interaction with systems, services and the law is something the DMS can protect in the context of ensuring the possibility *cannot be taken away* from Alice, but it cannot assist her if someone has legal obligation to report on her behalf ('forced participation'). The suggested countermeasure, as described prior, would then be to advise Alice to practice OPSEC in terms of what she decides to divulge to whom; this might include whether she chooses to show her face, her surroundings or even her voice based on individual trust. Such decisions are complex and on a specific basis; no expert can advise Alice on this aspect better than herself, but *could* point out where certain bits of 'metadata' could leak (for example, her location while on a call). Regardless, this aspect of Alice's threat model is firmly out of scope for what the DMS can provide.
+
+Because an ideal technical countermeasure Alice implements should not increase risk unneccessarily, the list might thus be categorized into what the DMS is *unlikely* to affect, what it *could* affect, and what it can explicitly *protect*.
+
+The DMS is unlikely to affect the following:
+
+- Whether Alice's contacts are manipulable by Mike or another adversary in the mesosystem
+- Alice's ability to choose *not to interact* with contact(s) on basis of safety.
+
+The DMS could affect the following via a *false positive:*
+
+- Whether a given contact chooses to contact Walter and/or Judy out of concern for Alice's safety
+- Her ability to access her secure computing environment, the internet, and her credentials.
+- The ability to build the resources she needs to escape Mike via digital means.
+
+The DMS could affect the following via a *false negative:*
+
+- Her health and safety, if its failure to trigger means that Mike discovers her plans
+- Alice's existing autonomy under Mike, if any.
+- Access to any resources that require the use of the digital assets she has been provided.
+
+From this outline, one reasonable assumption must be made for the deployment of the DMS to be an acceptable risk, even before a formal outline is made; **Alice accepts that the risk of losing whatever autonomy she currently has is less than the continued risks to health and safety of being with him.** This might seem like an obvious assumption to make, given the case study, but as established by the literature review (see Section 2.1.2.7.1, *avoidant coping mechanisms*) it is not necessarily one that applies in all domestic violence cases. This is an unfortunate limitation of the solution, and one to be discussed in depth in the relevant section.
+
+###### 3.3.2.3 Defining Alice's Adversaries
+
+4. Who are we protecting it from and what are their motives, resources and methods?
+
+Alice's primary adversaries are Mike and Wendy. Wendy as an 'insider threat' is unlike the typical definition, as she does not have Alice's trusted environment; she instead has access to her mesosystem (through being a trusted contact, and potentially unknown existing connections). Mike on the other hand might not have full access to Alice's mesosystem, but has full control over any endpoint or physical asset that he is aware of, as he can coerce Alice into revealing it. Together, they present a disjointed but strong control over the safety of Alice's 'home' life and her 'social' life.
+
+Mike's resources revolve around his majority control of Alice's *current* resources, such as travel, finances and devices. He may thus be capable of arbitrarily 'removing' resources from Alice to prevent her from achieving her goals in a way not easily counterable in the pre-separation stage of abuse, and so operating under Mike's radar is paramount for Alice. Given that from an ethical standpoint it is not expected that Alice can 'stand up' against Mike if he knows about something and acts accordingly, we model that Mike 'knowing about something' potentially jeopardizes the entire operation. From this perspective, Mike's primary motives are to maintain his existing control over her life and to *gather intelligence* about any recent changes that might limit existing controls, so that he can sabotage them.
+
+The ways Mike can gather intelligence are primarily limited by his presumed technical expertise, where he is technically savvy but not able to 'hack'; he would be unable to perform *signals intelligence* (SIGINT), for example. Mike is likely limited to the following:
+
+- What he can find out about her on the internet using *open-source intelligence* (OSINT)
+- What he might *see* her doing, directly or via cameras using *imagery intelligence* (IMINT)
+- Whatever his 'insider' (Wendy) might tell him, or what he picks up in the mesosystem, modellable as a form of *human intelligence* (HUMINT).
+
+Wendy's motivations might simply be to spread gossip about Alice to others within the mesosystem; a partial countermeasure for this is for Alice to appear as uninteresting as possible by default as a form of cover. In terms of resources, she is quite limited in breadth; she has access to Alice's partial trust, and any shared comms lines or social connections they might have - at minimum this would be any 1-to-1 conversations they have, but could also include group chats or other 'cells' (such as if she needs both Wendy and Bob's help for something). She thus might be capable of low-skill, hueristics-based *communications intelligence* (COMINT) based on the direct contents of her conversations with Alice, or metadata thereof, including people that they both have shared knowledge of, or that Wendy knows Alice is communicating with. This could be as simple as 'reading between the lines' of what Alice says, or noting when she is online or how long she takes to see or respond to a message.
+
+Since the DMS may directly affect Alice's access to communications based on the need to protect her operations from Mike, its triggering might provide some form of trace over this channel in the form of how it affects associated metadata, such as when she was last online, when she read a message or how long she has been inactive. To limit the amount of risks we note to those with a certain amount of relevance to the DMS, only adversarial threats relevant to the scope of what design can affect is considered, being: any traces the DMS leaves behind that may cause a risk, alongside any risks relating to Mike's discovery of her secure computing environment or any relevant COMINT that Wendy might derive from Alice being *unable* to use her computing environment due to the DMS triggering.
+
+###### 3.2.2.4 Risks, Likelihood and Impact
+
+1. What can go wrong?
+2. How likely is it to happen?
+3. How bad are the consequences?
+4. What are we going to do about it?
+
+| Risk ID | Description | Likelihood | Impact |
+| :-----: | :---------- | :--------- | :---------- |
+| 1 | The DMS fails to automatically trigger in an instance where it should have ('false negative'). | Low, depending on detection hueristic. | High; could potentially lead to compromise of the operation. |
+| 2 | The DMS automatically triggers in a situation where it shouldn't have ('false positive'). | Medium, depending on detection hueristic. | Medium; could potentially lead to legal intervention if a contact believes Alice is in danger. |
+| 3 | 
+
+<!--
+###### 3.3.2.5 Countermeasures relevant to the DMS
+
+
+##### 3.3.1 Dependencies/parties the solution is forced to trust
+
+(WIP)
+- Device driver developers
+  - We could remove trust by being a driver ourselves, but this is hard to implement and non-portable.
+- OS kernel itself
+- UEFI and BIOS software
+- component manufacturers
+  - H/W and firmware
+- OEM/device manufacturer
+- Peripheral manufacturers
+
+Parties:
+
+- We trust that the victim is willing to engage with the system given control is allowed based on circumstance
+- We trust the owner of the device on which the trigger is established
+  - We trust the owner of the device on which the payload is to be dropped
+- We trust that the OS and below will not compromise either the functionality of the trigger or payload components
+
+##### 3.3.2 --> 
+
+#### 3.4 Establishing Requirements
+
+From the project planning document, our baseline set of requirements were as follows:
+
+|  ID | Description |
+| :-: | :---------- |
+| `DMS-HLR-1` | The observer component **MUST** communicate any trigger events to the payload component. |
+| `DMS-HLR-2` | The DMS setup utility **MUST** operate independently from any component processes so that the tool can be set up and left to work in the background. |
+| `DMS-HLR-3` | The payload component **MUST** alert other components to the outcome of an activation. |
+| `DMS-HLR-4` | Any given DMS component that dies unexpectedly **MUST** show this to components that depend on it to allow for failure state handling. |
+| `DV-HLR-1` | The scenario-specific observer ‘trigger prevention mechanism’ **MUST** be reasonably accessible for the victim to use in terms of availability, setup and technical ability required. |
+| `DV-HLR-2` | The scenario-specific payload **MUST** provide the victim’s support network with an alert that the victim has not used the prevention mechanism. |
+
+At this point, because we have shifted focus from the mesosystem to endpoint security of the victim's device, `DV-HLR-2` no longer applies in its current form.
+
+##  4 Implementation & Investigation
 <!--
 DEVELOP AND IMPLEMENT suitable software, hardware, database or other 'tools' for testing the validity of the newly proposed ideas. This must be performed in a professional manner using the correct tools and techniques for the problem in hand.
 
