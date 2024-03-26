@@ -664,7 +664,7 @@ The DMS could affect the following via a *false negative:*
 - Alice's existing autonomy under Mike, if any.
 - Access to any resources that require the use of the digital assets she has been provided.
 
-From this outline, one reasonable assumption must be made for the deployment of the DMS to be an acceptable risk, even before a formal outline is made; **Alice accepts that the risk of losing whatever autonomy she currently has is less than the continued risks to health and safety of being with him.** This might seem like an obvious assumption to make, given the case study, but as established by the literature review (see Section 2.1.2.7.1, *avoidant coping mechanisms*) it is not necessarily one that applies in all domestic violence cases. This is an unfortunate limitation of the solution, and one to be discussed in depth in the relevant section.
+From this outline, one reasonable assumption must be made for the deployment of the DMS to be an acceptable risk, even before a formal outline is made; **Alice accepts that the risk of losing whatever autonomy she currently has under Mike is less than the continued risks to health and safety of keeping Mike in her life.** This might seem like an obvious assumption to make, given the case study, but as established by the literature review (see Section 2.1.2.7.1, *avoidant coping mechanisms*) it is not necessarily one that applies in all domestic violence cases. This is an unfortunate limitation of the solution, and one to be discussed in depth in the relevant section.
 
 ###### 3.3.2.3 Defining Alice's Adversaries
 
@@ -682,49 +682,27 @@ The ways Mike can gather intelligence are primarily limited by his presumed tech
 
 Wendy's motivations might simply be to spread gossip about Alice to others within the mesosystem; a partial countermeasure for this is for Alice to appear as uninteresting as possible by default as a form of cover. In terms of resources, she is quite limited in breadth; she has access to Alice's partial trust, and any shared comms lines or social connections they might have - at minimum this would be any 1-to-1 conversations they have, but could also include group chats or other 'cells' (such as if she needs both Wendy and Bob's help for something). She thus might be capable of low-skill, hueristics-based *communications intelligence* (COMINT) based on the direct contents of her conversations with Alice, or metadata thereof, including people that they both have shared knowledge of, or that Wendy knows Alice is communicating with. This could be as simple as 'reading between the lines' of what Alice says, or noting when she is online or how long she takes to see or respond to a message.
 
-Since the DMS may directly affect Alice's access to communications based on the need to protect her operations from Mike, its triggering might provide some form of trace over this channel in the form of how it affects associated metadata, such as when she was last online, when she read a message or how long she has been inactive. To limit the amount of risks we note to those with a certain amount of relevance to the DMS, only adversarial threats relevant to the scope of what design can affect is considered, being: any traces the DMS leaves behind that may cause a risk, alongside any risks relating to Mike's discovery of her secure computing environment or any relevant COMINT that Wendy might derive from Alice being *unable* to use her computing environment due to the DMS triggering.
+Since the DMS may directly affect Alice's access to communications based on the need to protect her operations from Mike, its triggering might provide some form of trace over this channel in the form of how it affects associated metadata, such as when she was last online, when she read a message or how long she has been inactive. To limit the amount of risks we note to those with a certain amount of relevance to the DMS, only adversarial threats relevant to the scope of what design can affect are considered, being: any traces the DMS leaves behind that may cause a risk, alongside any risks relating to Mike's discovery of her secure computing environment or any relevant COMINT that Wendy might derive from Alice being *unable* to use her computing environment due to the DMS triggering.
 
 ###### 3.2.2.4 Risks, Likelihood and Impact
 
-1. What can go wrong?
-2. How likely is it to happen?
-3. How bad are the consequences?
-4. What are we going to do about it?
+5. What can go wrong?
+6. How likely is it to happen?
+7. How bad are the consequences?
+8. What are we going to do about it?
 
-| Risk ID | Description | Likelihood | Impact |
-| :-----: | :---------- | :--------- | :---------- |
-| 1 | The DMS fails to automatically trigger in an instance where it should have ('false negative'). | Low, depending on detection hueristic. | High; could potentially lead to compromise of the operation. |
-| 2 | The DMS automatically triggers in a situation where it shouldn't have ('false positive'). | Medium, depending on detection hueristic. | Medium; could potentially lead to legal intervention if a contact believes Alice is in danger. |
-| 3 | 
+| Risk ID | Description | Likelihood | Impact | Countermeasure |
+| :-----: | :---------- | :--------- | :----- | :------------- |
+| 1 | The DMS fails to automatically trigger in an instance where it should have ('false negative'). | Dependant on *reliability* of detection proxy. | High; could potentially lead to compromise of the operation. | The DMS should be implementable as part of a wider, comprehensive shutdown protocol to reduce likelihood of tool failure ('defence-in-depth'). |
+| 2 | The DMS automatically triggers in a situation where it shouldn't have ('false positive'). | Dependant on *accuracy* of detection proxy in identifying the original 'trigger event'. | Medium; could potentially lead to legal intervention if a contact believes Alice is in danger if not. | The DMS should allow for Alice to configure a 'grace period' between a trigger event and the subsequent payload (shutdown) that allows for authenticated, manual override. |
+| 3 | Due to a DMS trigger event, indirect legal intervention occurs against Alice's wishes, even in event of perfect functionality. | High; Alice's wishes may not necessarily be respected by legal and moral obligation. | High; Police intervention could result in Alice's assets being found out on basis of Mike figuring out 'why it happened', or a dangerous abuse incident occurring afterwards. It may also merely delay a dangerous incident rather than prevent it entirely. | Alice either chooses to communicate the existence to the DMS to few, heavily-trusted parties to prevent this, or previous 'grace-period' requirements allow for Alice to selectively interrupt the DMS if it provides more danger than safety. In the case of the former, the DMS should have a **default-disabled** means to communicate to outside parties that it has been triggered as part of the payload. |
+| 4 | Wendy gains awareness of Alice's operation and reports it to Mike. | Medium if Alice contacting Wendy is not itself 'unacceptable' to Mike; Very High if it is. | Very High; Mike merely gaining awareness of the fact that Alice is operating against his wishes is enough to assume compromise of assets via coercion. | Alice must practice OPSEC and COMSEC and has to selectively evaluate the risks of a given confidant being an adversary, and must trust others **explicitly and only if absolutely necessary to operations**. The DMS should make reasonable accomodations to prevent leakage of system state and operational conditions to external entitites **by default.** |
+| 5 | Faythe may be legally obligated to divulge information to authorities against Alice's wishes. | Medium; Faythe will be obliged to divulge under what conditions this must occur to Alice if she asks, and Alice can subsequently change what she communicates based on this. | Medium; legal intervention is explicitly overt, and can indicate that Alice is seeking help from a specific individual, but does *not* divulge the methods; Mike may demand that Alice stop talking to Faythe, and might enter a period of increased vigilance and paranoia for a time. | Alice practices reasonable COMSEC by restricting what information she divulges to Faythe on an ongoing basis. **Out of scope for the DMS.** |
+| 6 | A malicious actor within Alice's online community realises enough information about her pattern of usage and/or life and uses this intelligence to link her pseudonym and real-world identities | Dependant on amount of metadata available to an adversary when a given Communication Event (CE) between Alice and the community occurs. | Medium; this link has to be communicated to a known real-world adversary (Wendy or Mike) in order to be significant. Potential likelihood of the impact being realised increases with time. | Alice must be aware of the metadata surrounding a given communication event and the contents of said communications. **Out of scope for the DMS.** |
 
-<!--
-###### 3.3.2.5 Countermeasures relevant to the DMS
+###### 3.3.2.5 Evaluating requirements based on established threat model
 
-
-##### 3.3.1 Dependencies/parties the solution is forced to trust
-
-(WIP)
-- Device driver developers
-  - We could remove trust by being a driver ourselves, but this is hard to implement and non-portable.
-- OS kernel itself
-- UEFI and BIOS software
-- component manufacturers
-  - H/W and firmware
-- OEM/device manufacturer
-- Peripheral manufacturers
-
-Parties:
-
-- We trust that the victim is willing to engage with the system given control is allowed based on circumstance
-- We trust the owner of the device on which the trigger is established
-  - We trust the owner of the device on which the payload is to be dropped
-- We trust that the OS and below will not compromise either the functionality of the trigger or payload components
-
-##### 3.3.2 --> 
-
-#### 3.4 Establishing Requirements
-
-From the project planning document, our baseline set of requirements were as follows:
+The initial list of requirements defined in the project planning document were as follows:
 
 |  ID | Description |
 | :-: | :---------- |
@@ -735,7 +713,24 @@ From the project planning document, our baseline set of requirements were as fol
 | `DV-HLR-1` | The scenario-specific observer ‘trigger prevention mechanism’ **MUST** be reasonably accessible for the victim to use in terms of availability, setup and technical ability required. |
 | `DV-HLR-2` | The scenario-specific payload **MUST** provide the victim’s support network with an alert that the victim has not used the prevention mechanism. |
 
-At this point, because we have shifted focus from the mesosystem to endpoint security of the victim's device, `DV-HLR-2` no longer applies in its current form.
+The original context in which `DV-HLR-2` was written was surrounding the idea that contacts within the support network are to some extent more trustworthy than the victim's internal suroundings, and prioritises this over victim autonomy in such cases. This was a naiive approach caused by the lack of knowledge, and through the literature review it is reasonable (see Sections 2.1.2.7.1, 2.1.2.7.2 and Bailey 2012) to instead derive the idea that maintenance of victim autonomy over all else is paramount to adoption of useful tools due to the low risk appetite pre-separation victims have by necessity of survival.
+
+While it is true that some level of trust is required for Alice to receive outside support in the first place - and that the end goal is to help Alice to transition to a 'default trusted' environment - a willingness to accept some risks has been assumed, both implicitly (via the case study) and explicitly (See sections 3.3.2.2, 3.3.2.4). The working theory underlying the necessity of pre-separation technical solutions is that 'inherent trustworthiness' of services and tools alone is not acceptable at the pre-separation phase, due to the risk of unintentional harm (See sections 2.1.2.7.3, 2.1.2.7.5; 2.2.2, 2.2.7, 2.2.8), and that tools should either yield to the user or be (*accessibly*) opinionated in implementation and documentation so that the victim can easily assess risk (e.g., previous discussions of existing solutions in sections 2.1.1, 3.1 and 3.2). There is a significant gap in the 'market' of tools that *yield* to user intervention of the triggering process, and this will be a significant focus of the DMS solution provided.
+
+In line with the above, `DV-HLR-2` is not entirely misguided, but requires rewriting in accordance with the countermeasure associated with 3. The rest of the in-scope countermeasures as defined in section 3.3.2.4 can be reasonably mapped to requirements, allowing for a new list:
+
+|  ID | Description |
+| :-: | :---------- |
+| `DMS-HLR-1` | The observer component **MUST** communicate any trigger events to the payload component. |
+| `DMS-HLR-2` | The DMS setup utility **MUST** operate independently from any component processes so that the tool can be set up and left to work in the background. |
+| `DMS-HLR-3` | The payload component **MUST** alert other components to the outcome of an activation. |
+| `DMS-HLR-4` | Any given DMS component that dies unexpectedly **MUST** show this to components that depend on it to allow for failure state handling. |
+| `DMS-HLR-5` | Both *trigger* and *payload* mechanisms within the DMS **SHOULD** prefer to use existing, low-level functionality of its execution enviromment where reasonable, to limit the possibility of byzantine failure to the OS and hardware layers. |
+| `DV-HLR-1` | The scenario-specific observer ‘trigger prevention mechanism’ **MUST** be reasonably accessible for the victim to use in terms of availability, setup and technical ability required. |
+| `DV-HLR-2` | The scenario-specific payload **COULD** provide the **optional, default-disabled** ability to communicate its activation to outside parties within the victim’s support network. |
+| `DV-HLR-3` | The DMS **SHOULD** have a configurable 'grace-period' between a trigger event and activation of the subsequent payload that allows for a manual, **authenticated** override via the 'trigger prevention mechanism'. |
+| `DV-HLR-4` | The DMS and its individual components **SHOULD** make reasonable efforts to *limit the amount of metadata it produces* in both unactivated and 'triggered' states, based on forensic ability of adversaries, known and unknown. |
+| `DV-HLR-5` | The *programmatic flow* of a triggered DMS in terms of the triggering 'event' and subsequent payload 'response' **SHOULD** be **reasonably abstractable** to the user in order to allow for manual replication of the process to faciliate understanding of its operation. |
 
 ##  4 Implementation & Investigation
 <!--
@@ -746,6 +741,13 @@ OR
 a properly conducted INVESTIGATION based on scientific principles and demonstrates the use of appropriate tools, techiques and standards.
 -->
 
+### 4.1 Design
+
+![](./assets/Class%20Diagram.png)
+![](./assets/Program%20Flow.png)
+![](./assets/Sequence%20Diagram.png)
+![](./assets/Use%20Case%20Diagram.png)
+
 ## 5 Results & Discussion
 <!--
 Use these tools to obtain RESULTS to show the quality of the new ideas. Results may be grpahs, tables or pictures that require DISCUSSION to explain their significance.
@@ -753,7 +755,7 @@ Use these tools to obtain RESULTS to show the quality of the new ideas. Results 
 
 ## 6 Conclusions & Future Work
 <!--
-Summarise the project achievements as a set of CONCLUSIONS and suggest how they may lead to FUTURE WORK. Discuss the impact of **all four areas** of LSEPIs relevant to the project as implemented and for the future plans. Explain why some areas have high or low impact and how you addressed the impact in each area. You should also include a synoptic assessment in this chapter. This will comrpise a reflection on the project in relation to employment aspirations and the skills developed toward this through engagement with the project.
+Summarise the project achievements as a set of CONCLUSIONS and suggest how they may lead to FUTURE WORK. Discuss the impact of **all four areas** of LSEPIs relevant to the project as implemented and for the future plans. Explain why some areas have high or low impact and how you addressed the impact in each area. You should also include a synoptic assessment in this chapter. This will comprise a reflection on the project in relation to employment aspirations and the skills developed toward this through engagement with the project.
 -->
 
 ## 7 References
