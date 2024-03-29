@@ -370,7 +370,7 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
         logger.debug(traceback.print_exc())
         return
                     
-def determineFacialEmotion(obsTriggered, detectorLock, FERLock, faceVerifResultsQueue, facialEmotionQueue):
+def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, idEmotionPairDict):
     logger = logging.getLogger(__name__)
     handler = logging.StreamHandler()
 
@@ -414,24 +414,24 @@ def determineFacialEmotion(obsTriggered, detectorLock, FERLock, faceVerifResults
             emotionRatings = emotion_results['emotion']
             
             logger.debug("attempting to acquire FERLock...")
-            with FERLock:
-                logger.debug("acquired FERLock.")
+            with idEmotionPairDict[faceID]['lock']:
+                logger.debug(f"acquired idEmotionLock for {faceID}.")
                 # Because the calculateAverage threads drain facialEmotionQueue in batches, we do put_nowait() regardless of --noblock to avoid a deadlock.
                 # We need FERLock because calculateAverage threads need to 'peek' the queue to see if a given item belongs to their identity without accidentally moving them out of order.
                 try:
                     logger.debug("trying to put faceID, emotionRatings into facialEmotionQueue...")
-                    facialEmotionQueue.put_nowait((faceID,emotionRatings))
-                    logger.critical("put faceID, emotionRatings in facialEmotionQueue.")
+                    idEmotionPairDict[faceID]['queue'].put_nowait(emotionRatings)
+                    logger.debug("put faceID, emotionRatings in facialEmotionQueue.")
                 except queue.Full:
-                    logger.critical("Queue is full - releasing FERLock to prevent deadlock.")
+                    logger.warn(f"Queue is full - releasing idEmotionLock for {faceID} to prevent deadlock.")
                     break
-            logger.debug("released FERLock.")
+            logger.debug(f"released idEmotionLock for {faceID}.")
 
     except Exception as e:
         logger.debug(traceback.print_exc())
         return
 
-def calculateAverage(obsTriggered, FERLock, identity, facialEmotionQueue, FERAvgQueue):
+def calculateAverage(obsTriggered, idEmotionLock, identity, idEmotionBuffer, FERAvgQueue):
     logger = logging.getLogger(__name__)
     handler = logging.StreamHandler()
 
@@ -446,73 +446,50 @@ def calculateAverage(obsTriggered, FERLock, identity, facialEmotionQueue, FERAvg
                 logger.critical("other thread(s) triggered. Cleaning up.")
                 raise dms.observerTriggerException
 
-            identityEmotionBuffer = []
-            while len(identityEmotionBuffer) < args.sliding_window_size:
-                faceID = False
-                logger.debug(f"{identity} attempting to acquire FERLock...")
-                with FERLock:
-                    logger.debug(f"{identity} acquired FERLock.")
+            idEmotionBufferList = []
+            while len(idEmotionBufferList) < args.sliding_window_size:
+                logger.debug(f"{identity} attempting to acquire idEmotionLock...")
+                with idEmotionLock:
+                    logger.debug(f"{identity} acquired idEmotionLock.")
 
-                    # We're basically doing the dodgiest peek() in existence here.
-                    # Acquire lock, take out entry. If it's not for our identity, put it back.
-                    # We originally had a thread that took the emotion out, and mapped it to a dictionary with this kind of structure:
+                    if not idEmotionBuffer.full():
+                        logger.debug(f"{identity} idEmotionBuffer state: {idEmotionBuffer.qsize()}/{args.sliding_window_size}")
+                        pass
+                    
+                    elif idEmotionBuffer.full():
+                        logger.info(f"{identity} idEmotionBuffer full")
+                        while not idEmotionBuffer.empty():
+                            idEmotionBufferList.append(idEmotionBuffer.get())
+                        logger.info(f"{identity} idEmotionBuffer empty")
 
-                    # "identity": {
-                    #   "lock": multiprocessing.Lock(),
-                    #       "values": {
-                    #           <DeepFace FER key values pairs here>
-                    #       }
-                    # }
-
-                    # This didn't work because of Python generally disallowing pass by reference.
-                    # Thankfully, multiprocessing.queue works across threads, so we use that and a lock.
-                    # This will result in a lot of infighting amongst each identity-specific thread, and likely bottlenecks across many identities as of current.
-                    # Will likely not be fixed within the scope of the FYP since it doesn't map to a requirement.
-
-                    try:
-                        logger.debug("trying to get faceID, emotionRatings from facialEmotionQueue...")
-                        faceID, emotionRatings = facialEmotionQueue.get_nowait()
-                        logger.critical("got faceID, emotionRatings from facialEmotionQueue.")
-
-                        if faceID != identity: 
-                            logger.critical(f"pulled value that doesn't belong to {identity} from facialEmotionQueue. Putting back.")
-                            # We explicitly block for this operation because we want to ensure that we aren't accidentally shuffling the queue order.
-                            # If we were to submit this to the operations pool, then we would exit the lock immediately after and this could no longer be guaranteed.
-                            facialEmotionQueue.put((faceID,emotionRatings))
-                        else:
-                            identityEmotionBuffer.append(emotionRatings)
-
-                    except queue.Empty:
-                        logger.debug("facialEmotionQueue is empty. passing.")
-
-                logger.debug(f"{identity} released FERLock.")
+                logger.debug(f"{identity} released idEmotionLock.")
 
             # Now we calculate the averages and put them in the average queue.
 
             averageDict = {
                 "identity": identity,
                 "emotion": {
-                    "anger": sum([x.get('angry') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
-                    "disgust": sum([x.get('disgust') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
-                    "fear": sum([x.get('fear') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
-                    "happy": sum([x.get('happy') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
-                    "sad": sum([x.get('sad') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
-                    "surprise": sum([x.get('surprise') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
-                    "neutral": sum([x.get('neutral') for x in identityEmotionBuffer])/len(identityEmotionBuffer)
+                    "anger": sum([x.get('angry') for x in idEmotionBufferList])/len(idEmotionBufferList),
+                    "disgust": sum([x.get('disgust') for x in idEmotionBufferList])/len(idEmotionBufferList),
+                    "fear": sum([x.get('fear') for x in idEmotionBufferList])/len(idEmotionBufferList),
+                    "happy": sum([x.get('happy') for x in idEmotionBufferList])/len(idEmotionBufferList),
+                    "sad": sum([x.get('sad') for x in idEmotionBufferList])/len(idEmotionBufferList),
+                    "surprise": sum([x.get('surprise') for x in idEmotionBufferList])/len(idEmotionBufferList),
+                    "neutral": sum([x.get('neutral') for x in idEmotionBufferList])/len(idEmotionBufferList)
                 }
             }
             
             if args.noblock:
                 try:    
-                    logger.critical("trying to put averageDict into FERAvgQueue (--noblock)...")
+                    logger.debug("trying to put averageDict into FERAvgQueue (--noblock)...")
                     FERAvgQueue.put_nowait(averageDict)
-                    logger.critical("put averageDict into FERAvgQueue.")
+                    logger.debug("put averageDict into FERAvgQueue.")
                 except queue.Full:
-                    logger.critical("FERAvgQueue is full: --noblock flag set. Moving on.")
+                    logger.warn("FERAvgQueue is full: --noblock flag set. Moving on.")
             else:
-                logger.critical("waiting to put averageDict into FERAvgQueue...")
+                logger.debug("waiting to put averageDict into FERAvgQueue...")
                 FERAvgQueue.put(averageDict)
-                logger.critical("put averageDict into FERAvgQueue.")
+                logger.debug("put averageDict into FERAvgQueue.")
 
     except Exception as e:
         logger.debug(traceback.print_exc())
@@ -541,14 +518,14 @@ def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
 
             for emotion,value in avgEmotionDict.get('emotion').items():
                 if (emotion in forbidden_emotions) and (value >= forbidden_emotions.get(emotion)):
-                    logger.critical(f"TRIGGER: Identity {avgEmotionDict.get('identity')} held sufficiently strong (average confidence: {value}) forbidden emotion ({emotion}) over the last {args.sliding_window_size} frame(s) they were in. This exceeded the maximum allowable confidence of {forbidden_emotions.get(emotion)}.")
+                    logger.critical(f"TRIGGER: Identity {avgEmotionDict.get('identity')} held forbidden emotion ({emotion}) over the last {args.sliding_window_size} frame(s) in which they were identified with average strength of {value}, bypassing the limit ({forbidden_emotions.get(emotion)}) by {value-forbidden_emotions.get(emotion)}.")
                     raise dms.obsTriggerException
                 elif (emotion in forbidden_emotions):
-                    logger.info(f"{avgEmotionDict.get('identity')}: {emotion} within acceptable bounds (avg. {value}, max {forbidden_emotions.get(emotion)})")
+                    logger.info(f"{avgEmotionDict.get('identity')}: monitored emotion ({emotion}) within acceptable bounds (avg. {value}, limit: {forbidden_emotions.get(emotion)})")
                 else:
                     logger.debug(f"{avgEmotionDict.get('identity')}: {emotion} not forbidden. Skipping.")
             
-            logger.info(f"no forbidden emotions crossed threshold for {avgEmotionDict.get('identity')} in this averaged period.")
+            logger.info(f"no forbidden emotions crossed threshold for {avgEmotionDict.get('identity')} over the last {args.sliding_window_size} frames in which they were identified.")
 
     except Exception as e:
         logger.debug(traceback.print_exc())
@@ -587,22 +564,30 @@ def observerFunction():
             logger.debug("added enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue) to asyncList.")
         
         if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
-            if args.reject_emotions: faceVerifResultsQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
-            else: faceVerifResultsQueue = None
+            if args.reject_emotions: 
+                faceVerifResultsQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
+            else: 
+                faceVerifResultsQueue = None
             asyncList.append(multiprocessing.Process(target=extractFaceAndVerify, args=(obsTriggered, detectorLock, faceDetectionQueue, faceVerifResultsQueue)))
             logger.debug("added extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVerifResultsQueue) to asyncList.")
         
         if args.reject_emotions:
-            facialEmotionQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             FERAvgQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
-            logger.debug("created facialEmotionQueue, FERAvgQueue.")
+            logger.debug("created FERAvgQueue.")
 
-            asyncList.append(multiprocessing.Process(target=determineFacialEmotion, args=(obsTriggered, detectorLock, FERLock, faceVerifResultsQueue, facialEmotionQueue)))
-            logger.debug("added determineFacialEmotion(obsTriggered, detectorLock, FERLock, faceVerifResultsQueue, facialEmotionQueue) to asyncList.")
-
+            idEmotionPairDict = dict()
             for identity in identitySet:
-                asyncList.append(multiprocessing.Process(target=calculateAverage, args=(obsTriggered, FERLock, identity, facialEmotionQueue, FERAvgQueue)))
-                logger.debug(f"added calculateAverage(obsTriggered, FERLock, '{identity}', facialEmotionQueue, FERAvgQueue) to asyncList.")
+                idEmotionPairDict.update({
+                    identity: {
+                        "lock": multiprocessing.Manager().Lock(),
+                        "queue": multiprocessing.Manager().Queue(maxsize=args.sliding_window_size)
+                    }
+                })
+                asyncList.append(multiprocessing.Process(target=calculateAverage, args=(obsTriggered, idEmotionPairDict[identity]['lock'], identity, idEmotionPairDict[identity]['queue'], FERAvgQueue)))
+                logger.debug(f"added calculateAverage(obsTriggered, idEmotionLock, '{identity}', idEmotionBuffer, FERAvgQueue) to asyncList.")
+            
+            asyncList.append(multiprocessing.Process(target=determineFacialEmotion, args=(obsTriggered, detectorLock, faceVerifResultsQueue, idEmotionPairDict)))
+            logger.debug("added determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, idEmotionPairDict) to asyncList.")
         
             asyncList.append(multiprocessing.Process(target=calcForbidden, args=(obsTriggered, FERAvgQueue, forbidden_emotions)))
             logger.debug("added calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions) to asyncList.")
@@ -629,7 +614,7 @@ def observerFunction():
     except Exception as e:
         logger.debug("exception received!")
         logger.debug(traceback.print_exc())        
-        logger.critical("closing all processes.")
+        logger.debug("closing all processes.")
         obsTriggered.set()
         for process in asyncList:
             logger.debug("waiting for process to exit cleanly...")
