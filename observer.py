@@ -32,9 +32,7 @@ def _lim_faces(f):
     else: return int(f)
 
 def _face_path(p):
-    if os.path.isfile(p): return [p]
-    elif os.path.isdir(p): 
-        return filter(os.path.isfile, glob.glob(p + '/*', recursive=True))
+    if os.path.isfile(p) or os.path.isdir(p): return [p]
     else: raise argparse.ArgumentTypeError(f"Identity flags (--known-faces, --require-faces and --reject-faces) must be valid filenames or paths. {p} is an invalid path.")
 
 def _log_level(l):
@@ -91,6 +89,8 @@ if args.dump_frames:
 if args.max_faces: assert (args.min_faces < args.max_faces), f"--min-faces ({args.min_faces}) is greater than (or the same as) --max-faces ({args.max_faces})"
 
 # This is some complicated pythonic list comprehension, but we're basically flattening a nested list of 'children' within directories (to allow for both directories and files).
+# Doing as such was necessary when we were using glob to find child identities within directories, since we'd get nested lists from the result.
+# Now that we treat a 'folder' argument as a single identity with multiple 'training' images it might not be needed, but if it isn't broke...
 if args.known_faces: args.known_faces = { file for entry in args.known_faces for file in entry }
 if args.require_faces: args.require_faces = { file for entry in args.require_faces for file in entry }
 if args.reject_faces: args.reject_faces = { file for entry in args.reject_faces for file in entry }
@@ -120,17 +120,17 @@ identitySet = {None}
 
 if args.known_faces:
     for knownFace in args.known_faces:
-        if os.path.isfile(knownFace) and (knownFace not in IGNORE_FILES):
+        if os.path.exists(knownFace) and (knownFace not in IGNORE_FILES):
             identitySet.add(knownFace)
 
 if args.require_faces:
     for requiredFace in args.require_faces:
-        if os.path.isfile(requiredFace) and (requiredFace not in IGNORE_FILES):
+        if os.path.exists(requiredFace) and (requiredFace not in IGNORE_FILES):
             identitySet.add(requiredFace)
 
 if args.reject_faces:
     for rejectFace in args.reject_faces:
-        if os.path.isfile(rejectFace) and (rejectFace not in IGNORE_FILES):
+        if os.path.exists(rejectFace) and (rejectFace not in IGNORE_FILES):
             identitySet.add(rejectFace)
 
 if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level)
@@ -250,7 +250,7 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
     logger.info("thread started.")
     
     logger.info("loading imports...")
-    from deepface.DeepFace import verify
+    from deepface.DeepFace import verify, find
     if args.dump_frames:
         logger.warn("--dump-frames flag set. This will write past faces to disk, which may not be desired behaviour.")
         logger.info("Loading --dump-frames imports...")
@@ -280,6 +280,7 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
                 faceID = None
                 faceVerified = False
                 for identity in identitySet:
+                    logger.debug(f"Checking to see if current frame matches with identity: {identity}")
                     if identity == None:
                         logger.debug("Current identity to check is None (unknown). This is impossible to verify; pass.")
                         pass
@@ -287,18 +288,35 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
                         logger.debug("awaiting detectorLock to verify cropped frame...")
                         with detectorLock:
                             logger.debug("detectorLock acquired.")
-                            faceVerified = verify(
-                                img1_path=croppedFrame,
-                                img2_path=identity,
-                                silent=True,
-                                enforce_detection=False,
-                                model_name=args.model_name
-                            )['verified']
+
+                            if os.path.isfile(identity):
+                                faceVerified = verify(
+                                    img1_path=croppedFrame,
+                                    img2_path=identity,
+                                    silent=True,
+                                    enforce_detection=False,
+                                    model_name=args.model_name
+                                )['verified']
+                            elif os.path.isdir(identity):
+                                # Return true if any matches are made with the images in the folder, else false.
+                                faceVerified = True if (
+                                    len(find(
+                                        img_path=croppedFrame,
+                                            db_path=identity,
+                                            silent=True,
+                                            enforce_detection=False,
+                                            detector_backend=args.detector_backend,
+                                            model_name=args.model_name
+                                        )) > 0
+                                ) else False
+                                
+                            else: raise Exception(f"{identity} appears to be neither a folder nor file. This should be caught during argument parsing.")
+
                         logger.debug("detectorLock released.")
 
                         if faceVerified:
                             faceID = identity
-                            logger.info(f"face matched with identity ({os.path.basename(identity)})")
+                            logger.debug(f"face matched with identity ({os.path.basename(identity)})")
                             if args.known_faces:
                                 if identity in args.known_faces:
                                     logger.info("identity recognized, but not required or forbidden.")
@@ -318,17 +336,24 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
                                         imwrite(f"{frameDumpDir}/{__name__}/forbidden/{os.path.basename(identity)}", croppedFrame)
                                     logger.critical("TRIGGER: forbidden identity ({os.path.basename(identity)}) detected in frame.")
                                     raise dms.observerTriggerException
-                        else: logger.info(f"Face did not match with identity {identity}")
+                        else: logger.debug(f"Face did not match with identity {identity}")
 
-                if (faceID == None):         
-                    if args.require_faces: logger.warn("face did not match with any identities provided.")
+                if (faceID == None):     
+                    
+                    logger.warn("face did not match with any identities provided.")
+
+                    if args.require_faces and not requiredFacePresent:
+                        logger.critical("TRIGGER: --require-faces argument provided, but no required faces in frame.")
+                        raise dms.observerTriggerException
+                    elif args.reject_unknown:
+                        logger.critical("TRIGGER: --reject-unknown flag set.")
+                        raise dms.observerTriggerException
+                    
                     if args.dump_frames: 
                         logger.debug(f"--dump-frames set: writing frame to {frameDumpDir}/{__name__}/Unknown.jpg")
                         if not os.path.exists(f"{frameDumpDir}/{__name__}"): os.makedirs(f"{frameDumpDir}/{__name__}")
                         imwrite(f"{frameDumpDir}/{__name__}/Unknown.jpg", croppedFrame)
-                    if args.reject_unknown:
-                        logger.critical("TRIGGER: --reject-unknown flag set.")
-                        raise dms.observerTriggerException
+
         
                 if args.reject_emotions and faceVerifResultsQueue:
                     if args.noblock:
@@ -344,10 +369,7 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
                         logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
                 else:
                     logger.debug("FER disabled. Skipping queue.")
-        
-            if args.require_faces and not requiredFacePresent:
-                logger.critical("TRIGGER: --require-faces argument provided, but no required faces in frame.")
-                raise dms.observerTriggerException
+
     except Exception as e:
         logger.debug(traceback.print_exc())
         return
