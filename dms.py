@@ -1,5 +1,41 @@
 from abc import ABC, abstractmethod
-import socket, threading, multiprocessing, signal, datetime, time, traceback, sys
+import socket, threading, signal, datetime, time, traceback, sys, logging
+
+class observerTriggerException(Exception):
+    "Raised when the observer process intentionally fires a trigger event."
+    pass
+
+class observerInitException(SystemExit):
+    "Raised when observer thread fails to initialise."
+    pass
+
+class lifelineInitException(SystemExit):
+    "Raised when lifeline thread fails to initialise."
+    pass
+
+class lifelineSeveredException(Exception):
+    "Raised when the lifeline thread is intentionally severed by the observer or payload processes."
+    pass
+
+class lifelineDeadException(Exception):
+    "Raised when the observer or payload processes fails to receive a heartbeat after a set number of retries."
+    pass
+
+class tamperingEventException(Exception):
+    "Raised when tamper evident events _unrelated to the trigger condition_ occur outside of the process scope such as SIGTERM, the removal of files, or likewise."
+    pass
+
+class payloadExecutionException(Exception):
+    "Raised when a triggered payload process fails to execute due to known exceptions."
+    pass
+
+class payloadOutcomeException(Exception):
+    "Raised when a triggered payload executes without exception, but cannot verify the intended outcome at the endpoint level."
+    pass
+
+class triggerFinishedException(SystemExit):
+    "Raised when the trigger procedure for a thread concludes, regardless of type or outcome."
+    pass
 
 class DMSProcess(ABC):
 
@@ -23,7 +59,7 @@ class DMSProcess(ABC):
         # This means that we cannot escape the GIL in terms of competition between the lifeline thread and the observer thread; multiprocessing should be used /within/ the latter to optimize resources.
 
         # This thread handles our 'heartbeat' signal, separate from the function code.
-        self.lifelineThread = threading.Thread(target=self.checkSkt)
+        self.lifelineThread = threading.Thread(target=self.checkSkt, daemon=True)
         self.lifelineThread.start()
 
     def checkSkt(self):
@@ -32,11 +68,11 @@ class DMSProcess(ABC):
             time.sleep(self.HEARTBEAT_GRACE_PERIOD)
             try:
                 self.lifelineSkt.send(b'1')
-                #print(f"[{self}][{__name__}][{datetime.datetime.now()}] - Heartbeat sent.")
+                print(f"[{self}][{__name__}][{datetime.datetime.now()}] - Heartbeat sent.")
                 # 'pingpong' heartbeat: Observer has to send heartbeat and expects one back from payload.
-                #print(f"[{self}][{__name__}][{datetime.datetime.now()}] - Awaiting response...")
+                print(f"[{self}][{__name__}][{datetime.datetime.now()}] - Awaiting response...")
                 self.lifelineSkt.recv(1)
-                #print(f"[{self}][{__name__}][{datetime.datetime.now()}] - Heartbeat received.")
+                print(f"[{self}][{__name__}][{datetime.datetime.now()}] - Heartbeat received.")
                 # TODO: Do any race conditions occur here?
                 self.HEARTBEAT_ATTEMPTS_FAILED = 0
             except:
@@ -48,13 +84,11 @@ class DMSProcess(ABC):
                 else:
                     print(f"[{self}][{__name__}][{datetime.datetime.now()}] - Maximum retries exceeded. Closing socket and sending SIGTERM.")
                     self.lifelineSkt.close()
-                    signal.raise_signal(signal.SIGTERM)
-                    sys.exit(signal.SIGTERM) # Possibly moot
+                    raise lifelineDeadException(signal.SIGTERM)
     
     @abstractmethod
     def trigger():
         pass
-
 
 
 class obsProcess(DMSProcess):
@@ -65,8 +99,8 @@ class obsProcess(DMSProcess):
             self.lifelineSkt = socket.create_connection((host,port),timeout=hs_timeout)
         except Exception as e:
             print(f"[{self}][{__name__}][{datetime.datetime.now()}] - Failed to initiate connection with payload on {host}:{port}.")
-            print(f"[{self}][{__name__}][{datetime.datetime.now()}] Exception: {e}.")
-            sys.exit(404)
+            print(f"[{self}][{__name__}][{datetime.datetime.now()}] - Exception: {e}.")
+            raise lifelineInitException(404)
         
         print(f"[{self}][{__name__}][{datetime.datetime.now()}] Established connection with payload on {host}:{port}.")
         
@@ -79,7 +113,22 @@ class obsProcess(DMSProcess):
         self.obsThread = threading.Thread(target=self.obs_func, args=self.obs_args)
         self.obsThread.start()
 
-        while True: time.sleep(1)
+        while True:
+            obsRet = self.obsThread.join(timeout=1)
+            if obsRet is not None:
+                print(obsRet)
+                self.trigger()
+            else:
+                if self.obsThread.is_alive(): pass
+                else: raise Exception("obsThread appeared to exit normally, which shouldn't happen.")
+
+            lifelineRet = self.lifelineThread.join(timeout=1)
+            if lifelineRet is not None:
+                print(lifelineRet)
+                self.trigger()
+            else:
+                if self.lifelineThread.is_alive(): pass
+                else: raise Exception("lifelineThread appeared to exit normally, which shouldn't happen.")
 
     def trigger(self, signum, frame):
         # We don't actually send any messages to the payload here.
@@ -96,7 +145,7 @@ class obsProcess(DMSProcess):
         # On windows hosts, the socket was kept alive via KEEPALIVE packets after the process was killed.
         # We assume most KEEPALIVE implementations assume kernel-level control over what is defined as a 'dead socket', since KEEPALIVE works at the transport layer (not the application) due to it being implemented in TCP.
         # Therefore it stands to reason that it would be nonsensical for KEEPALIVE to *not* represent whether the link is alive at the kernel-level and below...
-        sys.exit(signum)
+        raise triggerFinishedException(signum)
 
 class plProcess(DMSProcess):
 
@@ -112,7 +161,7 @@ class plProcess(DMSProcess):
             except Exception as e:
                 print(f"[{self}][{__name__}][{datetime.datetime.now()}] Failed to establish connection with observer on {host}:{port}.")
                 print(f"[{self}][{__name__}][{datetime.datetime.now()}] Exception: {e}.")
-                sys.exit(404)
+                raise lifelineInitException(404)
             
             print(f"[{self}][{__name__}][{datetime.datetime.now()}] Established connection with observer on {host}:{port}.")
 
@@ -122,21 +171,39 @@ class plProcess(DMSProcess):
         self.pl_func = func
         self.pl_args = args
         
-        while True: time.sleep(1)
+        while True:
+
+            lifelineRet = self.lifelineThread.join(timeout=1)
+            if lifelineRet is not None:
+                print(lifelineRet)
+                self.trigger()
+            else:
+                if self.lifelineThread.is_alive(): pass
+                else: raise Exception("lifelineThread appeared to exit normally, which shouldn't happen.")
 
     def trigger(self, signum, frame):
         print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Payload Triggered!")
         try: 
-            print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Closing socket to alert Observer!")
+            print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Severing lifeline to alert Observer!")
             self.lifelineSkt.close()
-        except: print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Failed to close socket on trigger!")
+            raise lifelineSeveredException
+        except lifelineSeveredException: print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Lifeline severed!")
+        except Exception as e: 
+            print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Failed to sever lifeline - {e}! Traceback:")
+            traceback.print_exc()
         try:
             print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Attempting execution of payload.")
             self.pl_func(self.pl_args)
-            print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Payload finished without apparent exception.")
-        except:
+            print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Payload finished, with outcome verified.")
+        except payloadExecutionException:
             print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Payload execution failed! Traceback:")
+            traceback.print_exc()
+        except payloadOutcomeException:
+            print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Payload executed without error, but could not verify outcome. Traceback:")
+            traceback.print_exc()
+        except Exception as e:
+            print(f"[{self}][self.trigger][{datetime.datetime.now()}] - Unexpected exception occurred - {e}. Traceback:")
             traceback.print_exc()
         finally: 
             print(f"[{self}][self.trigger][{datetime.datetime.now()}] - terminated with signal {signum}.")
-            sys.exit(signum)
+            triggerFinishedException(signum)

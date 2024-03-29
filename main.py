@@ -2,11 +2,12 @@ import subprocess
 import logging
 import argparse
 import sys, signal, time, threading, datetime, traceback
+
 def checkLiveness(sp):
     while True:
         if sp.poll():
             print(f"[{__name__}][{datetime.datetime.now()}] Received returncode {sp.returncode} from {sp.pid}")
-            signal.raise_signal(sp.returncode)
+            return sp.returncode
 
 def main(args):
     if args.headless: 
@@ -50,15 +51,20 @@ def main(args):
         print(f"[Initiator][{__name__}][{datetime.datetime.now()}] Headless; terminating.")
         sys.exit(0)
     else:
-        if plP: threading.Thread(target=checkLiveness(plP)).start()
-        if obsP: threading.Thread(target=checkLiveness(obsP)).start()
+        if plP: threading.Thread(target=checkLiveness, args=(plP,)).start()
+        if obsP: threading.Thread(target=checkLiveness, args=(obsP,)).start()
         
         while True: 
             try:
                 time.sleep(1)
             except KeyboardInterrupt:
+                print(f"[Initiator][{__name__}][{datetime.datetime.now()}] Explicit keyboard interrupt received. Killing observer and payload.")
                 if plP: plP.kill()
                 if obsP: obsP.kill()
+                sys.exit(signal.SIGINT)
+            except Exception as e:
+                logger.debug(traceback.print_exc())
+                sys.exit(signal.SIGTERM)
                 
 
 if __name__ == "__main__":

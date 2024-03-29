@@ -1,7 +1,52 @@
-from dms import obsProcess
-import signal, traceback,time, argparse, datetime, pathlib, sys, os, multiprocessing, threading
-from subprocess import DEVNULL
-import queue
+import dms
+import signal, traceback, time, argparse, sys, os, multiprocessing, glob, logging, datetime, queue
+
+logfmt = logging.Formatter(fmt='[{filename}][{funcName}][{asctime}][{levelname}]: {message}', datefmt="%Y-%m-%d %H:%M:%S", style='{', validate=True)
+
+VALID_EMOTIONS=(
+    "happy",
+    "neutral",
+    "surprise",
+    "sad",
+    "angry",
+    "fear",
+    "disgust"
+)
+
+IGNORE_FILES = (
+    "ds_vggface_opencv_v2.pkl"
+    "ds_vggface_ssd_v2.pkl"
+    "ds_ghostfacenet_opencv_v2.pkl"
+)
+
+def _emotions(e):
+    try:
+        emotion, min_score = e.split(':')
+        if emotion not in VALID_EMOTIONS: raise Exception
+        min_score = float(min_score)
+        return emotion, min_score
+    except:
+        raise argparse.ArgumentTypeError(f"[{os.path.os.path.basename(__file__)}][{__name__}][{datetime.datetime.now()}] Forbidden emotions must be in format emotion:min_score.\nmin_score must be a valid float between 0-100.\nemotion must be a valid emotion out of the following: happy, neutral, surprise, sad, angry, fear, disgust.")
+
+def _lim_faces(f):
+    if int(f) < 0:
+        raise argparse.ArgumentTypeError("Face bounds (--min-faces and --max-faces) cannot be less than 0.")
+    else: return int(f)
+
+def _face_path(p):
+    if os.path.isfile(p): return [p]
+    elif os.path.isdir(p): 
+        return filter(os.path.isfile, glob.glob(p + '/*', recursive=True))
+    else: raise argparse.ArgumentTypeError(f"Identity flags (--known-faces, --require-faces and --reject-faces) must be valid filenames or paths. {p} is an invalid path.")
+
+def _log_level(l):
+    match l:
+        case "DEBUG": return logging.DEBUG
+        case "INFO": return logging.INFO
+        case "WARNING": return logging.WARNING
+        case "ERROR": return logging.ERROR
+        case "CRITICAL": return logging.CRITICAL
+        case _: raise argparse.ArgumentTypeError(f"Invalid log level provided ('{l}')")
 
 parser = argparse.ArgumentParser(
     prog='facial recognition component for DMS',
@@ -14,470 +59,592 @@ parser.add_argument('--heartbeat-grace-period', action='store', type=float)
 parser.add_argument('--heartbeat-max-retries', action='store', type=int)
 parser.add_argument('--heartbeat-timeout', action='store', type=float)
 parser.add_argument('--handshake-timeout', action='store', type=float)
-parser.add_argument('--known-faces', nargs="+", type=str)
-#parser.add_argument('--trigger-events', choices=["CAMERA_BLOCK", "UNKNOWN_FACE", "VERIFICATION_FAILED", "EMOTION_DETECTION"])
-#parser.add_argumnt('--detector-backend', default='opencv')
+
+# Trigger when a frame cannot be returned from cv2.VideoCapture.
+parser.add_argument('--reject-noframe', action="store_true")
+
+parser.add_argument('--min-faces', default=0, action="store", type=_lim_faces)
+parser.add_argument('--max-faces', action="store", type=_lim_faces)
+
+# Enforcing verification of faces necessarily implies rejection of unknown faces
+parser.add_argument('--known-faces', action="extend", nargs="+", type=_face_path)
+parser.add_argument('--require-faces', action="extend", nargs="+", type=_face_path)
+parser.add_argument('--reject-faces', action="extend", nargs="+", type=_face_path)
+parser.add_argument('--reject-unknown', action="store_true")
+
+parser.add_argument('--reject-emotions', action="store", nargs="*", type=_emotions)
+parser.add_argument('--noblock', action="store_true", default=False)
+
+parser.add_argument('--detector-backend', action="store", default='opencv', choices=["opencv","ssd","dlib","mtcnn","retinaface","mediapipe","yolov8","yunet","fastmtcnn"])
+parser.add_argument('--model-name', action="store", default='GhostFaceNet', choices=["VGG-Face","Facenet","Facenet512","OpenFace","DeepFace","DeepID","ArcFace","Dlib","SFace","GhostFaceNet"])
+
+parser.add_argument('--sliding-window-size', action="store", default=10, type=int, required=True)
+parser.add_argument('--max-buffer-size', action="store", default=0, type=int)
+
+parser.add_argument('--dump-frames', action="store_true")
+parser.add_argument('--log-level', choices=[logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL], default="INFO", type=_log_level)
+parser.add_argument('--log-file', action="store", default=None)
 
 args = parser.parse_args()
 
-MODEL_NAME='GhostFaceNet'
-DETECTOR_BACKEND='opencv'
+if args.dump_frames:
+    frameDumpDir = './debug'
 
-ignoreList = (
-    "ds_vggface_opencv_v2.pkl"
-    "ds_vggface_ssd_v2.pkl"
-    "ds_ghostfacenet_opencv_v2.pkl"
-)
+if args.max_faces: assert (args.min_faces < args.max_faces), f"--min-faces ({args.min_faces}) is greater than (or the same as) --max-faces ({args.max_faces})"
 
-openCVLock = threading.Lock()
+# This is some complicated pythonic list comprehension, but we're basically flattening a nested list of 'children' within directories (to allow for both directories and files).
+if args.known_faces: args.known_faces = { file for entry in args.known_faces for file in entry }
+if args.require_faces: args.require_faces = { file for entry in args.require_faces for file in entry }
+if args.reject_faces: args.reject_faces = { file for entry in args.reject_faces for file in entry }
 
-SLIDING_WINDOW_SIZE=10
-MAX_BUFFER_SIZE=100
+if (args.require_faces and args.reject_faces):
+    for face in args.require_faces: assert (face not in args.reject_faces), f"Identity ({face}) provided in both --auth-faces and --reject-faces arguments"
 
-assert (SLIDING_WINDOW_SIZE <= MAX_BUFFER_SIZE), "Sliding window size larger than queue buffer!" 
+if not (
+    args.reject_noframe or \
+    args.min_faces or \
+    args.max_faces or \
+    args.require_faces or \
+    args.reject_faces or \
+    args.reject_unknown or \
+    args.reject_emotions
+): raise argparse.ArgumentTypeError("No trigger conditions have been specified!")
 
-def getFrameFromWebcam(frameQueue):
-    print("[getFrameFromWebcam] loading imports...")
+if args.reject_emotions:
+    forbidden_emotions = {}
+    for emotion,score in args.reject_emotions:
+        forbidden_emotions[emotion] = score
+elif args.fer_noblock:
+    print("--fer-noblock flag set without accompanying --reject-emotions. Redundant since FER would be disabled anyway, so unsetting this flag.")
+    args.fer_noblock = False
+
+if (args.max_buffer_size != 0): # This is the default value for multiprocessing.Manager().Queue, and signifies an 'uncapped' queue size.
+    assert (args.sliding_window_size <= args.max_buffer_size), "Sliding window size larger than queue buffer!" 
+
+identitySet = {None}
+
+if args.known_faces:
+    for knownFace in args.known_faces:
+        if os.path.isfile(knownFace) and (knownFace not in IGNORE_FILES):
+            identitySet.add(knownFace)
+
+if args.require_faces:
+    for requiredFace in args.require_faces:
+        if os.path.isfile(requiredFace) and (requiredFace not in IGNORE_FILES):
+            identitySet.add(requiredFace)
+
+if args.reject_faces:
+    for rejectFace in args.reject_faces:
+        if os.path.isfile(rejectFace) and (rejectFace not in IGNORE_FILES):
+            identitySet.add(rejectFace)
+
+if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level)
+else:
+    if args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level)
+    else: logging.basicConfig(stream=sys.stderr, level=args.log_level)
+
+def getFrameFromWebcam(obsTriggered, frameQueue):
+    logger = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
+
+    handler.setFormatter(logfmt)
+    logger.addHandler(handler)
+    
+    logger.info("thread started.")
+
+    logger.info("loading imports...")
     from cv2 import VideoCapture
-    print("[getFrameFromWebcam] imports loaded.")
-
-    video_capture = VideoCapture(0)
-
-    while True:
-        ret, frame = video_capture.read()
-        #print("[getFrameFromWebcam] got frame from webcam.")
-        if not ret:
-            print("[getFrameFromWebcam] FATAL: lost access to webcam!")
-            signal.raise_signal(signal.SIGTERM)
-            sys.exit(signal.SIGTERM)
-        else: 
-            #imwrite("debug/frame.jpg",frame)
-            frameQueue.put(frame)
-            #print("[getFrameFromWebcam] put webcam frame into frameQueue.")
-
-def enumFacesInFrame(frameQueue, faceDetectionQueue):
-    print("[enumFacesInFrame] loading imports...")
-    from deepface.DeepFace import extract_faces
-    print("[enumFacesInFrame] imports loaded.")
-
-    while True:
-        frame = frameQueue.get()
-        #print("[enumFacesInFrame] got frame from frameQueue.")
-        try:
-            with openCVLock:
-                face_locations = extract_faces(
-                    img_path=frame,
-                    detector_backend=DETECTOR_BACKEND
-                )
-            print(f"[enumFacesInFrame] Enumerated {len(face_locations)} face(s) in this frame.")
-        except ValueError:
-            print("[enumFacesInFrame] No faces detected in this frame.")
-            face_locations = None
-        finally:
-            faceDetectionQueue.put((frame, face_locations))
-            #print("[enumFacesInFrame] put tuple into faceDetectionQueue.")
-
-def extractFaceAndVerify(faceDetectionQueue, identityMap, faceVerifResultsQueue):
-    print("[extractFaceAndVerify] loading imports...")
-    from deepface.DeepFace import verify
-    print("[extractFacesAndVerify] imports loaded.")
-
-    while True:
-        facesIdentifiedTuple = faceDetectionQueue.get()
-        #print("[extractFaceAndVerify] got tuple from faceDetectionQueue.")
-        if facesIdentifiedTuple[1] is None: # No faces detected
-            pass
-        else:
-            for face in facesIdentifiedTuple[1]:
-                print("[extractFaceAndVerify] Trying to acquire lock to crop frame to face with OpenCV...")
-                #with openCVLock:
-                #    print("[extractFaceAndVerify] Acquired cv2 Crop Lock.")
-                croppedFrame = facesIdentifiedTuple[0][
-                    face['facial_area']['y']:face['facial_area']['y']+face['facial_area']['h'],
-                    face['facial_area']['x']:face['facial_area']['x']+face['facial_area']['w']
-                ]
-                #print("[extractFaceAndVerify] released cv2 Crop Lock.")
-                faceID = None
-                for identity in identityMap.keys():
-                    if identity == None:
-                        pass
-                    else:
-                        faceVerified = verify(
-                            img1_path=croppedFrame,
-                            img2_path=f"known_faces/{identity}",
-                            silent=True,
-                            enforce_detection=False,
-                            model_name=MODEL_NAME
-                        )['verified']
-
-                        if faceVerified:
-                            print(f"[extractFaceAndVerify] Face match: {identity}")
-                            faceID = identity
-                            break
-                        else:
-                            print("[extractFaceAndVerify] Face did not match with any identities.")
-                            pass
-
-                faceVerifResultsQueue.put((croppedFrame,face,faceVerified,faceID))
-                #print("[extractFaceAndVerify] put tuple into faceVerifResultsQueue.")
-                
-def determineFacialEmotion(faceVerifResultsQueue, facialEmotionQueue):
+    logger.info("imports loaded.")
+    
     try:
-        print("[determineFacialEmotions] loading imports...")
-        from deepface.DeepFace import analyze
-        print("[determineFacialEmotion] imports loaded.")
+        video_capture = VideoCapture(0)
 
         while True:
-            faceVerifTuple = faceVerifResultsQueue.get()
-            #print("[determineFacialEmotion] got tuple from faceVerifResultsQueue.")
-            if (faceVerifTuple[2] == False) and (faceVerifTuple[3] == None):
-                continue
+            if obsTriggered.is_set():
+                logger.critical("other thread(s) triggered. Cleaning up.")
+                raise dms.observerTriggerException
+
+            logger.debug("trying to get frame from webcam...")
+            ret, frame = video_capture.read()
+            logger.debug("got frame from webcam.")
+            if not ret:
+                logger.warn("Could not get frame from webcam.")
+                if args.reject_noframe:
+                    logger.critical("TRIGGER: --reject-noframe flag set.")
+                    raise dms.observerTriggerException
+                else:
+                    pass
+            else:
+                if args.noblock:
+                    try:
+                        logger.debug("trying to put frame into frameQueue (--noblock)...")
+                        frameQueue.put_nowait(frame)
+                        logger.debug("put frame into frameQueue.")
+                    except queue.Full:
+                        logger.warn("frameQueue is full: --noblock flag set. Moving on.")
+                else:
+                    logger.debug("waiting to put frame into frameQueue...")
+                    frameQueue.put(frame)
+                    logger.debug("put frame into framequeue.")
+                
+    except Exception as e:
+        logger.debug(traceback.print_exc())
+        return
     
-            faceID = faceVerifTuple[3]
-            with openCVLock:
+def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=None):
+    logger = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
+
+    handler.setFormatter(logfmt)
+    logger.addHandler(handler)
+
+    logger.info("thread started.")
+    
+    logger.info("loading imports...")
+    from deepface.DeepFace import extract_faces
+    logger.info("imports loaded.")
+    
+    try:
+        while True:
+            if obsTriggered.is_set(): 
+                logger.critical("other thread(s) triggered. Cleaning up.")
+                raise dms.observerTriggerException
+
+            logger.debug("trying to get frame from frameQueue...")
+            frame = frameQueue.get()
+            logger.debug("got frame from frameQueue.")
+            try:
+                logger.debug("trying to acquire detectorLock...")
+                with detectorLock:
+                    logger.debug("acquired detectorLock.")
+                    face_locations = extract_faces(
+                        img_path=frame,
+                        detector_backend=args.detector_backend,
+                        enforce_detection=False
+                    )
+                logger.debug("released detectorLock.")
+                logger.debug(f"Enumerated {len(face_locations)} face(s) in this frame.")
+
+                if (len(face_locations) < args.min_faces) or ((args.max_faces != None) and (len(face_locations) > args.max_faces)):
+                    logger.critical(f"TRIGGER: Number of faces outside of accepted bounds. Min: {args.min_faces} Max: {args.max_faces} Found: {len(face_locations)}")
+                    raise dms.observerTriggerException
+                
+            except ValueError:
+                logger.warn("No faces detected in this frame.")
+                if args.min_faces > 0:
+                    logger.critical(f"TRIGGER: --min-faces ({args.min_faces}) mandates at least one face be present in every frame.")
+                    raise dms.observerTriggerException
+            else:
+                pass
+            
+            if face_locations is None:
+                logger.warn("Skipping queue since no faces were detected.")
+            elif (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions) and faceDetectionQueue:
+                if args.noblock:
+                    try:
+                        logger.debug("trying to put frame, face_locations into faceDetectionQueue (--noblock)...")
+                        faceDetectionQueue.put_nowait((frame,face_locations))
+                        logger.debug("put frame, face_locations into faceDetectionQueue.")
+                    except queue.Full:
+                        logger.warn("faceDetectionQueue is full: --noblock flag set. Moving on.")
+                else:
+                    logger.debug("waiting to put frame, face_locations into faceDetectionQueue...")
+                    faceDetectionQueue.put((frame,face_locations))
+                    logger.debug("put frame, face_locations into faceDetectionQueue.")
+            else:
+                pass
+
+    except Exception as e:
+        logger.debug(traceback.print_exc())
+        return
+    
+def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVerifResultsQueue=None):
+    logger = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
+
+    handler.setFormatter(logfmt)
+    logger.addHandler(handler)
+
+    logger.info("thread started.")
+    
+    logger.info("loading imports...")
+    from deepface.DeepFace import verify
+    if args.dump_frames:
+        logger.warn("--dump-frames flag set. This will write past faces to disk, which may not be desired behaviour.")
+        logger.info("Loading --dump-frames imports...")
+        from cv2 import imwrite 
+    logger.info("[extractFacesAndVerify] imports loaded.")
+    
+    try:
+        while True:
+            if obsTriggered.is_set(): 
+                logger.critical("other thread(s) triggered. Cleaning up.")
+                raise dms.observerTriggerException
+
+            logger.debug("trying to get frame, face_locations from faceDetectionQueue...")
+            frame, face_locations = faceDetectionQueue.get()
+            logger.debug("got frame, face_locations from faceDetectionQueue.")
+        
+            if args.require_faces: requiredFacePresent = False
+            for face in face_locations:
+                logger.debug("awaiting detectorLock to crop frame to face...")
+                with detectorLock:
+                    logger.debug("detectorLock acquired.")
+                    croppedFrame = frame[
+                        face['facial_area']['y']:face['facial_area']['y']+face['facial_area']['h'],
+                        face['facial_area']['x']:face['facial_area']['x']+face['facial_area']['w']
+                    ]
+                logger.debug("releasing detectorLock...")
+                faceID = None
+                faceVerified = False
+                for identity in identitySet:
+                    if identity == None:
+                        logger.debug("Current identity to check is None (unknown). This is impossible to verify; pass.")
+                        pass
+                    else:
+                        logger.debug("awaiting detectorLock to verify cropped frame...")
+                        with detectorLock:
+                            logger.debug("detectorLock acquired.")
+                            faceVerified = verify(
+                                img1_path=croppedFrame,
+                                img2_path=identity,
+                                silent=True,
+                                enforce_detection=False,
+                                model_name=args.model_name
+                            )['verified']
+                        logger.debug("detectorLock released.")
+
+                        if faceVerified:
+                            faceID = identity
+                            logger.info(f"face matched with identity ({os.path.basename(identity)})")
+                            if args.known_faces:
+                                if identity in args.known_faces:
+                                    logger.info("identity recognized, but not required or forbidden.")
+                            if args.require_faces:
+                                if identity in args.required_faces and (requiredFacePresent == False):
+                                    requiredFacePresent = True
+                                    logger.info(f"required identity recognized.")
+                                if args.dump_frames:
+                                    logger.debug(f"--dump-frames set: writing frame to {frameDumpDir}/{__name__}/required/{os.path.basename(identity)}")
+                                    if not os.path.exists(f"{frameDumpDir}/{__name__}/required"): os.makedirs(f"{frameDumpDir}/{__name__}/required")
+                                    imwrite(f"{frameDumpDir}/{__name__}/required/{os.path.basename(identity)}.jpg", croppedFrame)
+                            if args.reject_faces:
+                                if identity in args.reject_faces:
+                                    if args.dump_frames: 
+                                        logging.debug(f"--dump-frames set: writing frame to {frameDumpDir}/{__name__}/forbidden/{os.path.basename(identity)}")
+                                        if not os.path.exists(f"{frameDumpDir}/{__name__}/forbidden"): os.makedirs(f"{frameDumpDir}/{__name__}/forbidden")
+                                        imwrite(f"{frameDumpDir}/{__name__}/forbidden/{os.path.basename(identity)}", croppedFrame)
+                                    logger.critical("TRIGGER: forbidden identity ({os.path.basename(identity)}) detected in frame.")
+                                    raise dms.observerTriggerException
+                        else: logger.info(f"Face did not match with identity {identity}")
+
+                if (faceID == None):         
+                    if args.require_faces: logger.warn("face did not match with any identities provided.")
+                    if args.dump_frames: 
+                        logger.debug(f"--dump-frames set: writing frame to {frameDumpDir}/{__name__}/Unknown.jpg")
+                        if not os.path.exists(f"{frameDumpDir}/{__name__}"): os.makedirs(f"{frameDumpDir}/{__name__}")
+                        imwrite(f"{frameDumpDir}/{__name__}/Unknown.jpg", croppedFrame)
+                    if args.reject_unknown:
+                        logger.critical("TRIGGER: --reject-unknown flag set.")
+                        raise dms.observerTriggerException
+        
+                if args.reject_emotions and faceVerifResultsQueue:
+                    if args.noblock:
+                        try:
+                            logger.debug("trying to put faceID, croppedFrame into faceVerifResultsQueue (--noblock)...")
+                            faceDetectionQueue.put_nowait((frame,face_locations))
+                            logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
+                        except queue.Full:
+                            logger.warn("faceVerifResultsQueue is full: --noblock flag set. Moving on.")
+                    else:
+                        logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
+                        faceVerifResultsQueue.put((faceID,croppedFrame))
+                        logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
+                else:
+                    logger.debug("FER disabled. Skipping queue.")
+        
+            if args.require_faces and not requiredFacePresent:
+                logger.critical("TRIGGER: --require-faces argument provided, but no required faces in frame.")
+                raise dms.observerTriggerException
+    except Exception as e:
+        logger.debug(traceback.print_exc())
+        return
+                    
+def determineFacialEmotion(obsTriggered, detectorLock, FERLock, faceVerifResultsQueue, facialEmotionQueue):
+    logger = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
+
+    handler.setFormatter(logfmt)
+    logger.addHandler(handler)
+
+    logger.info("thread started.")
+    
+    logger.info("loading imports...")
+    from deepface.DeepFace import analyze
+    logger.info("imports loaded.")
+
+    try:
+        while True:
+            if obsTriggered.is_set(): 
+                logger.critical("other thread(s) triggered. Cleaning up.")
+                raise dms.observerTriggerException
+
+            logger.debug("trying to get faceID, croppedFrame from faceVerifResultsQueue...")
+            faceID, croppedFrame = faceVerifResultsQueue.get()
+            logger.debug("got faceID, croppedFrame from faceVerifResultsQueue.")
+    
+            logger.debug("attempting to acquire detectorLock...")
+            with detectorLock:
+                logger.debug("acquired detectorLock.")
                 analysis_results = analyze(
-                    img_path=faceVerifTuple[0],
+                    img_path=croppedFrame,
                     actions=["emotion"],
                     silent=True,
                     enforce_detection=False,
-                    detector_backend=DETECTOR_BACKEND
+                    detector_backend=args.detector_backend
                 )
+            logger.debug("released detectorLock.")
 
-            if len(analysis_results) != 1: raise Exception("[determineFacialEmotion] FATAL: More than one face was detected in the cropped image. This should not happen.")
+            if len(analysis_results) != 1: 
+                logger.critical("More than one face was detected in the cropped image. This should never happen.")
+                raise Exception
                         
             emotion_results = analysis_results[0] # We're cropping straight to the detected face, so we should only ever have one entry.
 
             emotionRatings = emotion_results['emotion']
             
-            facialEmotionQueue.put((faceID,emotionRatings))
-            #print("[determineFacialEmotion] put tuple in facialEmotionQueue.")
-    except Exception as e:
-        traceback.print_exc()
-        print(e)
-        signal.raise_signal(signal.SIGTERM)
-        sys.exit(signal.SIGTERM)
+            logger.debug("attempting to acquire FERLock...")
+            with FERLock:
+                logger.debug("acquired FERLock.")
+                # Because the calculateAverage threads drain facialEmotionQueue in batches, we do put_nowait() regardless of --noblock to avoid a deadlock.
+                # We need FERLock because calculateAverage threads need to 'peek' the queue to see if a given item belongs to their identity without accidentally moving them out of order.
+                try:
+                    logger.debug("trying to put faceID, emotionRatings into facialEmotionQueue...")
+                    facialEmotionQueue.put_nowait((faceID,emotionRatings))
+                    logger.critical("put faceID, emotionRatings in facialEmotionQueue.")
+                except queue.Full:
+                    logger.critical("Queue is full - releasing FERLock to prevent deadlock.")
+                    break
+            logger.debug("released FERLock.")
 
-def putEmotionIntoIdentityMap(facialEmotionQueue, identityMap):
+    except Exception as e:
+        logger.debug(traceback.print_exc())
+        return
+
+def calculateAverage(obsTriggered, FERLock, identity, facialEmotionQueue, FERAvgQueue):
+    logger = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
+
+    handler.setFormatter(logfmt)
+    logger.addHandler(handler)
+
+    logger.info(f"thread started for {identity}.")
+
     try:
         while True:
-            #print("[putEmotionIntoIdentityMap] trying to get emotionTuple from facialEmotionQueue...")
-            emotionTuple = facialEmotionQueue.get()
-            #print("[putEmotionIntoIdentityMap] got emotionTuple from facialEmotionQueue.")
-            identity = emotionTuple[0]
-            ratings = emotionTuple[1]
+            if obsTriggered.is_set(): 
+                logger.critical("other thread(s) triggered. Cleaning up.")
+                raise dms.observerTriggerException
 
-            print("[putEmotionIntoIdentityMap] Waiting to acquire identityMap lock...")
-            with identityMap[identity]['lock']:
-                print("[putEmotionIntoIdentityMap] Acquired identityMap lock.")
-                for emotion in ratings.keys():
-                    identityMap[identity]['values'][emotion].put(ratings[emotion])
-                print("[putEmotionIntoIdentityMap] Released identityMap lock.")
+            identityEmotionBuffer = []
+            while len(identityEmotionBuffer) < args.sliding_window_size:
+                faceID = False
+                logger.debug(f"{identity} attempting to acquire FERLock...")
+                with FERLock:
+                    logger.debug(f"{identity} acquired FERLock.")
 
-    except Exception as e:
-        traceback.print_exc()
-        print(e)
-        signal.raise_signal(signal.SIGTERM)
-        sys.exit(signal.SIGTERM)
+                    # We're basically doing the dodgiest peek() in existence here.
+                    # Acquire lock, take out entry. If it's not for our identity, put it back.
+                    # We originally had a thread that took the emotion out, and mapped it to a dictionary with this kind of structure:
 
-def calculateAverage(identityMap, identity, FERAvgQueue):
-    try:
-        while True:
-            identityAvg = {
-                "happy": float(),
-                "neutral": float(),
-                "surprise": float(),
-                "sad": float(),
-                "angry": float(),
-                "fear": float(),
-                "disgust": float()
-            }
+                    # "identity": {
+                    #   "lock": multiprocessing.Lock(),
+                    #       "values": {
+                    #           <DeepFace FER key values pairs here>
+                    #       }
+                    # }
 
-            buffersReady = False
+                    # This didn't work because of Python generally disallowing pass by reference.
+                    # Thankfully, multiprocessing.queue works across threads, so we use that and a lock.
+                    # This will result in a lot of infighting amongst each identity-specific thread, and likely bottlenecks across many identities as of current.
+                    # Will likely not be fixed within the scope of the FYP since it doesn't map to a requirement.
 
-            while not buffersReady:
-                buffersReady = True
-                for emotion in identityMap[identity]['values'].keys():
-                    if not identityMap[identity]['values'][emotion].full():
-                        #print(f"[calculateAverager] {emotion}: {identityMap[identity]['values'][emotion].qsize()}/{identityMap[identity]['values'][emotion].maxsize}")
-                        #print(f"[calculateAverage] emotion buffers not full for identity {identity}. Looping.")
-                        time.sleep(1)
-                        buffersReady = False
-                        break
+                    try:
+                        logger.debug("trying to get faceID, emotionRatings from facialEmotionQueue...")
+                        faceID, emotionRatings = facialEmotionQueue.get_nowait()
+                        logger.critical("got faceID, emotionRatings from facialEmotionQueue.")
 
-                if buffersReady:
-                    print("[calculateAverage] Waiting to acquire identityMap lock...")
-                    with identityMap[identity]['lock']:
-                        print("[calculateAverage] Acquired identityMap lock.")
-                        for emotion in identityMap[identity]['values'].keys():
-                            slidingWindow = []
-                            while not identityMap[identity]['values'][emotion].empty():
-                                slidingWindow.append(identityMap[identity]['values'][emotion].get())
-                            identityAvg[emotion] = sum(slidingWindow)/len(slidingWindow)
-                    print("[calculateAverage] Released identityMap lock.")
-                    
-                    FERAvgQueue.put((identity,identityAvg))
-                    #print("[calculateAverage] put tuple into FERAvgQueue.")
-    except Exception as e:
-        traceback.print_exc()
-        print(e)
-        signal.raise_signal(signal.SIGTERM)
-        sys.exit(signal.SIGTERM)
+                        if faceID != identity: 
+                            logger.critical(f"pulled value that doesn't belong to {identity} from facialEmotionQueue. Putting back.")
+                            # We explicitly block for this operation because we want to ensure that we aren't accidentally shuffling the queue order.
+                            # If we were to submit this to the operations pool, then we would exit the lock immediately after and this could no longer be guaranteed.
+                            facialEmotionQueue.put((faceID,emotionRatings))
+                        else:
+                            identityEmotionBuffer.append(emotionRatings)
 
-def calcForbidden(FERAvgQueue, forbidden_emotions):
-    try:
-        while True:
-            FERAvgQueueTuple = FERAvgQueue.get()
-            #print("[calcForbidden] got tuple from FERAvgQueue.")
-            identity = FERAvgQueueTuple[0]
-            FERAvg = FERAvgQueueTuple[1]
+                    except queue.Empty:
+                        logger.debug("facialEmotionQueue is empty. passing.")
 
-            for emotion in FERAvg.keys():
-                if (emotion in forbidden_emotions.keys()) and (FERAvg[emotion] >= forbidden_emotions[emotion]):
-                    print(f"Forbidden emotion ({emotion}) exceeded minimum confidence ({forbidden_emotions[emotion]}) over the last {SLIDING_WINDOW_SIZE} frame(s). Average confidence: {FERAvg[emotion]}")
-                    signal.raise_signal(signal.SIGTERM)
-                    sys.exit(signal.SIGTERM)
+                logger.debug(f"{identity} released FERLock.")
 
-            print(f"[calcForbidden] no forbidden emotions met trigger threshold over the last {SLIDING_WINDOW_SIZE} frame(s).")
-    except Exception as e:
-        traceback.print_exc()
-        print(e)
-        signal.raise_signal(signal.SIGTERM)
-        sys.exit(signal.SIGTERM)
+            # Now we calculate the averages and put them in the average queue.
 
-def observerFunction(known_faces,forbidden_emotions=[],min_confidence=50,trigger_on_unknown=False,trigger_on_no_faces=False,trigger_on_camera_block=True):
-    import numpy
-    print("[observerFunction] Finished initialization of modules.")
-
-    #####################################################
-    # INITIALIZATION FOR face_recognition               #
-    #                                                   #
-    #####################################################
-    # Load a sample picture and learn how to recognize it.
-    
-    #for file in known_faces
-
-    # Create arrays of known face encodings and their names    
-    frameQueue = multiprocessing.Queue(maxsize=MAX_BUFFER_SIZE)
-    faceDetectionQueue = multiprocessing.Queue(maxsize=MAX_BUFFER_SIZE)
-    faceVerifResultsQueue = multiprocessing.Queue(maxsize=MAX_BUFFER_SIZE)
-    facialEmotionQueue = multiprocessing.Queue(maxsize=MAX_BUFFER_SIZE)
-    FERAvgQueue = multiprocessing.Queue(maxsize=MAX_BUFFER_SIZE)
-
-    identityMap = {}
-
-    forbidden_emotions = {
-        "anger": 0.0000001
-    }
-
-    identityMap[None] = {
-        "lock": threading.Lock(),
-        "values": {
-            "happy":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-            "neutral":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-            "surprise":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-            "sad":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-            "angry":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-            "fear":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-            "disgust":queue.Queue(maxsize=SLIDING_WINDOW_SIZE)
-        }
-    }
-
-    for entry in os.scandir(known_faces): # filenames
-        if (entry.is_file) and (entry.name not in ignoreList):
-            identityMap[entry.name] =  {
-                "lock": threading.Lock(),
-                "values": {
-                    "happy":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-                    "neutral":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-                    "surprise":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-                    "sad":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-                    "angry":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-                    "fear":queue.Queue(maxsize=SLIDING_WINDOW_SIZE),
-                    "disgust":queue.Queue(maxsize=SLIDING_WINDOW_SIZE)
+            averageDict = {
+                "identity": identity,
+                "emotion": {
+                    "anger": sum([x.get('angry') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
+                    "disgust": sum([x.get('disgust') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
+                    "fear": sum([x.get('fear') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
+                    "happy": sum([x.get('happy') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
+                    "sad": sum([x.get('sad') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
+                    "surprise": sum([x.get('surprise') for x in identityEmotionBuffer])/len(identityEmotionBuffer),
+                    "neutral": sum([x.get('neutral') for x in identityEmotionBuffer])/len(identityEmotionBuffer)
                 }
             }
-            threading.Thread(target=calculateAverage, args=(identityMap, entry.name, FERAvgQueue), daemon=True).start()
+            
+            if args.noblock:
+                try:    
+                    logger.critical("trying to put averageDict into FERAvgQueue (--noblock)...")
+                    FERAvgQueue.put_nowait(averageDict)
+                    logger.critical("put averageDict into FERAvgQueue.")
+                except queue.Full:
+                    logger.critical("FERAvgQueue is full: --noblock flag set. Moving on.")
+            else:
+                logger.critical("waiting to put averageDict into FERAvgQueue...")
+                FERAvgQueue.put(averageDict)
+                logger.critical("put averageDict into FERAvgQueue.")
 
-    # Using multiprocessing.Process for true parallelism seems to randomly provide [WinError 6] The handle is invalid.
-    # The `multiprocessing` module uses `subprocess` under the hood to bypass Python's Global Interpreter Lock for true multiprocessing capability (effectively by spawning new python processses).
-    # https://stackoverflow.com/questions/65805816/getting-oserror-winerror-6-the-handle-is-invalid https://stackoverflow.com/questions/40108816/python-running-as-windows-service-oserror-winerror-6-the-handle-is-invalid
-    # These seeem to indicate that the problem is with how the modules handle multiprocess initialisation; the exact cause is unknown but appears to be low-level enough to not be feasibly patchable in the context of the FYP.
-    # So unfortunately, they must compete for processing time with the 'heartbeat' thread of ObsProcess.
-    # This effectively enforces interleaving on Windows platforms.
+    except Exception as e:
+        logger.debug(traceback.print_exc())
+        return
 
-    frameProcess = threading.Thread(target=getFrameFromWebcam, args=(frameQueue,), daemon=True)
-    faceEnumProcess = threading.Thread(target=enumFacesInFrame, args=(frameQueue, faceDetectionQueue), daemon=True)
-    faceVerifProcess = threading.Thread(target=extractFaceAndVerify, args=(faceDetectionQueue, identityMap, faceVerifResultsQueue), daemon=True)
-    FERProcess = threading.Thread(target=determineFacialEmotion, args=(faceVerifResultsQueue, facialEmotionQueue), daemon=True)
-    identityMapProcess = threading.Thread(target=putEmotionIntoIdentityMap, args=(facialEmotionQueue, identityMap), daemon=True)
-    #calcAvg has already happened before.
-    calcForbiddenProcess = threading.Thread(target=calcForbidden, args=(FERAvgQueue,forbidden_emotions), daemon=True)
+def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
+    logger = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
 
-
-    frameProcess.start()
-    faceEnumProcess.start()
-    faceVerifProcess.start()
-    FERProcess.start()
-    identityMapProcess.start()
-    #See above for calcAvg
-    calcForbiddenProcess.start()
-
-    while True: time.sleep(1)
-
-    #####################################################
-
-    # TODO: convert all OpenCV calls to dlib in order to fix the cropping issue (see below).
-    #video_capture = cv2.VideoCapture(0)
-    # "Faces by default are detected using OpenCV's Haar Cascade classifier. To use the more accurate MTCNN network, add the parameter:"
+    handler.setFormatter(logfmt)
+    logger.addHandler(handler)
     
-    #while True:
+    logger.info("Thread started.")
 
-    #    ret, frame = video_capture.read()
-    #    if (ret == False) and trigger_on_camera_block: 
-    #        signal.raise_signal(signal.SIGTERM)
-    #        sys.exit(signal.SIGTERM)
+    try:
+        if obsTriggered.is_set(): 
+            logger.critical("other thread(s) triggered. Cleaning up.")
+            raise dms.observerTriggerException
 
-    #    facesDetected = False
+        # We don't need an operations pool here because it's the end of the line.
 
-        # Extract all faces from the openCV frame. Provide the results only.
-    #    try:
-    #        face_locations = DeepFace.extract_faces(img_path=frame, detector_backend=DETECTOR_BACKEND)
-    #        facesDetected = True
-    #        print("Detected faces in frame!")
-    #        print(face_locations)
-    #    except ValueError:
-    #        print("No faces detected in frame.")
-    #        if trigger_on_no_faces: 
-    #            signal.raise_signal(signal.SIGTERM)
-    #            sys.exit(signal.SIGTERM)
-    #        pass
+        while True:
+            avgEmotionDict = FERAvgQueue.get()
+            
+            logger.info(f"checking average emotional state of {avgEmotionDict.get('identity')}...")
+
+            for emotion,value in avgEmotionDict.get('emotion').items():
+                if (emotion in forbidden_emotions) and (value >= forbidden_emotions.get(emotion)):
+                    logger.critical(f"TRIGGER: Identity {avgEmotionDict.get('identity')} held sufficiently strong (average confidence: {value}) forbidden emotion ({emotion}) over the last {args.sliding_window_size} frame(s) they were in. This exceeded the maximum allowable confidence of {forbidden_emotions.get(emotion)}.")
+                    raise dms.obsTriggerException
+                elif (emotion in forbidden_emotions):
+                    logger.info(f"{avgEmotionDict.get('identity')}: {emotion} within acceptable bounds (avg. {value}, max {forbidden_emotions.get(emotion)})")
+                else:
+                    logger.debug(f"{avgEmotionDict.get('identity')}: {emotion} not forbidden. Skipping.")
+            
+            logger.info(f"no forbidden emotions crossed threshold for {avgEmotionDict.get('identity')} in this averaged period.")
+
+    except Exception as e:
+        logger.debug(traceback.print_exc())
+        return
+
+def observerFunction():
+    logger = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
+
+    handler.setFormatter(logfmt)
+    logger.addHandler(handler)
+
+    logger.info("Started function.")
+    
+    try:
+        asyncList = []
+
+        detectorLock = multiprocessing.Manager().Lock()
+        FERLock = multiprocessing.Manager().Lock()
+
+        obsTriggered = multiprocessing.Manager().Event()
+
+        if (args.reject_noframe or args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
+            if (args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
+                frameQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
+            else: frameQueue = None
+            asyncList.append(multiprocessing.Process(target=getFrameFromWebcam, args=(obsTriggered, frameQueue)))
+            logger.debug("added getFrameFromWebcam(obsTriggered, frameQueue) to asyncList.")
+
+
+        if (args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
+            if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
+                faceDetectionQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
+            else: faceDetectionQueue = None
+            asyncList.append(multiprocessing.Process(target=enumFacesInFrame, args=(obsTriggered, detectorLock, frameQueue, faceDetectionQueue)))
+            logger.debug("added enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue) to asyncList.")
         
-    #    if facesDetected:
-    #        for face_result in face_locations:
-    #            
-    #            # If our attempt to match the face to a known database fails and we've set to trigger:
-    #            for identity in identityMap.keys():
-    #                faceFound = DeepFace.verify(
-    #                    img1_path=frame[
-    #                        face_result['facial_area']['y']:face_result['facial_area']['y']+face_result['facial_area']['h'],
-    #                        face_result['facial_area']['x']:face_result['facial_area']['x']+face_result['facial_area']['w']
-    #                    ], 
-    #                    img2_path=f"{known_faces}/{identity}",
-    #                    silent=True,
-    #                    enforce_detection=False,
-    #                    detector_backend=DETECTOR_BACKEND
-    #                )['verified']
+        if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
+            if args.reject_emotions: faceVerifResultsQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
+            else: faceVerifResultsQueue = None
+            asyncList.append(multiprocessing.Process(target=extractFaceAndVerify, args=(obsTriggered, detectorLock, faceDetectionQueue, faceVerifResultsQueue)))
+            logger.debug("added extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVerifResultsQueue) to asyncList.")
+        
+        if args.reject_emotions:
+            facialEmotionQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
+            FERAvgQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
+            logger.debug("created facialEmotionQueue, FERAvgQueue.")
 
-    #                if faceFound: 
-                    #faces_recognized = DeepFace.find(img_path=face_result['face'], db_path=known_faces, silent=True)
-                        #cv2.imwrite(
-                        #    f"detected_frames/authorized/{identity}",
-                        #    frame[
-                        #        face_result['facial_area']['y']:face_result['facial_area']['y']+face_result['facial_area']['h'],
-                        #        face_result['facial_area']['x']:face_result['facial_area']['x']+face_result['facial_area']['w']
-                        #    ]
-                        #)
-                    # Pseudocode description for me to try and wrap my head around the spaghetti here:
-                        # 1. Get all of the faces you can recognize in the frame given.
-                        # 2. For each face you recognize:
-                            # 2.a Analyze what emotion it has.
-                            # 2.b Check the 'emotion buffer':
-                                # - If it's full, pull the last emotion you had off the queue.
-                            # 2.c Put the new dominant emotion and its score onto the queue.
-                            # 2.d Is the 'emotion buffer' still full after this?
-                                # - If so, time to parse:
-                                    # 3.d.1 Map each forbidden emotion in our runtime list into a dictionary, where the value of each key (emotion) is a list.
-                                    # 3.d.2 While the queue still has emotions inside of it:
-                                        # 3.d.2.a Get an entry off the queue.
-                                            # 3.d.2.a.1 Is the emotion forbidden?
-                                                # add it to the forbidden_emotion map's list of values.
-                                    # 3.d.3 For each emotion in the forbidden emotion map:
-                                        # 3.d.3.a Change the value of the list into the sum of the emotions inside.
-                                        # 3.d.3.b If the sum of any one emotion is greater than the minimum score, trigger.
+            asyncList.append(multiprocessing.Process(target=determineFacialEmotion, args=(obsTriggered, detectorLock, FERLock, faceVerifResultsQueue, facialEmotionQueue)))
+            logger.debug("added determineFacialEmotion(obsTriggered, detectorLock, FERLock, faceVerifResultsQueue, facialEmotionQueue) to asyncList.")
 
-                        #for person in faces_recognized:
-    #                    analysis_results = DeepFace.analyze(
-    #                        img_path=frame[
-    #                            face_result['facial_area']['y']:face_result['facial_area']['y']+face_result['facial_area']['h'],
-    #                            face_result['facial_area']['x']:face_result['facial_area']['x']+face_result['facial_area']['w']
-    #                        ],
-    #                        actions=["emotion"],
-    #                        silent=True,
-    #                       enforce_detection=False,
-    #                        detector_backend=DETECTOR_BACKEND
-    #                    )
+            for identity in identitySet:
+                asyncList.append(multiprocessing.Process(target=calculateAverage, args=(obsTriggered, FERLock, identity, facialEmotionQueue, FERAvgQueue)))
+                logger.debug(f"added calculateAverage(obsTriggered, FERLock, '{identity}', facialEmotionQueue, FERAvgQueue) to asyncList.")
+        
+            asyncList.append(multiprocessing.Process(target=calcForbidden, args=(obsTriggered, FERAvgQueue, forbidden_emotions)))
+            logger.debug("added calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions) to asyncList.")
 
-    #                    if len(analysis_results) != 1: raise Exception("More than one face was detected in the cropped image...")
-                    
-    #                    emotion_results = analysis_results[0] # We're cropping straight to the detected face, so we should only ever have one entry.
-
-    #                    print(f"Identity: {identity}\nDominant emotion: {emotion_results['dominant_emotion']}\nScore: {emotion_results['emotion'][emotion_results['dominant_emotion']]}")
-                            
-    #                    if identityMap[identity].full(): 
-    #                        identityMap[identity].get_nowait() # Cycle the last one out if full.
-
-    #                    emotionMap = dict()
-    #                    for emotion in emotion_results['emotion'].keys():
-    #                        if emotion in forbidden_emotions:
-    #                            emotionMap[emotion] = emotion_results['emotion'][emotion]
-                        
-    #                    identityMap[identity].put(emotionMap)
-
-    #                    print(emotionMap)
-    #                    print(identityMap[identity].qsize())
-
-    #                    if identityMap[identity].full(): # If we've parsed 5 frames
-    #                        forbidden_emotions_map = {}
-    #                        for emotion in forbidden_emotions:
-    #                            forbidden_emotions_map[emotion] = []
+        # We still have to run this when not verifying faces to extract the faces for FER.
+        if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
+            logger.debug("added extractFaceAndVerify(faceDetectionQueue,faceVerifResultsQueue) to asyncList.")
 
 
-    #                        while not identityMap[identity].empty():
-    #                            lastEmotion = identityMap[identity].get()
-    #                            for emotion in lastEmotion:
-    #                                forbidden_emotions_map[emotion].append(lastEmotion[emotion])
-                            
-    #                        strongestEmotion = None
-    #                        strongestAvgConfidence = 0
+        
+        logger.debug(f"starting all processes in asyncList ({len(asyncList)}).")
+        for process in asyncList: process.start()
+        logger.debug(f"successfully started all processes.")
 
-    #                        print(forbidden_emotions_map)
-
-    #                        for emotion in forbidden_emotions:
-    #                            forbidden_emotions_map[emotion] = sum(forbidden_emotions_map[emotion])/len(forbidden_emotions_map[emotion])
-    #                            if forbidden_emotions_map[emotion] > strongestAvgConfidence: 
-    #                               strongestAvgConfidence = forbidden_emotions_map[emotion]
-    #                                strongestEmotion = emotion
-
-    #                        print(forbidden_emotions_map)
-
-    #                        if strongestAvgConfidence >= min_confidence:
-    #                            print(f"Forbidden emotion ({strongestEmotion}) exceeded minimum confidence ({min_confidence}) over {MAX_BUFFER_SIZE} frame(s). Average confidence: {strongestAvgConfidence}")
-    #                            signal.raise_signal(signal.SIGTERM)
-    #                            sys.exit(signal.SIGTERM)
-
-    #                else: # This is an unknown person
-    #                    if trigger_on_unknown: 
-    #                        signal.raise_signal(signal.SIGTERM)
-    #                        sys.exit(signal.SIGTERM)
-    #                    pass
-
-                #except ValueError as e:
-                #    print(e)
-                #    print("Person could not be recognized")
-                #    cv2.imwrite("detected_frames/unknown/detected.jpg",
-                #        frame[
-                #            face_result['facial_area']['y']:face_result['facial_area']['y']+face_result['facial_area']['h'],
-                #            face_result['facial_area']['x']:face_result['facial_area']['x']+face_result['facial_area']['w']
-                #        ]
-                #    )
-                #    if trigger_on_unknown: print("Would've died here...") #signal.raise_signal(signal.SIGTERM); sys.exit(signal.SIGTERM)
+        while True:
+            for process in asyncList:
+                if process.exitcode != None: # Process has terminated, we should trigger!
+                    logger.critical("thread exited - terminating pool workers!")
+                    raise dms.observerTriggerException
+                else:
+                    logger.debug("Process appears to be still alive...")
+            logger.debug("all processes appear to still be running...")
+            
+    except Exception as e:
+        logger.debug("exception received!")
+        logger.debug(traceback.print_exc())        
+        logger.critical("closing all processes.")
+        obsTriggered.set()
+        for process in asyncList:
+            logger.debug("waiting for process to exit cleanly...")
+            waitOutcome = process.join(timeout=5) # Arbitrary timeout
+            if waitOutcome is not None:
+                logger.warn("process did not exit cleanly within timeout period. Terminating; some resources may not be freed.")
+                process.close() # Close the process.
+                logger.info("Joining terminated process to confirm closure.")
+                process.join() # Ensure it has actually closed to prevent zombie processes.
+                logger.info("Process appears to have exited with cleanup, but this is not guaranteed.")
+        raise dms.observerTriggerException
 
 if __name__ == "__main__":
-
-    obsProcess(
+    dms.obsProcess(
         args.host,
         args.port,
         func=observerFunction,
-        args=(list(args.known_faces)) # Monkey patch while I figure out why passing things to args isn't working in the internal class.
     )
-    
