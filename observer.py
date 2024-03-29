@@ -342,18 +342,14 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
                     
                     logger.warn("face did not match with any identities provided.")
 
-                    if args.require_faces and not requiredFacePresent:
-                        logger.critical("TRIGGER: --require-faces argument provided, but no required faces in frame.")
-                        raise dms.observerTriggerException
-                    elif args.reject_unknown:
-                        logger.critical("TRIGGER: --reject-unknown flag set.")
-                        raise dms.observerTriggerException
-                    
                     if args.dump_frames: 
                         logger.debug(f"--dump-frames set: writing frame to {frameDumpDir}/{__name__}/Unknown.jpg")
                         if not os.path.exists(f"{frameDumpDir}/{__name__}"): os.makedirs(f"{frameDumpDir}/{__name__}")
                         imwrite(f"{frameDumpDir}/{__name__}/Unknown.jpg", croppedFrame)
 
+                    elif args.reject_unknown:
+                        logger.critical("TRIGGER: --reject-unknown flag set.")
+                        raise dms.observerTriggerException
         
                 if args.reject_emotions and faceVerifResultsQueue:
                     if args.noblock:
@@ -370,6 +366,10 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
                 else:
                     logger.debug("FER disabled. Skipping queue.")
 
+            if args.require_faces and not requiredFacePresent:
+                logger.critical("TRIGGER: --require-faces argument provided, but no required faces in frame.")
+                raise dms.observerTriggerException
+            
     except Exception as e:
         logger.debug(traceback.print_exc())
         return
