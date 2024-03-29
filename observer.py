@@ -1,8 +1,6 @@
 import dms
 import signal, traceback, time, argparse, sys, os, multiprocessing, glob, logging, datetime, queue
 
-logfmt = logging.Formatter(fmt='[{filename}][{funcName}][{asctime}][{levelname}]: {message}', datefmt="%Y-%m-%d %H:%M:%S", style='{', validate=True)
-
 VALID_EMOTIONS=(
     "happy",
     "neutral",
@@ -114,9 +112,6 @@ if args.reject_emotions:
     forbidden_emotions = {}
     for emotion,score in args.reject_emotions:
         forbidden_emotions[emotion] = score
-elif args.fer_noblock:
-    print("--fer-noblock flag set without accompanying --reject-emotions. Redundant since FER would be disabled anyway, so unsetting this flag.")
-    args.fer_noblock = False
 
 if (args.max_buffer_size != 0): # This is the default value for multiprocessing.Manager().Queue, and signifies an 'uncapped' queue size.
     assert (args.sliding_window_size <= args.max_buffer_size), "Sliding window size larger than queue buffer!" 
@@ -139,16 +134,11 @@ if args.reject_faces:
             identitySet.add(rejectFace)
 
 if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level)
-else:
-    if args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level)
-    else: logging.basicConfig(stream=sys.stderr, level=args.log_level)
+elif args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
+else: logging.basicConfig(stream=sys.stderr, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 
 def getFrameFromWebcam(obsTriggered, frameQueue):
-    logger = logging.getLogger(__name__)
-    handler = logging.StreamHandler()
-
-    handler.setFormatter(logfmt)
-    logger.addHandler(handler)
+    logger = logging.getLogger(__file__).getChild(__name__)
     
     logger.info("thread started.")
 
@@ -192,11 +182,7 @@ def getFrameFromWebcam(obsTriggered, frameQueue):
         return
     
 def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=None):
-    logger = logging.getLogger(__name__)
-    handler = logging.StreamHandler()
-
-    handler.setFormatter(logfmt)
-    logger.addHandler(handler)
+    logger = logging.getLogger(__file__).getChild(__name__)
 
     logger.info("thread started.")
     
@@ -259,11 +245,7 @@ def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=
         return
     
 def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVerifResultsQueue=None):
-    logger = logging.getLogger(__name__)
-    handler = logging.StreamHandler()
-
-    handler.setFormatter(logfmt)
-    logger.addHandler(handler)
+    logger = logging.getLogger(__file__).getChild(__name__)
 
     logger.info("thread started.")
     
@@ -371,11 +353,7 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
         return
                     
 def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, idEmotionPairDict):
-    logger = logging.getLogger(__name__)
-    handler = logging.StreamHandler()
-
-    handler.setFormatter(logfmt)
-    logger.addHandler(handler)
+    logger = logging.getLogger(__file__).getChild(__name__)
 
     logger.info("thread started.")
     
@@ -432,11 +410,7 @@ def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, id
         return
 
 def calculateAverage(obsTriggered, idEmotionLock, identity, idEmotionBuffer, FERAvgQueue):
-    logger = logging.getLogger(__name__)
-    handler = logging.StreamHandler()
-
-    handler.setFormatter(logfmt)
-    logger.addHandler(handler)
+    logger = logging.getLogger(__file__).getChild(__name__)
 
     logger.info(f"thread started for {identity}.")
 
@@ -496,11 +470,7 @@ def calculateAverage(obsTriggered, idEmotionLock, identity, idEmotionBuffer, FER
         return
 
 def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
-    logger = logging.getLogger(__name__)
-    handler = logging.StreamHandler()
-
-    handler.setFormatter(logfmt)
-    logger.addHandler(handler)
+    logger = logging.getLogger(__file__).getChild(__name__)
     
     logger.info("Thread started.")
 
@@ -532,11 +502,7 @@ def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
         return
 
 def observerFunction():
-    logger = logging.getLogger(__name__)
-    handler = logging.StreamHandler()
-
-    handler.setFormatter(logfmt)
-    logger.addHandler(handler)
+    logger = logging.getLogger(__file__).getChild(__name__)
 
     logger.info("Started function.")
     
