@@ -24,7 +24,7 @@ def _emotions(e):
         min_score = float(min_score)
         return emotion, min_score
     except:
-        raise argparse.ArgumentTypeError(f"[{os.path.os.path.basename(__file__)}][{__name__}][{datetime.datetime.now()}] Forbidden emotions must be in format emotion:min_score.\nmin_score must be a valid float between 0-100.\nemotion must be a valid emotion out of the following: happy, neutral, surprise, sad, angry, fear, disgust.")
+        raise argparse.ArgumentTypeError(f"Forbidden emotions must be in format emotion:min_score.\nmin_score must be a valid float between 0-100.\nemotion must be a valid emotion out of the following: happy, neutral, surprise, sad, angry, fear, disgust.")
 
 def _lim_faces(f):
     if int(f) < 0:
@@ -34,6 +34,10 @@ def _lim_faces(f):
 def _face_path(p):
     if os.path.isfile(p) or os.path.isdir(p): return [p]
     else: raise argparse.ArgumentTypeError(f"Identity flags (--known-faces, --require-faces and --reject-faces) must be valid filenames or paths. {p} is an invalid path.")
+
+def _frame_dump_path(p):
+    if os.path.isdir(p): return p
+    else: raise argparse.ArgumentTypeError(f"a directory must be provided to the --dump-frames argument as a base. {p} is not a directory.")
 
 def _log_level(l):
     match l:
@@ -74,17 +78,14 @@ parser.add_argument('--noblock', action="store_true", default=False)
 parser.add_argument('--detector-backend', action="store", default='opencv', choices=["opencv","ssd","dlib","mtcnn","retinaface","mediapipe","yolov8","yunet","fastmtcnn"])
 parser.add_argument('--model-name', action="store", default='GhostFaceNet', choices=["VGG-Face","Facenet","Facenet512","OpenFace","DeepFace","DeepID","ArcFace","Dlib","SFace","GhostFaceNet"])
 
-parser.add_argument('--sliding-window-size', action="store", default=10, type=int, required=True)
+parser.add_argument('--sliding-window-size', action="store", default=10, type=int)
 parser.add_argument('--max-buffer-size', action="store", default=0, type=int)
 
-parser.add_argument('--dump-frames', action="store_true")
+parser.add_argument('--dump-frames', action="store", type=_frame_dump_path)
 parser.add_argument('--log-level', choices=[logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL], default="INFO", type=_log_level)
 parser.add_argument('--log-file', action="store", default=None)
 
 args = parser.parse_args()
-
-if args.dump_frames:
-    frameDumpDir = './debug'
 
 if args.max_faces: assert (args.min_faces < args.max_faces), f"--min-faces ({args.min_faces}) is greater than (or the same as) --max-faces ({args.max_faces})"
 
@@ -116,37 +117,14 @@ if args.reject_emotions:
 if (args.max_buffer_size != 0): # This is the default value for multiprocessing.Manager().Queue, and signifies an 'uncapped' queue size.
     assert (args.sliding_window_size <= args.max_buffer_size), "Sliding window size larger than queue buffer!" 
 
-identitySet = {None}
-
-if args.known_faces:
-    for knownFace in args.known_faces:
-        if os.path.exists(knownFace) and (knownFace not in IGNORE_FILES):
-            identitySet.add(knownFace)
-
-if args.require_faces:
-    for requiredFace in args.require_faces:
-        if os.path.exists(requiredFace) and (requiredFace not in IGNORE_FILES):
-            identitySet.add(requiredFace)
-
-if args.reject_faces:
-    for rejectFace in args.reject_faces:
-        if os.path.exists(rejectFace) and (rejectFace not in IGNORE_FILES):
-            identitySet.add(rejectFace)
-
-if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level)
+if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 elif args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 else: logging.basicConfig(stream=sys.stderr, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 
 def getFrameFromWebcam(obsTriggered, frameQueue):
-    logger = logging.getLogger(__file__).getChild(__name__)
-    
-    logger.info("thread started.")
-
-    logger.info("loading imports...")
-    from cv2 import VideoCapture
-    logger.info("imports loaded.")
-    
     try:
+        logger = logging.getLogger(__file__).getChild(__name__)
+    
         video_capture = VideoCapture(0)
 
         while True:
@@ -158,7 +136,7 @@ def getFrameFromWebcam(obsTriggered, frameQueue):
             ret, frame = video_capture.read()
             logger.debug("got frame from webcam.")
             if not ret:
-                logger.warn("Could not get frame from webcam.")
+                logger.warning("Could not get frame from webcam.")
                 if args.reject_noframe:
                     logger.critical("TRIGGER: --reject-noframe flag set.")
                     raise dms.observerTriggerException
@@ -171,26 +149,27 @@ def getFrameFromWebcam(obsTriggered, frameQueue):
                         frameQueue.put_nowait(frame)
                         logger.debug("put frame into frameQueue.")
                     except queue.Full:
-                        logger.warn("frameQueue is full: --noblock flag set. Moving on.")
+                        logger.debug("frameQueue is full: --noblock flag set. Moving on.")
                 else:
                     logger.debug("waiting to put frame into frameQueue...")
                     frameQueue.put(frame)
                     logger.debug("put frame into framequeue.")
                 
     except Exception as e:
+        obsTriggered.set()
         logger.debug(traceback.print_exc())
         return
     
 def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=None):
-    logger = logging.getLogger(__file__).getChild(__name__)
-
-    logger.info("thread started.")
-    
-    logger.info("loading imports...")
-    from deepface.DeepFace import extract_faces
-    logger.info("imports loaded.")
-    
     try:
+        logger = logging.getLogger(__file__).getChild(__name__)
+
+        logger.info("thread started.")
+    
+        logger.info("loading imports...")
+        from deepface.DeepFace import extract_faces
+        logger.info("imports loaded.")
+    
         while True:
             if obsTriggered.is_set(): 
                 logger.critical("other thread(s) triggered. Cleaning up.")
@@ -216,7 +195,7 @@ def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=
                     raise dms.observerTriggerException
                 
             except ValueError:
-                logger.warn("No faces detected in this frame.")
+                logger.warning("No faces detected in this frame.")
                 if args.min_faces > 0:
                     logger.critical(f"TRIGGER: --min-faces ({args.min_faces}) mandates at least one face be present in every frame.")
                     raise dms.observerTriggerException
@@ -224,7 +203,7 @@ def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=
                 pass
             
             if face_locations is None:
-                logger.warn("Skipping queue since no faces were detected.")
+                logger.warning("Skipping queue since no faces were detected.")
             elif (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions) and faceDetectionQueue:
                 if args.noblock:
                     try:
@@ -232,7 +211,7 @@ def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=
                         faceDetectionQueue.put_nowait((frame,face_locations))
                         logger.debug("put frame, face_locations into faceDetectionQueue.")
                     except queue.Full:
-                        logger.warn("faceDetectionQueue is full: --noblock flag set. Moving on.")
+                        logger.debug("faceDetectionQueue is full: --noblock flag set. Moving on.")
                 else:
                     logger.debug("waiting to put frame, face_locations into faceDetectionQueue...")
                     faceDetectionQueue.put((frame,face_locations))
@@ -241,23 +220,26 @@ def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=
                 pass
 
     except Exception as e:
+        obsTriggered.set()
         logger.debug(traceback.print_exc())
         return
     
-def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVerifResultsQueue=None):
-    logger = logging.getLogger(__file__).getChild(__name__)
-
-    logger.info("thread started.")
-    
-    logger.info("loading imports...")
-    from deepface.DeepFace import verify, find
-    if args.dump_frames:
-        logger.warn("--dump-frames flag set. This will write past faces to disk, which may not be desired behaviour.")
-        logger.info("Loading --dump-frames imports...")
-        from cv2 import imwrite 
-    logger.info("[extractFacesAndVerify] imports loaded.")
-    
+def extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue=None):
     try:
+        logger = logging.getLogger(__file__).getChild(__name__)
+
+        logger.info("thread started.")
+    
+        logger.info("loading imports...")
+        from deepface.DeepFace import verify, find
+    
+        if args.dump_frames:
+            logger.warning("--dump-frames flag set. This will write past faces to disk, which may not be desired behaviour.")
+            logger.info("--dump-frames: loading imports...")
+            from cv2 import imwrite 
+    
+        logger.info("imports loaded.")
+
         while True:
             if obsTriggered.is_set(): 
                 logger.critical("other thread(s) triggered. Cleaning up.")
@@ -267,8 +249,9 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
             frame, face_locations = faceDetectionQueue.get()
             logger.debug("got frame, face_locations from faceDetectionQueue.")
         
-            if args.require_faces: requiredFacePresent = False
+            if args.require_faces: requiredFacesPresent = []
             for face in face_locations:
+                logger.info("identifying the next face.")
                 logger.debug("awaiting detectorLock to crop frame to face...")
                 with detectorLock:
                     logger.debug("detectorLock acquired.")
@@ -279,11 +262,11 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
                 logger.debug("releasing detectorLock...")
                 faceID = None
                 faceVerified = False
-                for identity in identitySet:
+                for identity in identities:
                     logger.debug(f"Checking to see if current frame matches with identity: {identity}")
                     if identity == None:
-                        logger.debug("Current identity to check is None (unknown). This is impossible to verify; pass.")
-                        pass
+                        logger.debug("Current identity to check is None (unknown). This is impossible to verify; continuing to the next.")
+                        continue
                     else:
                         logger.debug("awaiting detectorLock to verify cropped frame...")
                         with detectorLock:
@@ -297,93 +280,146 @@ def extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVer
                                     enforce_detection=False,
                                     model_name=args.model_name
                                 )['verified']
+
                             elif os.path.isdir(identity):
                                 # Return true if any matches are made with the images in the folder, else false.
-                                faceVerified = True if (
-                                    len(find(
-                                        img_path=croppedFrame,
-                                            db_path=identity,
-                                            silent=True,
-                                            enforce_detection=False,
-                                            detector_backend=args.detector_backend,
-                                            model_name=args.model_name
-                                        )) > 0
-                                ) else False
+                                results = find(
+                                    img_path=croppedFrame,
+                                    db_path=identity,
+                                    silent=True,
+                                    enforce_detection=False,
+                                    detector_backend=args.detector_backend,
+                                    model_name=args.model_name
+                                )
                                 
+                                if len(results) != 1:
+                                    # Sometimes with detector backends, a face can be recognized but its boundaries poorly drawn,
+                                    # such that the cropped frame has enough room to contain multiple candidates for recognition/detection
+                                    # (false positive or no).
+                                    # It'd be nice to have a clean solution here, and perhaps it doesn't happen on other detectors;
+                                    # But opencv was used for dev and test due to performance limitations.
+                                    # This might also cause unexpected results further down the line, so it's best to discard the frame entirely.
+                                    # Unsure if the previous thread (enumFacesInFrame) solves this problem, but it is feasible that an 'overlap' could occur
+                                    # (wherein a given face appears in both crops where it is 'identified' and crops where it is not, within the same frame).
+                                    # This consideration is complex and does not currently appear to affect functionality of the FYP, so it will be discussed as future work.
+                                    logger.critical("More than one face was detected in the cropped image. This is possible, but should never happen.")
+                                    raise Exception
+
+                                # In this instance, this would manifest as a list with several pandas dataframes, since they each represent one identity.
+                                else:
+                                    faceVerified = True if not results[0].empty else False 
+                                    # returns pandas dataframe, so slightly different.
+                                    # Some clarification; find() returns a list of pandas datasets,
+                                    # corresponding to /each individual detected/ (regardless of recognizability).
+                                    # This means that if a face remains unknown, it still holds an entry as an empty
+                                    # pandas dataframe.
+                        
                             else: raise Exception(f"{identity} appears to be neither a folder nor file. This should be caught during argument parsing.")
 
                         logger.debug("detectorLock released.")
 
                         if faceVerified:
+                        
                             faceID = identity
-                            logger.debug(f"face matched with identity ({os.path.basename(identity)})")
+                            logger.info(f"face verified as identity ({identity})")
+                        
+                            if args.dump_frames: # Prepare filename
+                                # folders don't have file extensions so we kludge our way into having one.
+                                if os.path.isdir(identity): filename = os.path.basename(identity.replace('\\','/').strip('/'))+'.jpg' 
+                                elif os.path.isfile(identity): filename = os.path.basename(identity)
+
                             if args.known_faces:
                                 if identity in args.known_faces:
-                                    logger.info("identity recognized, but not required or forbidden.")
-                            if args.require_faces:
-                                if identity in args.required_faces and (requiredFacePresent == False):
-                                    requiredFacePresent = True
-                                    logger.info(f"required identity recognized.")
+                                    logger.info("--known-faces: face verified as identity, but it is neither required nor forbidden.")
+                            
                                 if args.dump_frames:
-                                    logger.debug(f"--dump-frames set: writing frame to {frameDumpDir}/{__name__}/required/{os.path.basename(identity)}")
-                                    if not os.path.exists(f"{frameDumpDir}/{__name__}/required"): os.makedirs(f"{frameDumpDir}/{__name__}/required")
-                                    imwrite(f"{frameDumpDir}/{__name__}/required/{os.path.basename(identity)}.jpg", croppedFrame)
-                            if args.reject_faces:
-                                if identity in args.reject_faces:
-                                    if args.dump_frames: 
-                                        logging.debug(f"--dump-frames set: writing frame to {frameDumpDir}/{__name__}/forbidden/{os.path.basename(identity)}")
-                                        if not os.path.exists(f"{frameDumpDir}/{__name__}/forbidden"): os.makedirs(f"{frameDumpDir}/{__name__}/forbidden")
-                                        imwrite(f"{frameDumpDir}/{__name__}/forbidden/{os.path.basename(identity)}", croppedFrame)
-                                    logger.critical("TRIGGER: forbidden identity ({os.path.basename(identity)}) detected in frame.")
-                                    raise dms.observerTriggerException
-                        else: logger.debug(f"Face did not match with identity {identity}")
+                                        logger.debug('--dump-frames: writing frame to ' + os.path.join(args.dump_frames,'extractFaceAndVerify','known',filename))
+                                        if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','known')): 
+                                            os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','known'))
+                                        imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','known',filename), croppedFrame)
+                            
+                                if args.require_faces:
+                                    if identity in args.required_faces and (identity not in requiredFacesPresent):
+                                        requiredFacesPresent.append(identity)
+                                        logger.info('--require-faces: Verified that required identity is present in this frame.')
+                                    else:
+                                        logger.warn('--require-faces: another face has already been verified as this identity in this frame...')
+                                
+                                    if args.dump_frames:
+                                        logger.debug('--dump-frames: writing frame to ' + os.path.join(args.dump_frames,'extractFaceAndVerify','required',filename))
+                                        if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','required')): 
+                                            os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','required'))
+                                        imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','required',filename), croppedFrame)
+                            
+                                if args.reject_faces:
+                                    if identity in args.reject_faces:
+                                    
+                                        if args.dump_frames: 
+                                            logging.debug('--dump-frames: writing frame to' + os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden',filename))
+                                            if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden')): 
+                                                os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden'))
+                                            imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden',filename), croppedFrame)
+                                    
+                                        logger.critical(f"TRIGGER: --reject-faces: face verified as forbidden identity ({identity}).")
+                                        raise dms.observerTriggerException
 
-                if (faceID == None):     
+                                # Finally, we move onto the next face.
+                                break
+                        
+                            else: logger.debug(f"Face did not match with identity {identity}")
+
+                    if (faceID == None):     
                     
-                    logger.warn("face did not match with any identities provided.")
+                        # Redundant?
+                        # 'None' is placed in identities to allow for FER to be performed on unknown identities.
+                        logger.warning("Identity unknown; face did not match with any that were provided.")
 
-                    if args.dump_frames: 
-                        logger.debug(f"--dump-frames set: writing frame to {frameDumpDir}/{__name__}/Unknown.jpg")
-                        if not os.path.exists(f"{frameDumpDir}/{__name__}"): os.makedirs(f"{frameDumpDir}/{__name__}")
-                        imwrite(f"{frameDumpDir}/{__name__}/Unknown.jpg", croppedFrame)
+                        if args.dump_frames: 
+                            logger.debug(f"--dump-frames: writing frame to {os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg')}")
+                            if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify')): os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify'))
+                            imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg'), croppedFrame)
 
-                    elif args.reject_unknown:
-                        logger.critical("TRIGGER: --reject-unknown flag set.")
-                        raise dms.observerTriggerException
+                        elif args.reject_unknown:
+                            logger.critical("TRIGGER: --reject-unknown: face in frame was unrecognizable as a specific identity.")
+                            raise dms.observerTriggerException
         
-                if args.reject_emotions and faceVerifResultsQueue:
-                    if args.noblock:
-                        try:
-                            logger.debug("trying to put faceID, croppedFrame into faceVerifResultsQueue (--noblock)...")
-                            faceDetectionQueue.put_nowait((frame,face_locations))
+                    if args.reject_emotions and faceVerifResultsQueue:
+                        if args.noblock:
+                        
+                            try:
+                                logger.debug("trying to put faceID, croppedFrame into faceVerifResultsQueue (--noblock)...")
+                                faceDetectionQueue.put_nowait((frame,face_locations))
+                                logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
+                            except queue.Full:
+                                logger.debug("faceVerifResultsQueue is full: --noblock flag set. Moving on.")
+                    
+                        else:
+                            logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
+                            faceVerifResultsQueue.put((faceID,croppedFrame))
                             logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
-                        except queue.Full:
-                            logger.warn("faceVerifResultsQueue is full: --noblock flag set. Moving on.")
+                
                     else:
-                        logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
-                        faceVerifResultsQueue.put((faceID,croppedFrame))
-                        logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
-                else:
-                    logger.debug("FER disabled. Skipping queue.")
+                        logger.debug("FER disabled. Skipping queue.")
 
-            if args.require_faces and not requiredFacePresent:
-                logger.critical("TRIGGER: --require-faces argument provided, but no required faces in frame.")
-                raise dms.observerTriggerException
+                if args.require_faces and (set(args.require_faces) != requiredFacesPresent):
+                    logger.critical("TRIGGER: --require-faces: Not all identities provided were present in this frame.")
+                    raise dms.observerTriggerException
             
     except Exception as e:
+        obsTriggered.set()
         logger.debug(traceback.print_exc())
         return
                     
 def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, idEmotionPairDict):
-    logger = logging.getLogger(__file__).getChild(__name__)
-
-    logger.info("thread started.")
-    
-    logger.info("loading imports...")
-    from deepface.DeepFace import analyze
-    logger.info("imports loaded.")
-
     try:
+        logger = logging.getLogger(__file__).getChild(__name__)
+
+        logger.info("thread started.")
+    
+        logger.info("loading imports...")
+        from deepface.DeepFace import analyze
+        logger.info("imports loaded.")
+
         while True:
             if obsTriggered.is_set(): 
                 logger.critical("other thread(s) triggered. Cleaning up.")
@@ -391,7 +427,7 @@ def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, id
 
             logger.debug("trying to get faceID, croppedFrame from faceVerifResultsQueue...")
             faceID, croppedFrame = faceVerifResultsQueue.get()
-            logger.debug("got faceID, croppedFrame from faceVerifResultsQueue.")
+            logger.info("got faceID, croppedFrame from faceVerifResultsQueue.")
     
             logger.debug("attempting to acquire detectorLock...")
             with detectorLock:
@@ -407,6 +443,8 @@ def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, id
 
             if len(analysis_results) != 1: 
                 logger.critical("More than one face was detected in the cropped image. This should never happen.")
+                # Actually, it's possible in some detector backends (openCV was used in dev) that a face can be /detected/,
+                # but its 'coordinates' not accurately drawable. This has never happened in testing, but the possibility is there, so this is here to raise an exception.
                 raise Exception
                         
             emotion_results = analysis_results[0] # We're cropping straight to the detected face, so we should only ever have one entry.
@@ -423,20 +461,21 @@ def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, id
                     idEmotionPairDict[faceID]['queue'].put_nowait(emotionRatings)
                     logger.debug("put faceID, emotionRatings in facialEmotionQueue.")
                 except queue.Full:
-                    logger.warn(f"Queue is full - releasing idEmotionLock for {faceID} to prevent deadlock.")
+                    logger.debug(f"Queue is full - releasing idEmotionLock for {faceID} to prevent deadlock.")
                     break
             logger.debug(f"released idEmotionLock for {faceID}.")
 
     except Exception as e:
+        obsTriggered.set()
         logger.debug(traceback.print_exc())
         return
 
 def calculateAverage(obsTriggered, idEmotionLock, identity, idEmotionBuffer, FERAvgQueue):
-    logger = logging.getLogger(__file__).getChild(__name__)
-
-    logger.info(f"thread started for {identity}.")
-
     try:
+        logger = logging.getLogger(__file__).getChild(__name__)
+
+        logger.info(f"thread started for {identity}.")
+ 
         while True:
             if obsTriggered.is_set(): 
                 logger.critical("other thread(s) triggered. Cleaning up.")
@@ -481,22 +520,24 @@ def calculateAverage(obsTriggered, idEmotionLock, identity, idEmotionBuffer, FER
                     FERAvgQueue.put_nowait(averageDict)
                     logger.debug("put averageDict into FERAvgQueue.")
                 except queue.Full:
-                    logger.warn("FERAvgQueue is full: --noblock flag set. Moving on.")
+                    logger.debug("FERAvgQueue is full: --noblock flag set. Moving on.")
             else:
                 logger.debug("waiting to put averageDict into FERAvgQueue...")
                 FERAvgQueue.put(averageDict)
                 logger.debug("put averageDict into FERAvgQueue.")
 
     except Exception as e:
+        obsTriggered.set()
         logger.debug(traceback.print_exc())
         return
 
 def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
-    logger = logging.getLogger(__file__).getChild(__name__)
-    
-    logger.info("Thread started.")
-
     try:
+    
+        logger = logging.getLogger(__file__).getChild(__name__)
+    
+        logger.info("Thread started.")
+
         if obsTriggered.is_set(): 
             logger.critical("other thread(s) triggered. Cleaning up.")
             raise dms.observerTriggerException
@@ -504,6 +545,7 @@ def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
         # We don't need an operations pool here because it's the end of the line.
 
         while True:
+            logging.debug('getting new emotional average from avgEmotionDict...')
             avgEmotionDict = FERAvgQueue.get()
             
             logger.info(f"checking average emotional state of {avgEmotionDict.get('identity')}...")
@@ -520,15 +562,16 @@ def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
             logger.info(f"no forbidden emotions crossed threshold for {avgEmotionDict.get('identity')} over the last {args.sliding_window_size} frames in which they were identified.")
 
     except Exception as e:
+        obsTriggered.set()
         logger.debug(traceback.print_exc())
         return
 
 def observerFunction():
-    logger = logging.getLogger(__file__).getChild(__name__)
-
-    logger.info("Started function.")
-    
     try:
+        logger = logging.getLogger(__file__).getChild(__name__)
+        
+        logger.info("Started function.")
+    
         asyncList = []
 
         detectorLock = multiprocessing.Manager().Lock()
@@ -536,6 +579,31 @@ def observerFunction():
 
         obsTriggered = multiprocessing.Manager().Event()
 
+        identities = [None]
+
+        if args.known_faces:
+            for knownFace in args.known_faces:
+                if os.path.exists(knownFace) and (knownFace not in IGNORE_FILES):
+                    identities.append(knownFace)
+
+        if args.require_faces:
+            for requiredFace in args.require_faces:
+                if os.path.exists(requiredFace) and (requiredFace not in IGNORE_FILES):
+                    identities.append(requiredFace)
+
+            if args.reject_faces:
+                for rejectFace in args.reject_faces:
+                    if os.path.exists(rejectFace) and (rejectFace not in IGNORE_FILES):
+                        identities.append(rejectFace)
+
+        # Why are we removing duplicates and casting to tuple instead of just using a set?
+        # Sets are unordered, and in practice this meant that identities shuffled about a bit from
+        # observerFunction() to extractFaceAndVerify().
+        # Since we iterate over this container in that function, it seemed a good idea to remove this
+        # non-determinable area of ambiguity, even though it wasn't causing any critical bugs.
+                        
+        identities = tuple(dict.fromkeys(identities))
+        
         if (args.reject_noframe or args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
             if (args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
                 frameQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
@@ -556,15 +624,15 @@ def observerFunction():
                 faceVerifResultsQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             else: 
                 faceVerifResultsQueue = None
-            asyncList.append(multiprocessing.Process(target=extractFaceAndVerify, args=(obsTriggered, detectorLock, faceDetectionQueue, faceVerifResultsQueue)))
-            logger.debug("added extractFaceAndVerify(obsTriggered, detectorLock, faceDetectionQueue, faceVerifResultsQueue) to asyncList.")
+            asyncList.append(multiprocessing.Process(target=extractFaceAndVerify, args=(obsTriggered, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue)))
+            logger.debug("added extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue) to asyncList.")
         
         if args.reject_emotions:
             FERAvgQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             logger.debug("created FERAvgQueue.")
 
             idEmotionPairDict = dict()
-            for identity in identitySet:
+            for identity in identities:
                 idEmotionPairDict.update({
                     identity: {
                         "lock": multiprocessing.Manager().Lock(),
@@ -608,7 +676,7 @@ def observerFunction():
             logger.debug("waiting for process to exit cleanly...")
             waitOutcome = process.join(timeout=5) # Arbitrary timeout
             if waitOutcome is not None:
-                logger.warn("process did not exit cleanly within timeout period. Terminating; some resources may not be freed.")
+                logger.warning("process did not exit cleanly within timeout period. Terminating; some resources may not be freed.")
                 process.close() # Close the process.
                 logger.info("Joining terminated process to confirm closure.")
                 process.join() # Ensure it has actually closed to prevent zombie processes.
@@ -616,8 +684,17 @@ def observerFunction():
         raise dms.observerTriggerException
 
 if __name__ == "__main__":
-    dms.obsProcess(
-        args.host,
-        args.port,
-        func=observerFunction,
-    )
+    try:
+        logger = logging.getLogger(__file__).getChild(__name__)
+
+        logging.debug('initialising obsProcess...')
+        dms.obsProcess(
+            args.host,
+            args.port,
+            func=observerFunction,
+        )
+        logging.debug('obsProcess initialised.')
+
+    except Exception as e:
+        logger.debug(traceback.print_exc())
+        raise dms.observerTriggerException

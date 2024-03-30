@@ -25,12 +25,12 @@ parser.add_argument('--heartbeat-grace-period', action='store', type=float)
 parser.add_argument('--heartbeat-max-retries', action='store', type=int)
 parser.add_argument('--heartbeat-timeout', action='store', type=float)
 parser.add_argument('--handshake-timeout', action='store', type=float)
-parser.add_argument('--log-level', action='store', type=_log_level)
+parser.add_argument('--log-level', choices=[logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL], default="INFO", type=_log_level)
 parser.add_argument('--log-file', action='store')
 
 args = parser.parse_args()
 
-if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level)
+if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 elif args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 else: logging.basicConfig(stream=sys.stderr, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 

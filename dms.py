@@ -43,14 +43,24 @@ class triggerFinishedException(Exception):
 class DMSProcess(ABC):
 
     def __init__(self,hb_grace_period=5.0,hb_timeout=5.0,hb_max_retries=0,interrupt_on=()):
+        baseLogger = self.classLogger.getChild(__name__)
+
+        logging.debug("Binding trigger to SIGTERM")
         signal.signal(signal.SIGTERM, self.trigger) # Process will *always* trigger on SIGTERM.
+        logging.debug("Bound trigger to SIGTERM")
         if set(interrupt_on).issubset(signal.valid_signals()):
+            logging.debug("Interrupts provided are all valid.")
             for signalToTrigger in interrupt_on:
+                logging.debug(f"trying to bind signal {signalToTrigger} to trigger...")
                 signal.signal(signalToTrigger, self.trigger)
+                logging.debug(f"bound {signalToTrigger} to trigger.")
 
         # We use *one* socket for the heartbeat; this is passed to both threads (checking-side and acknowledgement side).
 
+        logging.debug(f"Attempting to set lifelineSkt timeout to {hb_timeout}")
         self.lifelineSkt.settimeout(hb_timeout)
+        logging.debug(f"succesfully set timeout of lifelineSKt to {hb_timeout}")
+
         self.HEARTBEAT_MAXIMUM_RETRIES = hb_max_retries
         self.HEARTBEAT_ATTEMPTS_FAILED = 0
         self.HEARTBEAT_GRACE_PERIOD=hb_grace_period
@@ -60,8 +70,10 @@ class DMSProcess(ABC):
         # This means that we cannot escape the GIL in terms of competition between the lifeline thread and the observer thread; multiprocessing should be used /within/ the latter to optimize resources.
 
         # This thread handles our 'heartbeat' signal, separate from the function code.
+        logging.debug("Starting lifelineThread...")
         self.lifelineThread = threading.Thread(target=self.checkSkt, daemon=True)
         self.lifelineThread.start()
+        logging.debug("Lifeline thread started.")
 
     def checkSkt(self):
         logger = self.classLogger.getChild(__name__)
@@ -70,6 +82,7 @@ class DMSProcess(ABC):
             logger.info(f"Entering heartbeat grace period for {self.HEARTBEAT_GRACE_PERIOD} second(s).")
             time.sleep(self.HEARTBEAT_GRACE_PERIOD)
             try:
+                logging.info("Trying to send heartbeat...")
                 self.lifelineSkt.send(b'1')
                 logger.info("Heartbeat sent.")
                 # 'pingpong' heartbeat: Observer has to send heartbeat and expects one back from payload.
@@ -79,10 +92,10 @@ class DMSProcess(ABC):
                 # TODO: Do any race conditions occur here?
                 self.HEARTBEAT_ATTEMPTS_FAILED = 0
             except:
-                logger.warn("Failed to receive heartbeat.")
+                logger.warning("Failed to receive heartbeat.")
                 if self.HEARTBEAT_ATTEMPTS_FAILED != self.HEARTBEAT_MAXIMUM_RETRIES:
                     self.HEARTBEAT_ATTEMPTS_FAILED += 1
-                    logger.warn(f"Retries left: {self.HEARTBEAT_MAXIMUM_RETRIES-self.HEARTBEAT_ATTEMPTS_FAILED} [{self.HEARTBEAT_ATTEMPTS_FAILED}/{self.HEARTBEAT_MAXIMUM_RETRIES}].")
+                    logger.warning(f"Retries left: {self.HEARTBEAT_MAXIMUM_RETRIES-self.HEARTBEAT_ATTEMPTS_FAILED} [{self.HEARTBEAT_ATTEMPTS_FAILED}/{self.HEARTBEAT_MAXIMUM_RETRIES}].")
                     pass
                 else:
                     logger.critical("Maximum retries exceeded. Closing socket and sending SIGTERM.")
@@ -104,6 +117,7 @@ class obsProcess(DMSProcess):
         
         assert func, logger.error("No observer function provided!")
         try:
+            logging.info(f"Trying to establish connection with {host} on port {port} with a timeout of {hs_timeout} second(s).")
             self.lifelineSkt = socket.create_connection((host,port),timeout=hs_timeout)
         except Exception as e:
             logger.critical(f"Failed to initiate connection with payload on {host}:{port}.")
@@ -118,8 +132,10 @@ class obsProcess(DMSProcess):
         self.obs_args = args
 
         # This handles the actual 'observer/payload' code that exists.
+        logging.debug("Starting observer thread...")
         self.obsThread = threading.Thread(target=self.obs_func, args=self.obs_args)
         self.obsThread.start()
+        logging.debug("Observer thread started")
 
         while True:
             obsRet = self.obsThread.join(timeout=1)
@@ -129,7 +145,7 @@ class obsProcess(DMSProcess):
             else:
                 if self.obsThread.is_alive(): pass
                 else: 
-                    logger.warn("obsThread appeared to exit normally, which shouldn't happen.")
+                    logger.warning("obsThread appeared to exit normally, which shouldn't happen.")
                     raise Exception
 
             lifelineRet = self.lifelineThread.join(timeout=1)
@@ -139,7 +155,7 @@ class obsProcess(DMSProcess):
             else:
                 if self.lifelineThread.is_alive(): pass
                 else: 
-                    logger.warn("lifelineThread appeared to exit normally, which shouldn't happen.")
+                    logger.warning("lifelineThread appeared to exit normally, which shouldn't happen.")
                     raise Exception
 
     def trigger(self, signum, frame):
@@ -199,7 +215,7 @@ class plProcess(DMSProcess):
             else:
                 if self.lifelineThread.is_alive(): pass
                 else: 
-                    logger.warn("lifelineThread appeared to exit normally, which shouldn't happen.")
+                    logger.warning("lifelineThread appeared to exit normally, which shouldn't happen.")
                     raise Exception
 
     def trigger(self, signum, frame):
