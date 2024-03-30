@@ -67,60 +67,60 @@ def main(args):
     if args.env:
         execArgs = [args.env+pythonExec]
     else: execArgs = [pythonExec]
-    logging.info(f"executable to be used to call DMS: {str(execArgs)}")
+    logger.info(f"executable to be used to call DMS: {str(execArgs)}")
     while not lifelineEstablished and args.retries > -1:
-        logging.warning(f"Retries left: {args.retries}")
+        logger.warning(f"Retries left: {args.retries}")
         args.retries -= 1
         if args.payload:
-            logging.info(f"Launching payload subprocess...")
+            logger.info(f"Launching payload subprocess...")
             plP = subprocess.Popen(execArgs+args.payload[0].split(" "), creationflags=creationflags)
-            logging.info("Payload subprocess launched.")
+            logger.info("Payload subprocess launched.")
         else: 
-            logging.info("--payload flag not provided; assuming remote payload.")
+            logger.info("--payload flag not provided; assuming remote payload.")
             plP = False
         if args.observer:
-            logging.info(f"Launching observer subprocess...")
+            logger.info(f"Launching observer subprocess...")
             obsP = subprocess.Popen(execArgs+args.observer[0].split(" "), creationflags=creationflags)
-            logging.info("Observer subprocess launched.")
+            logger.info("Observer subprocess launched.")
         else: 
-            logging.info("--observer flag not provided; assuming remote observer.")
+            logger.info("--observer flag not provided; assuming remote observer.")
             obsP = False
         try:
             if args.timeout == 0:
-                logging.warn(f"No timeout has been provided; will be unable to tell if DMS has launched successfully.")
+                logger.warning(f"No timeout has been provided; will be unable to tell if DMS has launched successfully.")
             if plP: 
-                logging.info("Waiting to see if payload fails handshake...")
+                logger.info("Waiting to see if payload fails handshake...")
                 plP.wait(timeout=args.timeout)
-                logging.error("Payload failed handshake.")
+                logger.error("Payload failed handshake.")
             if obsP: 
-                logging.info("Waiting to see if observer fails handshake...")
+                logger.info("Waiting to see if observer fails handshake...")
                 obsP.wait(timeout=args.timeout)
-                logging.error("Observer appears to have failed handshake.")
+                logger.error("Observer appears to have failed handshake.")
         except subprocess.TimeoutExpired:
             # Handshake must have succeeded
             lifelineEstablished = True
-            logging.info(f"Handshake assumed successful - no process failure for {args.timeout} second(s)")
+            logger.info(f"Handshake assumed successful - no process failure for {args.timeout} second(s)")
         except:
-            logging.debug(traceback.print_exc())
+            logger.debug(traceback.print_exc())
         finally:
             if not lifelineEstablished:
-                logging.error(f"Lifeline handshake failed.")
+                logger.error(f"Lifeline handshake failed.")
                 if plP: plP.kill()
                 if obsP: obsP.kill()
             else:
-                logging.info("Finished lifeline check.")
+                logger.info("Finished lifeline check.")
                 break
     
     if not lifelineEstablished:
-        logging.critical("lifeline was not established within allocated retries. Exiting.")
+        logger.critical("lifeline was not established within allocated retries. Exiting.")
         sys.exit(1)
 
     # At this point our handshake has been established.
     if args.headless:
-        logging.info(f"--headless flag has been passed, so not keeping logs; terminating.")
+        logger.info(f"--headless flag has been passed, so not keeping logs; terminating.")
         sys.exit(0)
     else:
-        logging.info("Checking to see if payload and obsever remains alive...")
+        logger.info("Checking to see if payload and obsever remains alive...")
         if plP: threading.Thread(target=checkLiveness, args=(plP,)).start()
         if obsP: threading.Thread(target=checkLiveness, args=(obsP,)).start()
         
@@ -128,11 +128,11 @@ def main(args):
             try:
                 time.sleep(1)
             except KeyboardInterrupt:
-                logging.critical(f"Explicit keyboard interrupt received. Killing observer and payload.")
+                logger.critical(f"Explicit keyboard interrupt received. Killing observer and payload.")
                 if plP: plP.kill()
                 if obsP: obsP.kill()
                 sys.exit(signal.SIGINT)
-            except Exception as e:
+            except BaseException as e:
                 logger.debug(traceback.print_exc())
                 sys.exit(signal.SIGTERM)
                 

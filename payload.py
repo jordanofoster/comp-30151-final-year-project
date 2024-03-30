@@ -60,10 +60,10 @@ def plFunction(args):
 if __name__ == "__main__":
     logger = logging.getLogger(__file__).getChild(__name__)
     
-    logging.info('starting payload process...')
+    logger.info('starting payload process...')
     dms.plProcess(
         args.host,
         args.port,
         func=plFunction,
         args=(args))
-    logging.info('payload process started.')
+    logger.info('payload process started.')

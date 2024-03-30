@@ -1,5 +1,5 @@
 import dms
-import signal, traceback, time, argparse, sys, os, multiprocessing, glob, logging, datetime, queue
+import signal, traceback, time, argparse, sys, os, multiprocessing, glob, logging, datetime, queue, threading
 
 VALID_EMOTIONS=(
     "happy",
@@ -121,16 +121,18 @@ if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_lev
 elif args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 else: logging.basicConfig(stream=sys.stderr, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 
-def getFrameFromWebcam(obsTriggered, frameQueue):
+def getFrameFromWebcam(triggerEvent, frameQueue):
     try:
         logger = logging.getLogger(__file__).getChild(__name__)
-    
+
+        from cv2 import VideoCapture
+
         video_capture = VideoCapture(0)
 
         while True:
-            if obsTriggered.is_set():
+            if triggerEvent.is_set():
                 logger.critical("other thread(s) triggered. Cleaning up.")
-                raise dms.observerTriggerException
+                raise dms.observerTriggerException()
 
             logger.debug("trying to get frame from webcam...")
             ret, frame = video_capture.read()
@@ -139,7 +141,7 @@ def getFrameFromWebcam(obsTriggered, frameQueue):
                 logger.warning("Could not get frame from webcam.")
                 if args.reject_noframe:
                     logger.critical("TRIGGER: --reject-noframe flag set.")
-                    raise dms.observerTriggerException
+                    raise dms.observerTriggerException()
                 else:
                     pass
             else:
@@ -155,12 +157,12 @@ def getFrameFromWebcam(obsTriggered, frameQueue):
                     frameQueue.put(frame)
                     logger.debug("put frame into framequeue.")
                 
-    except Exception as e:
-        obsTriggered.set()
+    except BaseException as e:
+        triggerEvent.set()
         logger.debug(traceback.print_exc())
-        return
+        raise dms.observerTriggerException()
     
-def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=None):
+def enumFacesInFrame(triggerEvent, detectorLock, frameQueue, faceDetectionQueue=None):
     try:
         logger = logging.getLogger(__file__).getChild(__name__)
 
@@ -171,9 +173,9 @@ def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=
         logger.info("imports loaded.")
     
         while True:
-            if obsTriggered.is_set(): 
+            if triggerEvent.is_set(): 
                 logger.critical("other thread(s) triggered. Cleaning up.")
-                raise dms.observerTriggerException
+                raise dms.observerTriggerException()
 
             logger.debug("trying to get frame from frameQueue...")
             frame = frameQueue.get()
@@ -192,13 +194,13 @@ def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=
 
                 if (len(face_locations) < args.min_faces) or ((args.max_faces != None) and (len(face_locations) > args.max_faces)):
                     logger.critical(f"TRIGGER: Number of faces outside of accepted bounds. Min: {args.min_faces} Max: {args.max_faces} Found: {len(face_locations)}")
-                    raise dms.observerTriggerException
+                    raise dms.observerTriggerException()
                 
             except ValueError:
                 logger.warning("No faces detected in this frame.")
                 if args.min_faces > 0:
                     logger.critical(f"TRIGGER: --min-faces ({args.min_faces}) mandates at least one face be present in every frame.")
-                    raise dms.observerTriggerException
+                    raise dms.observerTriggerException()
             else:
                 pass
             
@@ -219,12 +221,12 @@ def enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue=
             else:
                 pass
 
-    except Exception as e:
-        obsTriggered.set()
+    except BaseException as e:
+        triggerEvent.set()
         logger.debug(traceback.print_exc())
-        return
+        raise dms.observerTriggerException()
     
-def extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue=None):
+def extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue=None):
     try:
         logger = logging.getLogger(__file__).getChild(__name__)
 
@@ -241,9 +243,9 @@ def extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQu
         logger.info("imports loaded.")
 
         while True:
-            if obsTriggered.is_set(): 
+            if triggerEvent.is_set(): 
                 logger.critical("other thread(s) triggered. Cleaning up.")
-                raise dms.observerTriggerException
+                raise dms.observerTriggerException()
 
             logger.debug("trying to get frame, face_locations from faceDetectionQueue...")
             frame, face_locations = faceDetectionQueue.get()
@@ -251,7 +253,6 @@ def extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQu
         
             if args.require_faces: requiredFacesPresent = []
             for face in face_locations:
-                logger.info("identifying the next face.")
                 logger.debug("awaiting detectorLock to crop frame to face...")
                 with detectorLock:
                     logger.debug("detectorLock acquired.")
@@ -266,7 +267,7 @@ def extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQu
                     logger.debug(f"Checking to see if current frame matches with identity: {identity}")
                     if identity == None:
                         logger.debug("Current identity to check is None (unknown). This is impossible to verify; continuing to the next.")
-                        continue
+                        pass
                     else:
                         logger.debug("awaiting detectorLock to verify cropped frame...")
                         with detectorLock:
@@ -355,18 +356,18 @@ def extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQu
                                     if identity in args.reject_faces:
                                     
                                         if args.dump_frames: 
-                                            logging.debug('--dump-frames: writing frame to' + os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden',filename))
+                                            logger.debug('--dump-frames: writing frame to' + os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden',filename))
                                             if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden')): 
                                                 os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden'))
                                             imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden',filename), croppedFrame)
                                     
                                         logger.critical(f"TRIGGER: --reject-faces: face verified as forbidden identity ({identity}).")
-                                        raise dms.observerTriggerException
-
-                                # Finally, we move onto the next face.
-                                break
+                                        raise dms.observerTriggerException()
                         
                             else: logger.debug(f"Face did not match with identity {identity}")
+
+                            # Finally, we move onto the next face.
+                            logger.info("identifying the next face.")
 
                     if (faceID == None):     
                     
@@ -381,8 +382,8 @@ def extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQu
 
                         elif args.reject_unknown:
                             logger.critical("TRIGGER: --reject-unknown: face in frame was unrecognizable as a specific identity.")
-                            raise dms.observerTriggerException
-        
+                            raise dms.observerTriggerException()
+
                     if args.reject_emotions and faceVerifResultsQueue:
                         if args.noblock:
                         
@@ -396,21 +397,21 @@ def extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQu
                         else:
                             logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
                             faceVerifResultsQueue.put((faceID,croppedFrame))
-                            logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
+                            logger.info("put faceID, croppedFrame into faceVerifResultsQueue.")
                 
                     else:
                         logger.debug("FER disabled. Skipping queue.")
 
                 if args.require_faces and (set(args.require_faces) != requiredFacesPresent):
                     logger.critical("TRIGGER: --require-faces: Not all identities provided were present in this frame.")
-                    raise dms.observerTriggerException
+                    raise dms.observerTriggerException()
             
-    except Exception as e:
-        obsTriggered.set()
+    except BaseException as e:
+        triggerEvent.set()
         logger.debug(traceback.print_exc())
-        return
+        raise dms.observerTriggerException()
                     
-def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, idEmotionPairDict):
+def determineFacialEmotion(triggerEvent, detectorLock, faceVerifResultsQueue, idEmotionPairDict):
     try:
         logger = logging.getLogger(__file__).getChild(__name__)
 
@@ -421,9 +422,9 @@ def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, id
         logger.info("imports loaded.")
 
         while True:
-            if obsTriggered.is_set(): 
+            if triggerEvent.is_set(): 
                 logger.critical("other thread(s) triggered. Cleaning up.")
-                raise dms.observerTriggerException
+                raise dms.observerTriggerException()
 
             logger.debug("trying to get faceID, croppedFrame from faceVerifResultsQueue...")
             faceID, croppedFrame = faceVerifResultsQueue.get()
@@ -459,27 +460,27 @@ def determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, id
                 try:
                     logger.debug("trying to put faceID, emotionRatings into facialEmotionQueue...")
                     idEmotionPairDict[faceID]['queue'].put_nowait(emotionRatings)
-                    logger.debug("put faceID, emotionRatings in facialEmotionQueue.")
+                    logger.info("put faceID, emotionRatings in facialEmotionQueue.")
                 except queue.Full:
                     logger.debug(f"Queue is full - releasing idEmotionLock for {faceID} to prevent deadlock.")
                     break
             logger.debug(f"released idEmotionLock for {faceID}.")
 
-    except Exception as e:
-        obsTriggered.set()
+    except BaseException as e:
+        triggerEvent.set()
         logger.debug(traceback.print_exc())
-        return
+        raise dms.observerTriggerException()
 
-def calculateAverage(obsTriggered, idEmotionLock, identity, idEmotionBuffer, FERAvgQueue):
+def calculateAverage(triggerEvent, idEmotionLock, identity, idEmotionBuffer, FERAvgQueue):
     try:
         logger = logging.getLogger(__file__).getChild(__name__)
 
         logger.info(f"thread started for {identity}.")
  
         while True:
-            if obsTriggered.is_set(): 
+            if triggerEvent.is_set(): 
                 logger.critical("other thread(s) triggered. Cleaning up.")
-                raise dms.observerTriggerException
+                raise dms.observerTriggerException()
 
             idEmotionBufferList = []
             while len(idEmotionBufferList) < args.sliding_window_size:
@@ -526,26 +527,26 @@ def calculateAverage(obsTriggered, idEmotionLock, identity, idEmotionBuffer, FER
                 FERAvgQueue.put(averageDict)
                 logger.debug("put averageDict into FERAvgQueue.")
 
-    except Exception as e:
-        obsTriggered.set()
+    except BaseException as e:
+        triggerEvent.set()
         logger.debug(traceback.print_exc())
-        return
+        raise dms.observerTriggerException()
 
-def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
+def calcForbidden(triggerEvent, FERAvgQueue, forbidden_emotions):
     try:
     
         logger = logging.getLogger(__file__).getChild(__name__)
     
         logger.info("Thread started.")
 
-        if obsTriggered.is_set(): 
+        if triggerEvent.is_set(): 
             logger.critical("other thread(s) triggered. Cleaning up.")
-            raise dms.observerTriggerException
+            raise dms.observerTriggerException()
 
         # We don't need an operations pool here because it's the end of the line.
 
         while True:
-            logging.debug('getting new emotional average from avgEmotionDict...')
+            logger.debug('getting new emotional average from avgEmotionDict...')
             avgEmotionDict = FERAvgQueue.get()
             
             logger.info(f"checking average emotional state of {avgEmotionDict.get('identity')}...")
@@ -553,7 +554,7 @@ def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
             for emotion,value in avgEmotionDict.get('emotion').items():
                 if (emotion in forbidden_emotions) and (value >= forbidden_emotions.get(emotion)):
                     logger.critical(f"TRIGGER: Identity {avgEmotionDict.get('identity')} held forbidden emotion ({emotion}) over the last {args.sliding_window_size} frame(s) in which they were identified with average strength of {value}, bypassing the limit ({forbidden_emotions.get(emotion)}) by {value-forbidden_emotions.get(emotion)}.")
-                    raise dms.obsTriggerException
+                    raise dms.observerTriggerException()
                 elif (emotion in forbidden_emotions):
                     logger.info(f"{avgEmotionDict.get('identity')}: monitored emotion ({emotion}) within acceptable bounds (avg. {value}, limit: {forbidden_emotions.get(emotion)})")
                 else:
@@ -561,10 +562,10 @@ def calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions):
             
             logger.info(f"no forbidden emotions crossed threshold for {avgEmotionDict.get('identity')} over the last {args.sliding_window_size} frames in which they were identified.")
 
-    except Exception as e:
-        obsTriggered.set()
+    except BaseException as e:
+        triggerEvent.set()
         logger.debug(traceback.print_exc())
-        return
+        raise dms.observerTriggerException()
 
 def observerFunction():
     try:
@@ -575,9 +576,8 @@ def observerFunction():
         asyncList = []
 
         detectorLock = multiprocessing.Manager().Lock()
-        FERLock = multiprocessing.Manager().Lock()
 
-        obsTriggered = multiprocessing.Manager().Event()
+        triggerEvent = multiprocessing.Manager().Event()
 
         identities = [None]
 
@@ -608,24 +608,24 @@ def observerFunction():
             if (args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
                 frameQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             else: frameQueue = None
-            asyncList.append(multiprocessing.Process(target=getFrameFromWebcam, args=(obsTriggered, frameQueue)))
-            logger.debug("added getFrameFromWebcam(obsTriggered, frameQueue) to asyncList.")
+            asyncList.append(multiprocessing.Process(target=getFrameFromWebcam, args=(triggerEvent, frameQueue)))
+            logger.debug("added getFrameFromWebcam(triggerEvent, frameQueue) to asyncList.")
 
 
         if (args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
             if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
                 faceDetectionQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             else: faceDetectionQueue = None
-            asyncList.append(multiprocessing.Process(target=enumFacesInFrame, args=(obsTriggered, detectorLock, frameQueue, faceDetectionQueue)))
-            logger.debug("added enumFacesInFrame(obsTriggered, detectorLock, frameQueue, faceDetectionQueue) to asyncList.")
+            asyncList.append(threading.Thread(target=enumFacesInFrame, args=(triggerEvent, detectorLock, frameQueue, faceDetectionQueue)))
+            logger.debug("added enumFacesInFrame(triggerEvent, detectorLock, frameQueue, faceDetectionQueue) to asyncList.")
         
         if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
             if args.reject_emotions: 
                 faceVerifResultsQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             else: 
                 faceVerifResultsQueue = None
-            asyncList.append(multiprocessing.Process(target=extractFaceAndVerify, args=(obsTriggered, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue)))
-            logger.debug("added extractFaceAndVerify(obsTriggered, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue) to asyncList.")
+            asyncList.append(threading.Thread(target=extractFaceAndVerify, args=(triggerEvent, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue)))
+            logger.debug("added extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue) to asyncList.")
         
         if args.reject_emotions:
             FERAvgQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
@@ -639,14 +639,14 @@ def observerFunction():
                         "queue": multiprocessing.Manager().Queue(maxsize=args.sliding_window_size)
                     }
                 })
-                asyncList.append(multiprocessing.Process(target=calculateAverage, args=(obsTriggered, idEmotionPairDict[identity]['lock'], identity, idEmotionPairDict[identity]['queue'], FERAvgQueue)))
-                logger.debug(f"added calculateAverage(obsTriggered, idEmotionLock, '{identity}', idEmotionBuffer, FERAvgQueue) to asyncList.")
+                asyncList.append(multiprocessing.Process(target=calculateAverage, args=(triggerEvent, idEmotionPairDict[identity]['lock'], identity, idEmotionPairDict[identity]['queue'], FERAvgQueue)))
+                logger.debug(f"added calculateAverage(triggerEvent, idEmotionLock, '{identity}', idEmotionBuffer, FERAvgQueue) to asyncList.")
             
-            asyncList.append(multiprocessing.Process(target=determineFacialEmotion, args=(obsTriggered, detectorLock, faceVerifResultsQueue, idEmotionPairDict)))
-            logger.debug("added determineFacialEmotion(obsTriggered, detectorLock, faceVerifResultsQueue, idEmotionPairDict) to asyncList.")
+            asyncList.append(threading.Thread(target=determineFacialEmotion, args=(triggerEvent, detectorLock, faceVerifResultsQueue, idEmotionPairDict)))
+            logger.debug("added determineFacialEmotion(triggerEvent, detectorLock, faceVerifResultsQueue, idEmotionPairDict) to asyncList.")
         
-            asyncList.append(multiprocessing.Process(target=calcForbidden, args=(obsTriggered, FERAvgQueue, forbidden_emotions)))
-            logger.debug("added calcForbidden(obsTriggered, FERAvgQueue, forbidden_emotions) to asyncList.")
+            asyncList.append(multiprocessing.Process(target=calcForbidden, args=(triggerEvent, FERAvgQueue, forbidden_emotions)))
+            logger.debug("added calcForbidden(triggerEvent, FERAvgQueue, forbidden_emotions) to asyncList.")
 
         # We still have to run this when not verifying faces to extract the faces for FER.
         if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
@@ -660,41 +660,47 @@ def observerFunction():
 
         while True:
             for process in asyncList:
-                if process.exitcode != None: # Process has terminated, we should trigger!
+                if not process.is_alive(): # Process has terminated, we should trigger!
                     logger.critical("thread exited - terminating pool workers!")
-                    raise dms.observerTriggerException
+                    raise dms.observerTriggerException()
                 else:
                     logger.debug("Process appears to be still alive...")
             logger.debug("all processes appear to still be running...")
             
-    except Exception as e:
+    except BaseException as e:
         logger.debug("exception received!")
         logger.debug(traceback.print_exc())        
         logger.debug("closing all processes.")
-        obsTriggered.set()
+        triggerEvent.set()
         for process in asyncList:
             logger.debug("waiting for process to exit cleanly...")
-            waitOutcome = process.join(timeout=5) # Arbitrary timeout
+            waitOutcome = process.join(timeout=1) # Arbitrary timeout
             if waitOutcome is not None:
-                logger.warning("process did not exit cleanly within timeout period. Terminating; some resources may not be freed.")
-                process.close() # Close the process.
-                logger.info("Joining terminated process to confirm closure.")
-                process.join() # Ensure it has actually closed to prevent zombie processes.
-                logger.info("Process appears to have exited with cleanup, but this is not guaranteed.")
-        raise dms.observerTriggerException
+                logger.warning("process did not exit cleanly within timeout period.")
+                if type(process) == threading.Thread:
+                    logger.debug("Thread process, so cannot terminate manually. Daemonizing as alternative.")
+                    process.daemon = True
+                else:
+                    try:
+                        process.terminate() # Close the process.
+                    except ValueError: logger.info('Process already closed...?')
+                    logger.info("Joining terminated process to confirm closure.")
+                    process.join() # Ensure it has actually closed to prevent zombie processes.
+                    logger.info("Process appears to have exited with cleanup, but this is not guaranteed.")
+        raise dms.observerTriggerException()
 
 if __name__ == "__main__":
     try:
         logger = logging.getLogger(__file__).getChild(__name__)
 
-        logging.debug('initialising obsProcess...')
+        logger.debug('initialising obsProcess...')
         dms.obsProcess(
             args.host,
             args.port,
             func=observerFunction,
         )
-        logging.debug('obsProcess initialised.')
+        logger.debug('obsProcess initialised.')
 
-    except Exception as e:
+    except BaseException as e:
         logger.debug(traceback.print_exc())
-        raise dms.observerTriggerException
+        raise dms.observerTriggerException()

@@ -36,7 +36,7 @@ class payloadOutcomeException(Exception):
     "Raised when a triggered payload executes without exception, but cannot verify the intended outcome at the endpoint level."
     pass
 
-class triggerFinishedException(Exception):
+class triggerFinishedException(SystemExit):
     "Raised when the trigger procedure for a thread concludes, regardless of type or outcome."
     pass
 
@@ -44,22 +44,22 @@ class DMSProcess(ABC):
 
     def __init__(self,hb_grace_period=5.0,hb_timeout=5.0,hb_max_retries=0,interrupt_on=()):
         baseLogger = self.classLogger.getChild(__name__)
-
-        logging.debug("Binding trigger to SIGTERM")
+        
+        baseLogger.debug("Binding trigger to SIGTERM")
         signal.signal(signal.SIGTERM, self.trigger) # Process will *always* trigger on SIGTERM.
-        logging.debug("Bound trigger to SIGTERM")
+        baseLogger.debug("Bound trigger to SIGTERM")
         if set(interrupt_on).issubset(signal.valid_signals()):
-            logging.debug("Interrupts provided are all valid.")
+            baseLogger.debug("Interrupts provided are all valid.")
             for signalToTrigger in interrupt_on:
-                logging.debug(f"trying to bind signal {signalToTrigger} to trigger...")
+                baseLogger.debug(f"trying to bind signal {signalToTrigger} to trigger...")
                 signal.signal(signalToTrigger, self.trigger)
-                logging.debug(f"bound {signalToTrigger} to trigger.")
+                baseLogger.debug(f"bound {signalToTrigger} to trigger.")
 
         # We use *one* socket for the heartbeat; this is passed to both threads (checking-side and acknowledgement side).
 
-        logging.debug(f"Attempting to set lifelineSkt timeout to {hb_timeout}")
+        baseLogger.debug(f"Attempting to set lifelineSkt timeout to {hb_timeout}")
         self.lifelineSkt.settimeout(hb_timeout)
-        logging.debug(f"succesfully set timeout of lifelineSKt to {hb_timeout}")
+        baseLogger.debug(f"succesfully set timeout of lifelineSKt to {hb_timeout}")
 
         self.HEARTBEAT_MAXIMUM_RETRIES = hb_max_retries
         self.HEARTBEAT_ATTEMPTS_FAILED = 0
@@ -70,20 +70,20 @@ class DMSProcess(ABC):
         # This means that we cannot escape the GIL in terms of competition between the lifeline thread and the observer thread; multiprocessing should be used /within/ the latter to optimize resources.
 
         # This thread handles our 'heartbeat' signal, separate from the function code.
-        logging.debug("Starting lifelineThread...")
+        baseLogger.debug("Starting lifelineThread...")
         self.lifelineProcess = multiprocessing.Process(target=self.checkSkt, daemon=True)
         self.lifelineProcess.start()
-        logging.debug("Lifeline thread started.")
+        baseLogger.debug("Lifeline thread started.")
 
     def checkSkt(self):
         logger = self.classLogger.getChild(__name__)
-
         while True:
-            logger.info(f"Entering heartbeat grace period for {self.HEARTBEAT_GRACE_PERIOD} second(s).")
-            time.sleep(self.HEARTBEAT_GRACE_PERIOD)
             try:
-                logging.info("Trying to send heartbeat...")
-                self.lifelineSkt.send(b'1')
+                logger.info(f"Entering heartbeat grace period for {self.HEARTBEAT_GRACE_PERIOD} second(s).")
+                time.sleep(self.HEARTBEAT_GRACE_PERIOD)
+
+                logger.info("Trying to send heartbeat...")
+                self.lifelineSkt.sendall(b'1')
                 logger.info("Heartbeat sent.")
                 # 'pingpong' heartbeat: Observer has to send heartbeat and expects one back from payload.
                 logger.info("Awaiting heartbeat...")
@@ -91,17 +91,32 @@ class DMSProcess(ABC):
                 logger.info("Heartbeat received.")
                 # TODO: Do any race conditions occur here?
                 self.HEARTBEAT_ATTEMPTS_FAILED = 0
-            except:
-                logger.warning("Failed to receive heartbeat.")
-                if self.HEARTBEAT_ATTEMPTS_FAILED != self.HEARTBEAT_MAXIMUM_RETRIES:
-                    self.HEARTBEAT_ATTEMPTS_FAILED += 1
-                    logger.warning(f"Retries left: {self.HEARTBEAT_MAXIMUM_RETRIES-self.HEARTBEAT_ATTEMPTS_FAILED} [{self.HEARTBEAT_ATTEMPTS_FAILED}/{self.HEARTBEAT_MAXIMUM_RETRIES}].")
-                    pass
-                else:
-                    logger.critical("Maximum retries exceeded. Closing socket and sending SIGTERM.")
-                    self.lifelineSkt.close()
-                    raise lifelineDeadException(signal.SIGTERM)
-    
+                continue
+
+            except ConnectionError as e:
+                logger.critical('Connection appears to have failed. Severing lifeline.')
+                self.lifelineSkt.close()
+                raise lifelineDeadException(signal.SIGTERM)
+            
+            except BlockingIOError as e:
+                logger.warning("Failed to send heartbeat immediately, but socket not closed.")
+            except TimeoutError as e:
+                logger.warning("Failed to receive heartbeat. Retrying...")
+            except BaseException as e:
+                logger.critical('Unknown exception received. Closing socket.')
+                logger.critical(e)
+                self.lifelineSkt.close()
+                raise lifelineDeadException(e)
+                
+            if self.HEARTBEAT_ATTEMPTS_FAILED != self.HEARTBEAT_MAXIMUM_RETRIES:
+                self.HEARTBEAT_ATTEMPTS_FAILED += 1
+                logger.warning(f"Retries left: {self.HEARTBEAT_MAXIMUM_RETRIES-self.HEARTBEAT_ATTEMPTS_FAILED} [{self.HEARTBEAT_ATTEMPTS_FAILED}/{self.HEARTBEAT_MAXIMUM_RETRIES}].")
+                continue
+            else:
+                logger.critical("Maximum retries exceeded. Severing lifeline.")
+                self.lifelineSkt.close()
+                raise lifelineDeadException(signal.SIGTERM)
+
     @abstractmethod
     def trigger():
         pass
@@ -117,9 +132,9 @@ class obsProcess(DMSProcess):
         
         assert func, logger.error("No observer function provided!")
         try:
-            logging.info(f"Trying to establish connection with {host} on port {port} with a timeout of {hs_timeout} second(s).")
+            logger.info(f"Trying to establish connection with {host} on port {port} with a timeout of {hs_timeout} second(s).")
             self.lifelineSkt = socket.create_connection((host,port),timeout=hs_timeout)
-        except Exception as e:
+        except BaseException as e:
             logger.critical(f"Failed to initiate connection with payload on {host}:{port}.")
             logger.error(f"Exception: {e}.")
             raise lifelineInitException(404)
@@ -132,14 +147,18 @@ class obsProcess(DMSProcess):
         self.obs_args = args
 
         # This handles the actual 'observer/payload' code that exists.
-        logging.debug("Starting observer thread...")
+        logger.debug("Starting observer thread...")
         self.obsProcess = multiprocessing.Process(target=self.obs_func, args=self.obs_args)
         self.obsProcess.start()
-        logging.debug("Observer thread started")
+        logger.debug("Observer thread started")
 
         while True:
-            if self.obsProcess.is_alive() and self.lifelineProcess.is_alive(): pass
-            else: self.trigger()
+            try:
+                if self.obsProcess.is_alive() and self.lifelineProcess.is_alive(): pass
+                else: self.trigger()
+            except BaseException as e:
+                logger.critical('Received exception while monitoring processes. Triggering!')
+                self.trigger()
 
     def trigger(self):
         logger = self.classLogger.getChild(__name__)
@@ -152,19 +171,33 @@ class obsProcess(DMSProcess):
         #    Payload inevitably times out on its receive and results in SIGTERM.
         # 3. Observer actually still has connection, and sends TCP RST (closing it entirely).
         logger.critical("Observer triggered. Attempting to sever lifeline.")
-        try: self.lifelineProcess.close()
-        except ValueError: pass
+        try:
+            self.lifelineProcess.terminate()
+            logger.debug('Terminated lifelineProcess.')
+        except ValueError:
+            logger.debug('lifelineProcess already closed.')
         self.lifelineProcess.join()
-        logger.debug("Lifeline severed.")
+        self.lifelineProcess.close()
+        logger.debug('Released resources held by lifelineProcess.')
+        logger.critical("Lifeline severed.")
 
-        try: self.obsProcess.close()
-        except ValueError: pass
+        logger.info('Attempting to stop obsProcess...')
+        try:
+            self.obsProcess.terminate()
+            logger.debug('Terminated obsProcess.')
+        except ValueError:
+            logger.debug('obsProcess already closed.')
+        logger.debug('Terminated obsProcess.')
         self.obsProcess.join()
+        self.obsProcess.close()
+        logger.debug('Released resources held by obsProcess.')
+        logger.info('obsProcess was stopped successfully.')
+
         # We /were/ trying to use TCP KEEPALIVE packets here, but handling of what this means when a process is killed unceremoniously was unstable.
         # On windows hosts, the socket was kept alive via KEEPALIVE packets after the process was killed.
         # We assume most KEEPALIVE implementations assume kernel-level control over what is defined as a 'dead socket', since KEEPALIVE works at the transport layer (not the application) due to it being implemented in TCP.
         # Therefore it stands to reason that it would be nonsensical for KEEPALIVE to *not* represent whether the link is alive at the kernel-level and below...
-        raise triggerFinishedException(signum)
+        raise triggerFinishedException(signal.SIGTERM)
 
 class plProcess(DMSProcess):
 
@@ -182,7 +215,7 @@ class plProcess(DMSProcess):
                 s.settimeout(hs_timeout)
                 s.listen()
                 self.lifelineSkt, addr = s.accept()
-            except Exception as e:
+            except BaseException as e:
                 logger.critical(f"Failed to establish connection with observer on {host}:{port}.")
                 logger.error(f"Exception: {e}.")
                 raise lifelineInitException(404)
@@ -196,8 +229,12 @@ class plProcess(DMSProcess):
         self.pl_args = args
         
         while True:
-            if self.lifelineProcess.is_alive(): pass
-            else: self.trigger()
+            try:
+                if self.lifelineProcess.is_alive(): pass
+                else: self.trigger()
+            except BaseException as e:
+                logger.critical('Received exception while monitoring processes. Triggering!')
+                self.trigger()
 
     def trigger(self):
         logger = self.classLogger.getChild(__name__)
@@ -206,24 +243,24 @@ class plProcess(DMSProcess):
         try: 
             logger.critical("Attempting to sever lifeline to alert Observer!")
             self.lifelineSkt.close()
-            raise lifelineSeveredException
+            raise lifelineSeveredException()
         except lifelineSeveredException: logger.critical("Lifeline severed!")
-        except Exception as e: 
-            logging.error(f"Failed to sever lifeline - {e}! Traceback:")
+        except BaseException as e: 
+            logger.error(f"Failed to sever lifeline - {e}! Traceback:")
             traceback.print_exc()
         try:
-            logging.info("Attempting execution of payload.")
+            logger.info("Attempting execution of payload.")
             self.pl_func(self.pl_args)
-            logging.info("Payload finished, with outcome verified.")
+            logger.info("Payload finished, with outcome verified.")
         except payloadExecutionException:
-            logging.critical("Payload execution failed! Traceback:")
+            logger.critical("Payload execution failed! Traceback:")
             traceback.print_exc()
         except payloadOutcomeException:
-            logging.warn("Payload executed without error, but could not verify outcome. Traceback:")
-            traceback.print_exc()
-        except Exception as e:
-            logging.error(f"Unexpected exception occurred - {e}. Traceback:")
-            traceback.print_exc()
+            logger.warning("Payload executed without error, but could not verify outcome. Traceback:")
+            logger.debug(traceback.print_exc())
+        except BaseException as e:
+            logger.error(f"Unexpected exception occurred - {e}. Traceback:")
+            logger.debug(traceback.print_exc())
         finally: 
-            logging.critical(f"terminating.")
-            raise triggerFinishedException
+            logger.critical(f"terminating.")
+            raise triggerFinishedException()
