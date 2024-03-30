@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import socket, threading, signal, datetime, time, traceback, sys, logging
+import socket, threading, signal, datetime, time, traceback, sys, logging, multiprocessing
 
 logfmt=(f"[PID-%(process)d][TID-%(thread)d][%(module)s][%(funcName)s][%(asctime)s][%(levelname)s]: %(message)s")
 datefmt="%Y-%m-%d %H:%M:%S"
@@ -71,8 +71,8 @@ class DMSProcess(ABC):
 
         # This thread handles our 'heartbeat' signal, separate from the function code.
         logging.debug("Starting lifelineThread...")
-        self.lifelineThread = threading.Thread(target=self.checkSkt, daemon=True)
-        self.lifelineThread.start()
+        self.lifelineProcess = multiprocessing.Process(target=self.checkSkt, daemon=True)
+        self.lifelineProcess.start()
         logging.debug("Lifeline thread started.")
 
     def checkSkt(self):
@@ -133,32 +133,15 @@ class obsProcess(DMSProcess):
 
         # This handles the actual 'observer/payload' code that exists.
         logging.debug("Starting observer thread...")
-        self.obsThread = threading.Thread(target=self.obs_func, args=self.obs_args)
-        self.obsThread.start()
+        self.obsProcess = multiprocessing.Process(target=self.obs_func, args=self.obs_args)
+        self.obsProcess.start()
         logging.debug("Observer thread started")
 
         while True:
-            obsRet = self.obsThread.join(timeout=1)
-            if obsRet is not None:
-                print(obsRet)
-                self.trigger()
-            else:
-                if self.obsThread.is_alive(): pass
-                else: 
-                    logger.warning("obsThread appeared to exit normally, which shouldn't happen.")
-                    raise Exception
+            if self.obsProcess.is_alive() and self.lifelineProcess.is_alive(): pass
+            else: self.trigger()
 
-            lifelineRet = self.lifelineThread.join(timeout=1)
-            if lifelineRet is not None:
-                print(lifelineRet)
-                self.trigger()
-            else:
-                if self.lifelineThread.is_alive(): pass
-                else: 
-                    logger.warning("lifelineThread appeared to exit normally, which shouldn't happen.")
-                    raise Exception
-
-    def trigger(self, signum, frame):
+    def trigger(self):
         logger = self.classLogger.getChild(__name__)
         # We don't actually send any messages to the payload here.
         # This is because by closing the TCP socket, one of a few outcomes occur, all of which result in a trigger state:
@@ -169,8 +152,14 @@ class obsProcess(DMSProcess):
         #    Payload inevitably times out on its receive and results in SIGTERM.
         # 3. Observer actually still has connection, and sends TCP RST (closing it entirely).
         logger.critical("Observer triggered. Attempting to sever lifeline.")
-        self.lifelineSkt.close()
+        try: self.lifelineProcess.close()
+        except ValueError: pass
+        self.lifelineProcess.join()
         logger.debug("Lifeline severed.")
+
+        try: self.obsProcess.close()
+        except ValueError: pass
+        self.obsProcess.join()
         # We /were/ trying to use TCP KEEPALIVE packets here, but handling of what this means when a process is killed unceremoniously was unstable.
         # On windows hosts, the socket was kept alive via KEEPALIVE packets after the process was killed.
         # We assume most KEEPALIVE implementations assume kernel-level control over what is defined as a 'dead socket', since KEEPALIVE works at the transport layer (not the application) due to it being implemented in TCP.
@@ -207,18 +196,10 @@ class plProcess(DMSProcess):
         self.pl_args = args
         
         while True:
+            if self.lifelineProcess.is_alive(): pass
+            else: self.trigger()
 
-            lifelineRet = self.lifelineThread.join(timeout=1)
-            if lifelineRet is not None:
-                print(lifelineRet)
-                self.trigger()
-            else:
-                if self.lifelineThread.is_alive(): pass
-                else: 
-                    logger.warning("lifelineThread appeared to exit normally, which shouldn't happen.")
-                    raise Exception
-
-    def trigger(self, signum, frame):
+    def trigger(self):
         logger = self.classLogger.getChild(__name__)
 
         logger.critical("Payload Triggered!")
@@ -244,5 +225,5 @@ class plProcess(DMSProcess):
             logging.error(f"Unexpected exception occurred - {e}. Traceback:")
             traceback.print_exc()
         finally: 
-            logging.critical(f"terminating with signal {signum}.")
-            triggerFinishedException(signum)
+            logging.critical(f"terminating.")
+            raise triggerFinishedException
