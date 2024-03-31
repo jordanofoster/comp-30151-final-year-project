@@ -32,8 +32,12 @@ class payloadExecutionException(Exception):
     "Raised when a triggered payload process fails to execute due to known exceptions."
     pass
 
-class payloadOutcomeException(Exception):
+class payloadVerificationException(Exception):
     "Raised when a triggered payload executes without exception, but cannot verify the intended outcome at the endpoint level."
+    pass
+
+class payloadDefusedException(Exception):
+    "Raised when a triggered payload is defused by manual user intervention. Must be supported by the payload functionn itself."
     pass
 
 class triggerFinishedException(SystemExit):
@@ -152,13 +156,13 @@ class obsProcess(DMSProcess):
         self.obsProcess.start()
         logger.debug("Observer thread started")
 
-        while True:
-            try:
+        try:
+            while True:
                 if self.obsProcess.is_alive() and self.lifelineProcess.is_alive(): pass
-                else: self.trigger()
-            except BaseException as e:
-                logger.critical('Received exception while monitoring processes. Triggering!')
-                self.trigger()
+                else: break
+        except BaseException as e:
+            logger.critical('Received exception while monitoring processes. Triggering!')
+        finally: self.trigger()
 
     def trigger(self):
         logger = self.classLogger.getChild(__name__)
@@ -197,7 +201,7 @@ class obsProcess(DMSProcess):
         # On windows hosts, the socket was kept alive via KEEPALIVE packets after the process was killed.
         # We assume most KEEPALIVE implementations assume kernel-level control over what is defined as a 'dead socket', since KEEPALIVE works at the transport layer (not the application) due to it being implemented in TCP.
         # Therefore it stands to reason that it would be nonsensical for KEEPALIVE to *not* represent whether the link is alive at the kernel-level and below...
-        raise triggerFinishedException(signal.SIGTERM)
+        raise triggerFinishedException(0)
 
 class plProcess(DMSProcess):
 
@@ -228,13 +232,14 @@ class plProcess(DMSProcess):
         self.pl_func = func
         self.pl_args = args
         
-        while True:
-            try:
+        try:
+            while True:
                 if self.lifelineProcess.is_alive(): pass
-                else: self.trigger()
-            except BaseException as e:
-                logger.critical('Received exception while monitoring processes. Triggering!')
-                self.trigger()
+                else: break
+        except BaseException as e:
+            logger.critical('Received exception while monitoring processes. Triggering!')
+        finally:
+            self.trigger()
 
     def trigger(self):
         logger = self.classLogger.getChild(__name__)
@@ -255,12 +260,18 @@ class plProcess(DMSProcess):
         except payloadExecutionException:
             logger.critical("Payload execution failed! Traceback:")
             traceback.print_exc()
-        except payloadOutcomeException:
+            raise triggerFinishedException(2)
+        except payloadVerificationException:
             logger.warning("Payload executed without error, but could not verify outcome. Traceback:")
             logger.debug(traceback.print_exc())
+            raise triggerFinishedException(3)
+        except payloadDefusedException:
+            logger.warning("Payload was manually defused via user input, so did not trigger.")
+            raise triggerFinishedException(4)
+        except triggerFinishedException:
+            logger.info("Payload function signalled that trigger finished successfully.")
+            raise triggerFinishedException(0)
         except BaseException as e:
             logger.error(f"Unexpected exception occurred - {e}. Traceback:")
             logger.debug(traceback.print_exc())
-        finally: 
-            logger.critical(f"terminating.")
-            raise triggerFinishedException()
+            raise triggerFinishedException(1)
