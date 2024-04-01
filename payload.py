@@ -60,36 +60,36 @@ def plFunction(args):
         logger = logging.getLogger(__file__).getChild(__name__)
 
         verified = True
-        logger.debug('Verifying that secrets have been deleted...')
+        logger.info('Verifying that secrets have been deleted...')
         for entry in args.secrets:
             logger.debug(f"Checking {entry}...")
             if os.path.exists(entry):
                 logger.critical(f"Secret still exists: {entry}")
                 verified = False
             else:
-                logger.debug(f"Verified that {entry} has been deleted.")
+                logger.info(f"Verified that {entry} has been deleted.")
 
         if 'PGP_PUBKEY' in os.environ:
-            logger.debug("Verifying that public encryption key has been deleted...")
+            logger.info("Verifying that public encryption key has been deleted...")
             if os.path.exists(os.getenv('PGP_PUBKEY')): 
                 logger.critical(f"Public encryption key {os.getenv('PGP_PUBKEY')} still exists!")
                 verified = False
             else:
-                logger.debug("Verified that public encryption key has been deleted.")
+                logger.info("Verified that public encryption key has been deleted.")
         if 'PGP_PRIVKEY' in os.environ:
-            logger.debug("Verifying that private signing key has been deleted...")
+            logger.info("Verifying that private signing key has been deleted...")
             if os.path.exists(os.getenv('PGP_PRIVKEY')): 
                 logger.critical(f"Private signing key {os.getenv('PGP_PRIVKEY')} still exists!")
                 verified = False
             else:
-                logger.debug("Verified that private signing key has been deleted.")
+                logger.info("Verified that private signing key has been deleted.")
         
-        logger.debug("Verifying that .env file has been deleted...")
+        logger.info("Verifying that .env file has been deleted...")
         if os.path.exists('.env'):
             logger.critical(f".env file still exists!") 
             verified = False
         else:
-            logger.debug("Verified that .env file has been deleted.")
+            logger.info("Verified that .env file has been deleted.")
 
         if verified: 
             logger.info("Verified that payload executed successfully.")
@@ -109,7 +109,7 @@ def plFunction(args):
                 if os.path.isfile(entry): os.remove(entry)
                 elif os.path.isdir(entry): rmtree(entry)
                 elif os.path.islink(entry): os.unlink(entry)
-                logger.debug(f"Secret deleted: {entry}")
+                logger.info(f"Secret deleted: {entry}")
             except:
                 logger.critical(f"Secret not deletable: {entry}")
                 raise dms.payloadExecutionException
@@ -156,51 +156,51 @@ def plFunction(args):
             """
 
             if ('PGP_PUBKEY' or 'PGP_PRIVKEY') in os.environ:
-                logger.debug("PGP key provided. Will be signing and/or encrypting this message.")
+                logger.info("PGP key provided. Will be signing and/or encrypting this message.")
                 msgContents = pgpy.PGPMessage.new(msgContents)
                 
                 # GPG does sign-then-encrypt rather than encrypt-then-sign.
                 if 'PGP_PRIVKEY' in os.environ:
-                    logger.debug("Private signing key provided. Signing this message.")
+                    logger.info("Private signing key provided. Signing this message.")
                     privkey, _ = pgpy.PGPKey.from_file(os.getenv('PGP_PRIVKEY'))
 
                     msgContents |= privkey.sign(msgContents)
-                    logger.debug("Messsage signed.")
+                    logger.info("Messsage signed.")
 
-                    logger.debug("Deleting signing key to prevent its reuse...")
+                    logger.info("Deleting signing key to prevent its reuse...")
                     os.remove(os.getenv('PGP_PRIVKEY'))
-                    logger.debug("Signing key deleted.")
+                    logger.info("Signing key deleted.")
                 
                 if 'PGP_PUBKEY' in os.environ:
-                    logger.debug("Public encryption key of recipient provided. Encrypting this message.")
+                    logger.info("Public encryption key of recipient provided. Encrypting this message.")
                     pubkey, _ = pgpy.PGPKey.from_file(os.getenv('PGP_PUBKEY'))
 
                     msgContents = pubkey.encrypt(msgContents)
-                    logger.debug("Message encrypted.")
+                    logger.info("Message encrypted.")
 
-                    logger.debug("Deleting encryption key to prevent its reuse...")
+                    logger.info("Deleting encryption key to prevent its reuse...")
                     os.remove(os.getenv('PGP_PUBKEY'))
-                    logger.debug("Encryption key deleted.")
+                    logger.info("Encryption key deleted.")
             else:
-                logger.debug("No PGP keys provided. This alert will be unsigned and unencrypted.")
+                logger.warn("No PGP keys provided. This alert will be unsigned and unencrypted.")
 
             msg.set_content(str(msgContents))
 
             with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
-                logger.debug(f"Attempting SSL connection with {smtp_host}:{smtp_port} as {smtp_from}...")
+                logger.info(f"Attempting SSL connection with {smtp_host}:{smtp_port} as {smtp_from}...")
                 server.login(smtp_from, smtp_pass)
                 logger.debug("Login successful.")
                 logger.debug("Sending message...")
                 server.send_message(msg)
-                logger.debug("Message sent.")
+                logger.info("Message sent.")
                 server.quit()
-                logger.debug("SMTP SSL connection closed.")
+                logger.info("SMTP SSL connection closed.")
 
         if verify(): raise dms.triggerFinishedException
         else: raise dms.payloadVerificationException
 
     if args.defuse:
-        logger.debug("--defuse argument provided. Spawning defusal GUI.")
+        logger.info("--defuse argument provided. Spawning defusal GUI.")
         from tkinter import ttk
         ttk.Label(root, text=TRIGGER_MSG).pack()
         ttk.Button(root, text="Defuse", command=lambda:defuse()).pack()
@@ -216,10 +216,8 @@ if __name__ == "__main__":
 
     logger = logging.getLogger(__file__).getChild(__name__)
 
-    logger.info('starting payload process...')
     dms.plProcess(
         args.host,
         args.port,
         func=plFunction,
         args=(args))
-    logger.info('payload process started.')

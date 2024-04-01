@@ -2,6 +2,7 @@ import subprocess
 import logging
 import argparse
 import sys, signal, time, threading, datetime, traceback, os
+import dms
 from dms import logfmt, datefmt
 
 def _log_level(l):
@@ -69,7 +70,6 @@ def main(args):
     else: execArgs = [pythonExec]
     logger.info(f"executable to be used to call DMS: {str(execArgs)}")
     while not lifelineEstablished and args.retries > -1:
-        logger.warning(f"Retries left: {args.retries}")
         args.retries -= 1
         if args.payload:
             logger.info(f"Launching payload subprocess...")
@@ -96,6 +96,8 @@ def main(args):
                 logger.info("Waiting to see if observer fails handshake...")
                 obsP.wait(timeout=args.timeout)
                 logger.error("Observer appears to have failed handshake.")
+            
+            logger.warning(f"Retries left: {args.retries}")
         except subprocess.TimeoutExpired:
             # Handshake must have succeeded
             lifelineEstablished = True
@@ -120,21 +122,27 @@ def main(args):
         logger.info(f"--headless flag has been passed, so not keeping logs; terminating.")
         sys.exit(0)
     else:
-        logger.info("Checking to see if payload and obsever remains alive...")
-        if plP: threading.Thread(target=checkLiveness, args=(plP,)).start()
-        if obsP: threading.Thread(target=checkLiveness, args=(obsP,)).start()
-        
-        while True: 
-            try:
-                time.sleep(1)
-            except KeyboardInterrupt:
-                logger.critical(f"Explicit keyboard interrupt received. Killing observer and payload.")
-                if plP: plP.kill()
-                if obsP: obsP.kill()
-                sys.exit(signal.SIGINT)
-            except BaseException as e:
-                logger.debug(traceback.print_exc())
-                sys.exit(signal.SIGTERM)
+        logger.info(f"plP: {bool(plP)}")
+        logger.info(f"obsP: {bool(obsP)}")
+        try:
+            logger.info("Awaiting")
+            if obsP: obsP.wait()
+            if plP: plP.wait()
+            raise dms.launcherFinishedException(0)
+        except KeyboardInterrupt:
+            logger.critical(f"Explicit keyboard interrupt received. Killing all subprocesses.")
+            if obsP: 
+                obsP.kill()
+                obsP.wait()
+            if plP:
+                plP.kill()
+                plP.wait()
+            raise dms.launcherFinishedException(signal.SIGINT)
+        except BaseException as e:
+            logger.debug(traceback.print_exc())
+            raise dms.launcherFinishedException(signal.SIGTERM)
+
+
                 
 
 if __name__ == "__main__":

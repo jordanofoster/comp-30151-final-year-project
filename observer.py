@@ -156,7 +156,7 @@ def getFrameFromWebcam(triggerEvent, frameQueue):
                     logger.debug("waiting to put frame into frameQueue...")
                     frameQueue.put(frame)
                     logger.debug("put frame into framequeue.")
-                
+            
     except BaseException as e:
         triggerEvent.set()
         logger.debug(traceback.print_exc())
@@ -190,7 +190,7 @@ def enumFacesInFrame(triggerEvent, detectorLock, frameQueue, faceDetectionQueue=
                         enforce_detection=False
                     )
                 logger.debug("released detectorLock.")
-                logger.debug(f"Enumerated {len(face_locations)} face(s) in this frame.")
+                logger.info(f"Enumerated {len(face_locations)} face(s) in this frame.")
 
                 if (len(face_locations) < args.min_faces) or ((args.max_faces != None) and (len(face_locations) > args.max_faces)):
                     logger.critical(f"TRIGGER: Number of faces outside of accepted bounds. Min: {args.min_faces} Max: {args.max_faces} Found: {len(face_locations)}")
@@ -220,7 +220,7 @@ def enumFacesInFrame(triggerEvent, detectorLock, frameQueue, faceDetectionQueue=
                     logger.debug("put frame, face_locations into faceDetectionQueue.")
             else:
                 pass
-
+            
     except BaseException as e:
         triggerEvent.set()
         logger.debug(traceback.print_exc())
@@ -364,10 +364,10 @@ def extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQu
                                         logger.critical(f"TRIGGER: --reject-faces: face verified as forbidden identity ({identity}).")
                                         raise dms.observerTriggerException()
                         
-                            else: logger.debug(f"Face did not match with identity {identity}")
+                            else: logger.info(f"Face did not match with identity {identity}")
 
                             # Finally, we move onto the next face.
-                            logger.info("identifying the next face.")
+                            continue
 
                     if (faceID == None):     
                     
@@ -397,7 +397,7 @@ def extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQu
                         else:
                             logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
                             faceVerifResultsQueue.put((faceID,croppedFrame))
-                            logger.info("put faceID, croppedFrame into faceVerifResultsQueue.")
+                            logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
                 
                     else:
                         logger.debug("FER disabled. Skipping queue.")
@@ -405,7 +405,9 @@ def extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQu
                 if args.require_faces and (set(args.require_faces) != requiredFacesPresent):
                     logger.critical("TRIGGER: --require-faces: Not all identities provided were present in this frame.")
                     raise dms.observerTriggerException()
-            
+
+                logger.info("Moving onto next face in queue.")
+
     except BaseException as e:
         triggerEvent.set()
         logger.debug(traceback.print_exc())
@@ -428,7 +430,7 @@ def determineFacialEmotion(triggerEvent, detectorLock, faceVerifResultsQueue, id
 
             logger.debug("trying to get faceID, croppedFrame from faceVerifResultsQueue...")
             faceID, croppedFrame = faceVerifResultsQueue.get()
-            logger.info("got faceID, croppedFrame from faceVerifResultsQueue.")
+            logger.debug("got faceID, croppedFrame from faceVerifResultsQueue.")
     
             logger.debug("attempting to acquire detectorLock...")
             with detectorLock:
@@ -460,11 +462,13 @@ def determineFacialEmotion(triggerEvent, detectorLock, faceVerifResultsQueue, id
                 try:
                     logger.debug("trying to put faceID, emotionRatings into facialEmotionQueue...")
                     idEmotionPairDict[faceID]['queue'].put_nowait(emotionRatings)
-                    logger.info("put faceID, emotionRatings in facialEmotionQueue.")
+                    logger.debug("put faceID, emotionRatings in facialEmotionQueue.")
                 except queue.Full:
                     logger.debug(f"Queue is full - releasing idEmotionLock for {faceID} to prevent deadlock.")
                     break
             logger.debug(f"released idEmotionLock for {faceID}.")
+
+            logger.info(f"Finished FER for instance of {faceID}.")
 
     except BaseException as e:
         triggerEvent.set()
@@ -527,6 +531,7 @@ def calculateAverage(triggerEvent, idEmotionLock, identity, idEmotionBuffer, FER
                 FERAvgQueue.put(averageDict)
                 logger.debug("put averageDict into FERAvgQueue.")
 
+            logger.info(f"Average calculated for identity {identity} over this sliding window period ({args.sliding_window_size} occurences).")
     except BaseException as e:
         triggerEvent.set()
         logger.debug(traceback.print_exc())

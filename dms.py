@@ -28,20 +28,24 @@ class tamperingEventException(Exception):
     "Raised when tamper evident events _unrelated to the trigger condition_ occur outside of the process scope such as SIGTERM, the removal of files, or likewise."
     pass
 
-class payloadExecutionException(Exception):
+class payloadExecutionException(SystemExit):
     "Raised when a triggered payload process fails to execute due to known exceptions."
     pass
 
-class payloadVerificationException(Exception):
+class payloadVerificationException(SystemExit):
     "Raised when a triggered payload executes without exception, but cannot verify the intended outcome at the endpoint level."
     pass
 
-class payloadDefusedException(Exception):
+class payloadDefusedException(SystemExit):
     "Raised when a triggered payload is defused by manual user intervention. Must be supported by the payload functionn itself."
     pass
 
 class triggerFinishedException(SystemExit):
     "Raised when the trigger procedure for a thread concludes, regardless of type or outcome."
+    pass
+
+class launcherFinishedException(SystemExit):
+    "Raised by a non-headless DMS launcher when it believes the DMS instance it launched is no longer alive."
     pass
 
 class DMSProcess(ABC):
@@ -258,8 +262,8 @@ class plProcess(DMSProcess):
             self.pl_func(self.pl_args)
             logger.info("Payload finished, with outcome verified.")
         except payloadExecutionException:
-            logger.critical("Payload execution failed! Traceback:")
-            traceback.print_exc()
+            logger.critical("Payload execution failed!")
+            logger.debug(traceback.print_exc())
             raise triggerFinishedException(2)
         except payloadVerificationException:
             logger.warning("Payload executed without error, but could not verify outcome. Traceback:")
