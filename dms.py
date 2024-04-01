@@ -50,19 +50,9 @@ class launcherFinishedException(SystemExit):
 
 class DMSProcess(ABC):
 
-    def __init__(self,hb_grace_period=5.0,hb_timeout=5.0,hb_max_retries=0,interrupt_on=()):
+    def __init__(self,hb_grace_period=5.0,hb_timeout=5.0,hb_max_retries=0):
         baseLogger = self.classLogger.getChild(__name__)
         
-        baseLogger.debug("Binding trigger to SIGTERM")
-        signal.signal(signal.SIGTERM, self.trigger) # Process will *always* trigger on SIGTERM.
-        baseLogger.debug("Bound trigger to SIGTERM")
-        if set(interrupt_on).issubset(signal.valid_signals()):
-            baseLogger.debug("Interrupts provided are all valid.")
-            for signalToTrigger in interrupt_on:
-                baseLogger.debug(f"trying to bind signal {signalToTrigger} to trigger...")
-                signal.signal(signalToTrigger, self.trigger)
-                baseLogger.debug(f"bound {signalToTrigger} to trigger.")
-
         # We use *one* socket for the heartbeat; this is passed to both threads (checking-side and acknowledgement side).
 
         baseLogger.debug(f"Attempting to set lifelineSkt timeout to {hb_timeout}")
@@ -132,7 +122,7 @@ class DMSProcess(ABC):
 
 class obsProcess(DMSProcess):
     
-    def __init__(self,host,port,hb_grace_period=5.0,hb_timeout=5.0,hb_max_retries=5,hs_timeout=5.0,interrupt_on=(),func=False,args=()):
+    def __init__(self,host,port,hb_grace_period=5.0,hb_timeout=5.0,hb_max_retries=5,hs_timeout=5.0,func=False,args=()):
 
         self.classLogger = logging.getLogger(__file__).getChild(str(self))
 
@@ -149,7 +139,7 @@ class obsProcess(DMSProcess):
         
         logger.info(f"Established connection with payload on {host}:{port}.")
         
-        super().__init__(hb_grace_period,hb_timeout,hb_max_retries,interrupt_on)
+        super().__init__(hb_grace_period,hb_timeout,hb_max_retries)
         
         self.obs_func = func
         self.obs_args = args
@@ -209,7 +199,7 @@ class obsProcess(DMSProcess):
 
 class plProcess(DMSProcess):
 
-    def __init__(self,host,port,hb_grace_period=5.0,hb_timeout=5.0,hb_max_retries=5,hs_timeout=5.0,interrupt_on=(),func=False,args=()):
+    def __init__(self,host,port,hb_grace_period=5.0,hb_timeout=5.0,hb_max_retries=5,hs_timeout=5.0,func=False,args=()):
 
         self.classLogger = logging.getLogger(__file__).getChild(str(self))
 
@@ -230,7 +220,7 @@ class plProcess(DMSProcess):
             
             logger.info(f"Established connection with observer on {host}:{port}.")
 
-        super().__init__(hb_grace_period,hb_timeout,hb_max_retries,interrupt_on)
+        super().__init__(hb_grace_period,hb_timeout,hb_max_retries)
 
         # We don't actually *have* a separate thread for the payload to run, as we don't need to handle it all individually.
         self.pl_func = func
