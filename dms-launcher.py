@@ -3,7 +3,7 @@ import logging
 import argparse
 import sys, signal, time, threading, datetime, traceback, os
 import dms
-from dms import logfmt, datefmt
+
 
 def _log_level(l):
     match l:
@@ -35,9 +35,9 @@ parser.add_argument('--log-file', action='store')
     
 args = parser.parse_args()
 
-if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level, format=logfmt, datefmt=datefmt)
-elif args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level, format=logfmt, datefmt=datefmt)
-else: logging.basicConfig(stream=sys.stderr, level=args.log_level, format=logfmt, datefmt=datefmt)
+if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
+elif args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
+else: logging.basicConfig(stream=sys.stderr, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 
 def checkLiveness(sp):
     logger = logging.getLogger(__file__).getChild(__name__)

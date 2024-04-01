@@ -1,5 +1,5 @@
 import dms
-import signal, traceback, time, argparse, sys, os, multiprocessing, glob, logging, datetime, queue, threading
+import traceback, argparse, sys, os, multiprocessing, logging, queue, threading
 
 VALID_EMOTIONS=(
     "happy",
