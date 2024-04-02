@@ -39,16 +39,6 @@ if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_lev
 elif args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 else: logging.basicConfig(stream=sys.stderr, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 
-def checkLiveness(sp):
-    logger = logging.getLogger(__file__).getChild(__name__)
-
-    while True:
-        if sp.poll():
-            logger.critical(f"Received returncode {sp.returncode} from {sp.pid}")
-            return sp.returncode
-        else:
-            logger.debug(f"{sp} appears to be alive.")
-
 def main(args):
     logger = logging.getLogger(__file__).getChild(__name__)
 

@@ -21,7 +21,7 @@ class lifelineSeveredException(Exception):
     pass
 
 class lifelineDeadException(Exception):
-    "Raised when the observer or payload processes fails to receive a heartbeat after a set number of retries."
+    "Raised when the observer or payload processes fail to receive a heartbeat after a set number of retries."
     pass
 
 class tamperingEventException(Exception):
@@ -29,15 +29,15 @@ class tamperingEventException(Exception):
     pass
 
 class payloadExecutionException(SystemExit):
-    "Raised when a triggered payload process fails to execute due to known exceptions."
+    "Raised when a triggered payload process fails to execute."
     pass
 
 class payloadVerificationException(SystemExit):
-    "Raised when a triggered payload executes without exception, but cannot verify the intended outcome at the endpoint level."
+    "Raised when a triggered payload executes without exception, but cannot verify the intended outcome has occurred."
     pass
 
 class payloadDefusedException(SystemExit):
-    "Raised when a triggered payload is defused by manual user intervention. Must be supported by the payload functionn itself."
+    "Raised when a triggered payload is defused by manual user intervention. Must be supported by the payload function itself."
     pass
 
 class triggerFinishedException(SystemExit):
