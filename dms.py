@@ -170,6 +170,8 @@ class obsProcess(DMSProcess):
         # 3. Observer actually still has connection, and sends TCP RST (closing it entirely).
         logger.critical("Observer triggered. Attempting to sever lifeline.")
         try:
+            self.lifelineSkt.close()
+            logger.debug('lifelineSkt closed.')
             self.lifelineProcess.terminate()
             logger.debug('Terminated lifelineProcess.')
         except ValueError:
