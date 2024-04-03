@@ -244,11 +244,23 @@ class plProcess(DMSProcess):
         try: 
             logger.critical("Attempting to sever lifeline to alert Observer!")
             self.lifelineSkt.close()
+            logger.debug("lifelineSkt closed.")
+            self.lifelineProcess.terminate()
+            logger.debug("lifelineProcess terminated.")
             raise lifelineSeveredException()
         except lifelineSeveredException: logger.critical("Lifeline severed!")
+        except ValueError: logger.debug("lifelineProcess already closed.")
         except BaseException as e: 
             logger.error(f"Failed to sever lifeline - {e}! Traceback:")
             traceback.print_exc()
+        
+        logger.debug("Checking lifelineProcess has terminated...")
+        self.lifelineProcess.join()
+        logger.debug("lifelineProcess terminated.")
+        self.lifelineProcess.close()
+        logger.debug("Released resources held by lifelineProcess.")
+        logger.critical("Lifeline severed!")
+        
         try:
             logger.info("Attempting execution of payload.")
             self.pl_func(self.pl_args)
