@@ -219,5 +219,10 @@ if __name__ == "__main__":
     dms.plProcess(
         args.host,
         args.port,
+        hb_grace_period=args.heartbeat_grace_period,
+        hb_max_retries=args.heartbeat_max_retries,
+        hb_timeout=args.heartbeat_timeout,
+        hs_timeout=args.handshake_timeout,
         func=plFunction,
-        args=(args))
+        args=(args)
+    )

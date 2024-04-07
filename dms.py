@@ -63,10 +63,6 @@ class DMSProcess(ABC):
         self.HEARTBEAT_ATTEMPTS_FAILED = 0
         self.HEARTBEAT_GRACE_PERIOD=hb_grace_period
 
-        # NOTE: we have to use threading for this instead of multiprocessing because the latter does not propagate exceptions and signals to parent threads on Windows without
-        # joining the thread.
-        # This means that we cannot escape the GIL in terms of competition between the lifeline thread and the observer thread; multiprocessing should be used /within/ the latter to optimize resources.
-
         # This thread handles our 'heartbeat' signal, separate from the function code.
         baseLogger.debug("Starting lifelineThread...")
         self.lifelineProcess = multiprocessing.Process(target=self.checkSkt, daemon=True)

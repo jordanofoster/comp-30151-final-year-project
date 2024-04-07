@@ -702,7 +702,11 @@ if __name__ == "__main__":
         dms.obsProcess(
             args.host,
             args.port,
-            func=observerFunction,
+            hb_grace_period=args.heartbeat_grace_period,
+            hb_max_retries=args.heartbeat_max_retries,
+            hb_timeout=args.heartbeat_timeout,
+            hs_timeout=args.handshake_timeout,
+            func=observerFunction
         )
         logger.debug('obsProcess initialised.')
 
