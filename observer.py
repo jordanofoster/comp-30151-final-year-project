@@ -153,9 +153,12 @@ def getFrameFromWebcam(triggerEvent, frameQueue):
                     except AttributeError:
                         logger.debug("frameQueue has not been provided. Moving on.")
                 else:
-                    logger.debug("waiting to put frame into frameQueue...")
-                    frameQueue.put(frame)
-                    logger.debug("put frame into framequeue.")
+                    try:
+                        logger.debug("waiting to put frame into frameQueue...")
+                        frameQueue.put(frame)
+                        logger.debug("put frame into framequeue.")
+                    except AttributeError:
+                        logger.debug("frameQueue has not been provided. Moving on.")
             
     except BaseException as e:
         triggerEvent.set()
