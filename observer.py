@@ -18,14 +18,12 @@ IGNORE_FILES = (
 )
 
 def _emotions(e):
-    try:
-        emotion, min_score = e.split(':')
-        if emotion not in VALID_EMOTIONS: raise Exception
-        min_score = float(min_score)
-        return emotion, min_score
-    except:
-        raise argparse.ArgumentTypeError(f"Forbidden emotions must be in format emotion:min_score.\nmin_score must be a valid float between 0-100.\nemotion must be a valid emotion out of the following: happy, neutral, surprise, sad, angry, fear, disgust.")
-
+    emotion, min_score = e.split(':')
+    if emotion not in VALID_EMOTIONS: raise argparse.ArgumentTypeError(f"{emotion} is not a valid emotion. Valid emotions: {VALID_EMOTIONS}")
+    min_score = float(min_score)
+    if (min_score < 0) or (min_score > 100): raise argparse.ArgumentTypeError(f"Minumum score for {emotion} out of valid bounds (0-100). Value: {min_score}")
+    return emotion, min_score
+    
 def _lim_faces(f):
     if int(f) < 0:
         raise argparse.ArgumentTypeError("Face bounds (--min-faces and --max-faces) cannot be less than 0.")
@@ -152,6 +150,8 @@ def getFrameFromWebcam(triggerEvent, frameQueue):
                         logger.debug("put frame into frameQueue.")
                     except queue.Full:
                         logger.debug("frameQueue is full: --noblock flag set. Moving on.")
+                    except AttributeError:
+                        logger.debug("frameQueue has not been provided. Moving on.")
                 else:
                     logger.debug("waiting to put frame into frameQueue...")
                     frameQueue.put(frame)
@@ -214,10 +214,15 @@ def enumFacesInFrame(triggerEvent, detectorLock, frameQueue, faceDetectionQueue=
                         logger.debug("put frame, face_locations into faceDetectionQueue.")
                     except queue.Full:
                         logger.debug("faceDetectionQueue is full: --noblock flag set. Moving on.")
+                    except AttributeError:
+                        logger.debug("frameQueue has not been provided. Moving on.")
                 else:
-                    logger.debug("waiting to put frame, face_locations into faceDetectionQueue...")
-                    faceDetectionQueue.put((frame,face_locations))
-                    logger.debug("put frame, face_locations into faceDetectionQueue.")
+                    try:
+                        logger.debug("waiting to put frame, face_locations into faceDetectionQueue...")
+                        faceDetectionQueue.put((frame,face_locations))
+                        logger.debug("put frame, face_locations into faceDetectionQueue.")
+                    except AttributeError:
+                        logger.debug("frameQueue has not been provided. Moving on.")
             else:
                 pass
             
@@ -393,12 +398,16 @@ def extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQu
                                 logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
                             except queue.Full:
                                 logger.debug("faceVerifResultsQueue is full: --noblock flag set. Moving on.")
+                            except AttributeError:
+                                logger.debug("frameQueue has not been provided. Moving on.")
                     
                         else:
-                            logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
-                            faceVerifResultsQueue.put((faceID,croppedFrame))
-                            logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
-                
+                            try:
+                                logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
+                                faceVerifResultsQueue.put((faceID,croppedFrame))
+                                logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
+                            except AttributeError:
+                                logger.debug("frameQueue has not been provided. Moving on.")
                     else:
                         logger.debug("FER disabled. Skipping queue.")
 
