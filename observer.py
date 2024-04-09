@@ -337,88 +337,98 @@ def extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQu
                                 if os.path.isdir(identity): filename = os.path.basename(identity.replace('\\','/').strip('/'))+'.jpg' 
                                 elif os.path.isfile(identity): filename = os.path.basename(identity)
 
-                            if args.known_faces:
-                                if identity in args.known_faces:
-                                    logger.info("--known-faces: face verified as identity, but it is neither required nor forbidden.")
+                            if args.reject_faces and (identity in args.reject_faces):
+                                if args.dump_frames: 
+                                    logger.debug('--dump-frames: writing frame to' + os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden',filename))
+                                    if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden')): 
+                                        os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden'))
+                                    imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden',filename), croppedFrame)
+                                    
+                                logger.critical(f"TRIGGER: --reject-faces: face verified as forbidden identity ({identity}).")
+                                raise dms.observerTriggerException()
+                            
+                            elif args.require_faces and (identity in args.require_faces):
+                                if identity not in requiredFacesPresent:
+                                    requiredFacesPresent.append(identity)
+                                    logger.info('--require-faces: Verified that required identity is present in this frame.')
+                                else:
+                                    logger.warning('--require-faces: another face has already been verified as this identity in this frame...')   
+
+                                if args.dump_frames:
+                                    logger.debug('--dump-frames: writing frame to ' + os.path.join(args.dump_frames,'extractFaceAndVerify','required',filename))
+                                    if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','required')): 
+                                        os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','required'))
+                                    imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','required',filename), croppedFrame)
+
+                            elif args.known_faces and (identity in args.known_faces):
+                                logger.info("--known-faces: face verified as identity, but it is neither required nor forbidden.")
                             
                                 if args.dump_frames:
-                                        logger.debug('--dump-frames: writing frame to ' + os.path.join(args.dump_frames,'extractFaceAndVerify','known',filename))
-                                        if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','known')): 
-                                            os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','known'))
-                                        imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','known',filename), croppedFrame)
-                            
-                                if args.require_faces:
-                                    if identity in args.required_faces and (identity not in requiredFacesPresent):
-                                        requiredFacesPresent.append(identity)
-                                        logger.info('--require-faces: Verified that required identity is present in this frame.')
-                                    else:
-                                        logger.warn('--require-faces: another face has already been verified as this identity in this frame...')
-                                
-                                    if args.dump_frames:
-                                        logger.debug('--dump-frames: writing frame to ' + os.path.join(args.dump_frames,'extractFaceAndVerify','required',filename))
-                                        if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','required')): 
-                                            os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','required'))
-                                        imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','required',filename), croppedFrame)
-                            
-                                if args.reject_faces:
-                                    if identity in args.reject_faces:
-                                    
-                                        if args.dump_frames: 
-                                            logger.debug('--dump-frames: writing frame to' + os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden',filename))
-                                            if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden')): 
-                                                os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden'))
-                                            imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','forbidden',filename), croppedFrame)
-                                    
-                                        logger.critical(f"TRIGGER: --reject-faces: face verified as forbidden identity ({identity}).")
-                                        raise dms.observerTriggerException()
-                        
-                            else: logger.info(f"Face did not match with identity {identity}")
+                                    logger.debug('--dump-frames: writing frame to ' + os.path.join(args.dump_frames,'extractFaceAndVerify','known',filename))
+                                    if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify','known')): 
+                                        os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify','known'))
+                                    imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','known',filename), croppedFrame)
 
-                            # Finally, we move onto the next face.
-                            continue
-
-                    if (faceID == None):     
-                    
-                        # Redundant?
-                        # 'None' is placed in identities to allow for FER to be performed on unknown identities.
-                        logger.warning("Identity unknown; face did not match with any that were provided.")
-
-                        if args.dump_frames: 
-                            logger.debug(f"--dump-frames: writing frame to {os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg')}")
-                            if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify')): os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify'))
-                            imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg'), croppedFrame)
-
-                        elif args.reject_unknown:
-                            logger.critical("TRIGGER: --reject-unknown: face in frame was unrecognizable as a specific identity.")
-                            raise dms.observerTriggerException()
-
-                    if args.reject_emotions and faceVerifResultsQueue:
-                        if args.noblock:
-                        
-                            try:
-                                logger.debug("trying to put faceID, croppedFrame into faceVerifResultsQueue (--noblock)...")
-                                faceDetectionQueue.put_nowait((frame,face_locations))
-                                logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
-                            except queue.Full:
-                                logger.debug("faceVerifResultsQueue is full: --noblock flag set. Moving on.")
-                            except AttributeError:
-                                logger.debug("frameQueue has not been provided. Moving on.")
-                    
+                            if args.require_faces and (list(args.require_faces) != requiredFacesPresent):
+                                # We present some possibilities where breaking out of the loop early might cause a false negative or positive to occur:
+                                # 1. A false negative occurs if this face would match with a forbidden identity later in the list, but matches with another identity in an earlier cycle.
+                                # 2. A false positive occurs if this face would match with an identity required later in the list, but matches with another identity in an earlier cycle
+                                #    meaning that although all required faces are technically present, one is mistaken for another.
+                                # We consider that it is unlikely for a face to match to two identities if arguments are provided properly
+                                # but perhaps edge-cases (twins?) might cause this issue.
+                                # Because we have ordered our lists in a specific way in the main observer function such that we check 
+                                # against forbidden faces before required and known faces, we only have to go through the whole list
+                                # if required faces are provided.
+                                logger.info("--required-faces provided, so having to go through whole identity list to prevent potential false positives. Onto the next.")
+                                continue
+                            else:
+                                logger.info("No need to ensure matching with other identities at this point. Breaking and taking the last match as actual identity.")
+                                break
                         else:
-                            try:
-                                logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
-                                faceVerifResultsQueue.put((faceID,croppedFrame))
-                                logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
-                            except AttributeError:
-                                logger.debug("frameQueue has not been provided. Moving on.")
-                    else:
-                        logger.debug("FER disabled. Skipping queue.")
+                            logger.info(f"Face did not match with identity {identity}")
+                    
+                if (faceID == None):     
+                    
+                    # Redundant?
+                    # 'None' is placed in identities to allow for FER to be performed on unknown identities.
+                    logger.warning("Identity unknown; face did not match with any that were provided.")
 
-                if args.require_faces and (set(args.require_faces) != requiredFacesPresent):
+                    if args.dump_frames: 
+                        logger.debug(f"--dump-frames: writing frame to {os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg')}")
+                        if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify')): os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify'))
+                        imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg'), croppedFrame)
+
+                    if args.reject_unknown:
+                        logger.critical("TRIGGER: --reject-unknown: face in frame was unrecognizable as a specific identity.")
+                        raise dms.observerTriggerException()
+                    
+                if args.require_faces and (list(args.require_faces) != requiredFacesPresent):
                     logger.critical("TRIGGER: --require-faces: Not all identities provided were present in this frame.")
                     raise dms.observerTriggerException()
+                
+                if args.reject_emotions and faceVerifResultsQueue:
+                    if args.noblock:
+                        
+                        try:
+                            logger.debug("trying to put faceID, croppedFrame into faceVerifResultsQueue (--noblock)...")
+                            faceDetectionQueue.put_nowait((frame,face_locations))
+                            logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
+                        except queue.Full:
+                            logger.debug("faceVerifResultsQueue is full: --noblock flag set. Moving on.")
+                        except AttributeError:
+                            logger.debug("frameQueue has not been provided. Moving on.")
+                    
+                    else:
+                        try:
+                            logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
+                            faceVerifResultsQueue.put((faceID,croppedFrame))
+                            logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
+                        except AttributeError:
+                            logger.debug("frameQueue has not been provided. Moving on.")
+                else:
+                    logger.debug("FER disabled. Skipping queue.")
 
-                logger.info("Moving onto next face in queue.")
+            logger.info("Moving onto next face in queue.")
 
     except BaseException as e:
         triggerEvent.set()
@@ -596,22 +606,33 @@ def observerFunction():
 
         triggerEvent = multiprocessing.Manager().Event()
 
-        identities = [None]
+        identities = []
 
-        if args.known_faces:
-            for knownFace in args.known_faces:
-                if os.path.exists(knownFace) and (knownFace not in IGNORE_FILES):
-                    identities.append(knownFace)
+        # The ordering in which these arguments are added is very important for
+        # intended outcomes in the face verification thread.
 
+        # We put forbidden faces first, since if we detect any of these we should
+        # immediately trigger:
+        if args.reject_faces:
+            for rejectFace in args.reject_faces:
+                if os.path.exists(rejectFace) and (rejectFace not in IGNORE_FILES):
+                    identities.append(rejectFace)
+
+        # Then required faces, since we need to check that all of these are present in a frame:
         if args.require_faces:
             for requiredFace in args.require_faces:
                 if os.path.exists(requiredFace) and (requiredFace not in IGNORE_FILES):
                     identities.append(requiredFace)
-
-            if args.reject_faces:
-                for rejectFace in args.reject_faces:
-                    if os.path.exists(rejectFace) and (rejectFace not in IGNORE_FILES):
-                        identities.append(rejectFace)
+        
+        # Then known faces, since it's of minimal loss if we skip these.
+        if args.known_faces:
+            for knownFace in args.known_faces:
+                if os.path.exists(knownFace) and (knownFace not in IGNORE_FILES):
+                    identities.append(knownFace)
+        
+        # We add the unknown identity as the final part, since it should only exist when we've exhausted
+        # all other options.
+        identities.append(None)
 
         # Why are we removing duplicates and casting to tuple instead of just using a set?
         # Sets are unordered, and in practice this meant that identities shuffled about a bit from
@@ -619,7 +640,7 @@ def observerFunction():
         # Since we iterate over this container in that function, it seemed a good idea to remove this
         # non-determinable area of ambiguity, even though it wasn't causing any critical bugs.
                         
-        identities = tuple(dict.fromkeys(identities))
+        identities = tuple(identities)
         
         if (args.reject_noframe or args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
             if (args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
