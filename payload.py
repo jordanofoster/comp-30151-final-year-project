@@ -45,6 +45,7 @@ if args.alert:
     elif 'SMTP_FROM' not in os.environ: raise argparse.ArgumentTypeError('--alert: .env appears to be missing a required environment variable (SMTP_FROM).')
     elif 'SMTP_PASS' not in os.environ: raise argparse.ArgumentTypeError('--alert: .env appears to be missing a required environment variable (SMTP_PASS).')
     elif 'SMTP_TO' not in os.environ: raise argparse.ArgumentTypeError('--alert: .env appears to be missing a required environment variable (SMTP_TO).')
+    elif 'MSG_CONTENTS' not in os.environ: raise argparse.ArgumentTypeError('--alert: .env appears to be missing a required environment variable (MSG_CONTENTS).')
 
 if args.defuse:
     TRIGGER_DELAY = args.defuse*1000
@@ -147,6 +148,7 @@ def plFunction(args):
             smtp_from=os.getenv('SMTP_FROM')
             smtp_pass=os.getenv('SMTP_PASS')
             smtp_to=os.getenv('SMTP_TO')
+            msg_contents=os.getenv('MSG_CONTENTS')
 
             context = ssl.create_default_context()
 
@@ -155,7 +157,7 @@ def plFunction(args):
             msg['From'] = smtp_from
             msg['To'] = smtp_to
 
-            msgContents = f"""
+            msg_contents = f"""
             Hi Bob,
 
             If you're reading this, my DMS set off successfully.
@@ -171,14 +173,14 @@ def plFunction(args):
 
             if ('PGP_PUBKEY' or 'PGP_PRIVKEY') in os.environ:
                 logger.info("PGP key provided. Will be signing and/or encrypting this message.")
-                msgContents = pgpy.PGPMessage.new(msgContents)
+                msg_contents = pgpy.PGPMessage.new(msg_contents)
                 
                 # GPG does sign-then-encrypt rather than encrypt-then-sign.
                 if 'PGP_PRIVKEY' in os.environ:
                     logger.info("Private signing key provided. Signing this message.")
                     privkey, _ = pgpy.PGPKey.from_file(os.getenv('PGP_PRIVKEY'))
 
-                    msgContents |= privkey.sign(msgContents)
+                    msg_contents |= privkey.sign(msg_contents)
                     logger.info("Messsage signed.")
 
                     logger.info("Deleting signing key to prevent its reuse...")
@@ -189,16 +191,16 @@ def plFunction(args):
                     logger.info("Public encryption key of recipient provided. Encrypting this message.")
                     pubkey, _ = pgpy.PGPKey.from_file(os.getenv('PGP_PUBKEY'))
 
-                    msgContents = pubkey.encrypt(msgContents)
+                    msg_contents = pubkey.encrypt(msg_contents)
                     logger.info("Message encrypted.")
 
                     logger.info("Deleting encryption key to prevent its reuse...")
                     os.remove(os.getenv('PGP_PUBKEY'))
                     logger.info("Encryption key deleted.")
             else:
-                logger.warn("No PGP keys provided. This alert will be unsigned and unencrypted.")
+                logger.warning("No PGP keys provided. This alert will be unsigned and unencrypted.")
 
-            msg.set_content(str(msgContents))
+            msg.set_content(str(msg_contents))
 
             with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
                 logger.info(f"Attempting SSL connection with {smtp_host}:{smtp_port} as {smtp_from}...")
