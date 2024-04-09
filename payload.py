@@ -9,6 +9,10 @@ def _log_level(l):
         case "CRITICAL": return logging.CRITICAL
         case _: raise argparse.ArgumentTypeError(f"Invalid log level provided ('{l}')")
 
+def _secret_exists(s):
+    if os.path.exists(s): return s
+    else: raise argparse.ArgumentTypeError("All secrets must be valid files, directories or symbolic link paths.")
+
 parser = argparse.ArgumentParser(
     prog='File erasure payload for DMS.',
     description='File erasure payload for DMS.'
@@ -16,7 +20,7 @@ parser = argparse.ArgumentParser(
         
 parser.add_argument('host', action='store', type=str)
 parser.add_argument('port', action='store', type=int)
-parser.add_argument('secrets', action='store', nargs='+')
+parser.add_argument('secrets', action='store', nargs='+', type=_secret_exists)
 parser.add_argument('--heartbeat-grace-period', action='store', type=float)
 parser.add_argument('--heartbeat-max-retries', action='store', type=int)
 parser.add_argument('--heartbeat-timeout', action='store', type=float)
@@ -31,6 +35,16 @@ args = parser.parse_args()
 if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 elif args.log_level < logging.WARNING: logging.basicConfig(stream=sys.stdout, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
 else: logging.basicConfig(stream=sys.stderr, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
+
+if args.alert:
+    if not os.path.exists('.env'): raise argparse.ArgumentTypeError('--alert: .env does not appear to exist, and is required for e-mail alerts to work.')
+    from dotenv import load_dotenv
+    try: load_dotenv()
+    except: raise argparse.ArgumentTypeError('--alert: .env does not appear to follow the expected format for an environment file.')
+    if 'SMTP_HOST' not in os.environ: raise argparse.ArgumentTypeError('--alert: .env appears to be missing a required environment variable (SMTP_HOST).')
+    elif 'SMTP_FROM' not in os.environ: raise argparse.ArgumentTypeError('--alert: .env appears to be missing a required environment variable (SMTP_FROM).')
+    elif 'SMTP_PASS' not in os.environ: raise argparse.ArgumentTypeError('--alert: .env appears to be missing a required environment variable (SMTP_PASS).')
+    elif 'SMTP_TO' not in os.environ: raise argparse.ArgumentTypeError('--alert: .env appears to be missing a required environment variable (SMTP_TO).')
 
 if args.defuse:
     TRIGGER_DELAY = args.defuse*1000
