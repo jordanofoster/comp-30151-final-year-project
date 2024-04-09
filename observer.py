@@ -387,46 +387,46 @@ def extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQu
                         else:
                             logger.info(f"Face did not match with identity {identity}")
                     
-            if (faceID == None):     
+                if (faceID == None):     
                     
-                # Redundant?
-                # 'None' is placed in identities to allow for FER to be performed on unknown identities.
-                logger.warning("Identity unknown; face did not match with any that were provided.")
+                    # Redundant?
+                    # 'None' is placed in identities to allow for FER to be performed on unknown identities.
+                    logger.warning("Identity unknown; face did not match with any that were provided.")
 
-                if args.dump_frames: 
-                    logger.debug(f"--dump-frames: writing frame to {os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg')}")
-                    if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify')): os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify'))
-                    imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg'), croppedFrame)
+                    if args.dump_frames: 
+                        logger.debug(f"--dump-frames: writing frame to {os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg')}")
+                        if not os.path.exists(os.path.join(args.dump_frames,'extractFaceAndVerify')): os.makedirs(os.path.join(args.dump_frames,'extractFaceAndVerify'))
+                        imwrite(os.path.join(args.dump_frames,'extractFaceAndVerify','unknown.jpg'), croppedFrame)
 
-                if args.reject_unknown:
-                    logger.critical("TRIGGER: --reject-unknown: face in frame was unrecognizable as a specific identity.")
-                    raise dms.observerTriggerException()
+                    if args.reject_unknown:
+                        logger.critical("TRIGGER: --reject-unknown: face in frame was unrecognizable as a specific identity.")
+                        raise dms.observerTriggerException()
+                
+                if args.reject_emotions and faceVerifResultsQueue:
+                    if args.noblock:
+                        
+                        try:
+                            logger.debug("trying to put faceID, croppedFrame into faceVerifResultsQueue (--noblock)...")
+                            faceDetectionQueue.put_nowait((frame,face_locations))
+                            logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
+                        except queue.Full:
+                            logger.debug("faceVerifResultsQueue is full: --noblock flag set. Moving on.")
+                        except AttributeError:
+                            logger.debug("frameQueue has not been provided. Moving on.")
+                    
+                    else:
+                        try:
+                            logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
+                            faceVerifResultsQueue.put((faceID,croppedFrame))
+                            logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
+                        except AttributeError:
+                            logger.debug("frameQueue has not been provided. Moving on.")
+                else:
+                    logger.debug("FER disabled. Skipping queue.")
                     
             if args.require_faces and (list(args.require_faces) != requiredFacesPresent):
                 logger.critical("TRIGGER: --require-faces: Not all identities provided were present in this frame.")
                 raise dms.observerTriggerException()
-                
-            if args.reject_emotions and faceVerifResultsQueue:
-                if args.noblock:
-                        
-                    try:
-                        logger.debug("trying to put faceID, croppedFrame into faceVerifResultsQueue (--noblock)...")
-                        faceDetectionQueue.put_nowait((frame,face_locations))
-                        logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
-                    except queue.Full:
-                        logger.debug("faceVerifResultsQueue is full: --noblock flag set. Moving on.")
-                    except AttributeError:
-                        logger.debug("frameQueue has not been provided. Moving on.")
-                    
-                else:
-                    try:
-                        logger.debug("waiting to put faceID, croppedFrame into faceVerifResultsQueue...")
-                        faceVerifResultsQueue.put((faceID,croppedFrame))
-                        logger.debug("put faceID, croppedFrame into faceVerifResultsQueue.")
-                    except AttributeError:
-                        logger.debug("frameQueue has not been provided. Moving on.")
-            else:
-                logger.debug("FER disabled. Skipping queue.")
 
             logger.info("Moving onto next face in queue.")
 
