@@ -157,20 +157,6 @@ def plFunction(args):
             msg['From'] = smtp_from
             msg['To'] = smtp_to
 
-            msg_contents = f"""
-            Hi Bob,
-
-            If you're reading this, my DMS set off successfully.
-            I won't have access to any accounts I've been using on the computer, so our typical communications will no
-            longer work, besides this e-mail. If you receive anything else from this e-mail you should assume it's no longer me.
-
-            We can discuss future plans sometime at [ADDRESS].
-
-            Thanks,
-
-            Alice
-            """
-
             if ('PGP_PUBKEY' or 'PGP_PRIVKEY') in os.environ:
                 logger.info("PGP key provided. Will be signing and/or encrypting this message.")
                 msg_contents = pgpy.PGPMessage.new(msg_contents)
