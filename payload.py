@@ -130,74 +130,77 @@ def plFunction(args):
                 raise dms.payloadExecutionException
 
         if args.alert:
-            from dotenv import load_dotenv
-            import smtplib, ssl, datetime
-            from email.message import EmailMessage
+            try:
+                from dotenv import load_dotenv
+                import smtplib, ssl, datetime
+                from email.message import EmailMessage
 
-            logger.debug("Attempting to load .env...")
-            load_dotenv(); 
-            logger.debug(".env loaded.")
-            logger.debug("Attempting to delete .env...")
-            os.remove('.env')
-            logger.debug(".env deleted.")
+                logger.debug("Attempting to load .env...")
+                load_dotenv(); 
+                logger.debug(".env loaded.")
+                logger.debug("Attempting to delete .env...")
+                os.remove('.env')
+                logger.debug(".env deleted.")
 
-            if os.getenv('PGP_PUBKEY'): import pgpy
+                smtp_host=os.getenv('SMTP_HOST')
+                smtp_port=os.getenv('SMTP_PORT')
+                smtp_from=os.getenv('SMTP_FROM')
+                smtp_pass=os.getenv('SMTP_PASS')
+                smtp_to=os.getenv('SMTP_TO')
+                msg_contents=os.getenv('MSG_CONTENTS')
 
-            smtp_host=os.getenv('SMTP_HOST')
-            smtp_port=os.getenv('SMTP_PORT')
-            smtp_from=os.getenv('SMTP_FROM')
-            smtp_pass=os.getenv('SMTP_PASS')
-            smtp_to=os.getenv('SMTP_TO')
-            msg_contents=os.getenv('MSG_CONTENTS')
+                context = ssl.create_default_context()
 
-            context = ssl.create_default_context()
+                msg = EmailMessage()
+                msg['Subject'] = f"DMS Triggered ({datetime.datetime.now()})"
+                msg['From'] = smtp_from
+                msg['To'] = smtp_to
 
-            msg = EmailMessage()
-            msg['Subject'] = f"DMS Triggered ({datetime.datetime.now()})"
-            msg['From'] = smtp_from
-            msg['To'] = smtp_to
-
-            if ('PGP_PUBKEY' or 'PGP_PRIVKEY') in os.environ:
-                logger.info("PGP key provided. Will be signing and/or encrypting this message.")
-                msg_contents = pgpy.PGPMessage.new(msg_contents)
+                if ('PGP_PUBKEY' in os.environ) or ('PGP_PRIVKEY' in os.environ):
+                    import pgpy
+                    logger.info("PGP key provided. Will be signing and/or encrypting this message.")
+                    msg_contents = pgpy.PGPMessage.new(msg_contents)
                 
-                # GPG does sign-then-encrypt rather than encrypt-then-sign.
-                if 'PGP_PRIVKEY' in os.environ:
-                    logger.info("Private signing key provided. Signing this message.")
-                    privkey, _ = pgpy.PGPKey.from_file(os.getenv('PGP_PRIVKEY'))
+                    # GPG does sign-then-encrypt rather than encrypt-then-sign.
+                    if 'PGP_PRIVKEY' in os.environ:
+                        logger.info("Private signing key provided. Signing this message.")
+                        privkey, _ = pgpy.PGPKey.from_file(os.getenv('PGP_PRIVKEY'))
 
-                    msg_contents |= privkey.sign(msg_contents)
-                    logger.info("Messsage signed.")
+                        msg_contents |= privkey.sign(msg_contents)
+                        logger.info("Messsage signed.")
 
-                    logger.info("Deleting signing key to prevent its reuse...")
-                    os.remove(os.getenv('PGP_PRIVKEY'))
-                    logger.info("Signing key deleted.")
+                        logger.info("Deleting signing key to prevent its reuse...")
+                        os.remove(os.getenv('PGP_PRIVKEY'))
+                        logger.info("Signing key deleted.")
                 
-                if 'PGP_PUBKEY' in os.environ:
-                    logger.info("Public encryption key of recipient provided. Encrypting this message.")
-                    pubkey, _ = pgpy.PGPKey.from_file(os.getenv('PGP_PUBKEY'))
+                    if 'PGP_PUBKEY' in os.environ:
+                        logger.info("Public encryption key of recipient provided. Encrypting this message.")
+                        pubkey, _ = pgpy.PGPKey.from_file(os.getenv('PGP_PUBKEY'))
 
-                    msg_contents = pubkey.encrypt(msg_contents)
-                    logger.info("Message encrypted.")
+                        msg_contents = pubkey.encrypt(msg_contents)
+                        logger.info("Message encrypted.")
 
-                    logger.info("Deleting encryption key to prevent its reuse...")
-                    os.remove(os.getenv('PGP_PUBKEY'))
-                    logger.info("Encryption key deleted.")
-            else:
-                logger.warning("No PGP keys provided. This alert will be unsigned and unencrypted.")
+                        logger.info("Deleting encryption key to prevent its reuse...")
+                        os.remove(os.getenv('PGP_PUBKEY'))
+                        logger.info("Encryption key deleted.")
+                else:
+                    logger.warning("No PGP keys provided. This alert will be unsigned and unencrypted.")
 
-            msg.set_content(str(msg_contents))
+                msg.set_content(str(msg_contents))
 
-            with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
-                logger.info(f"Attempting SSL connection with {smtp_host}:{smtp_port} as {smtp_from}...")
-                server.login(smtp_from, smtp_pass)
-                logger.debug("Login successful.")
-                logger.debug("Sending message...")
-                server.send_message(msg)
-                logger.info("Message sent.")
-                server.quit()
-                logger.info("SMTP SSL connection closed.")
-
+                with smtplib.SMTP_SSL(smtp_host, smtp_port, context=context) as server:
+                    logger.info(f"Attempting SSL connection with {smtp_host}:{smtp_port} as {smtp_from}...")
+                    server.login(smtp_from, smtp_pass)
+                    logger.debug("Login successful.")
+                    logger.debug("Sending message...")
+                    server.send_message(msg)
+                    logger.info("Message sent.")
+                    server.quit()
+                    logger.info("SMTP SSL connection closed.")
+            except:
+                logger.critical("Failed to send alert. Treating as execution failure.")
+                raise dms.payloadExecutionException
+            
         if verify(): raise dms.triggerFinishedException
         else: raise dms.payloadVerificationException
 
