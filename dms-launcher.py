@@ -24,8 +24,8 @@ parser = argparse.ArgumentParser(
     description='Dead Man\'s Switch utility written in Python'
 )
 
-parser.add_argument('-p', '--payload', action="store", nargs="+", type=str)
-parser.add_argument('-o', '--observer', action="store", nargs="+", type=str)
+parser.add_argument('-p', '--payload', action="store", type=str)
+parser.add_argument('-o', '--observer', action="store", type=str)
 parser.add_argument('--timeout', type=float, default=0)
 parser.add_argument('--retries', type=int, default=0)
 parser.add_argument('--headless', action="store_true")
@@ -63,14 +63,14 @@ def main(args):
         args.retries -= 1
         if args.payload:
             logger.info(f"Launching payload subprocess...")
-            plP = subprocess.Popen(execArgs+args.payload[0].split(" "), creationflags=creationflags)
+            plP = subprocess.Popen(execArgs+args.payload.split(" "), creationflags=creationflags)
             logger.info("Payload subprocess launched.")
         else: 
             logger.info("--payload flag not provided; assuming remote payload.")
             plP = False
         if args.observer:
             logger.info(f"Launching observer subprocess...")
-            obsP = subprocess.Popen(execArgs+args.observer[0].split(" "), creationflags=creationflags)
+            obsP = subprocess.Popen(execArgs+args.observer.split(" "), creationflags=creationflags)
             logger.info("Observer subprocess launched.")
         else: 
             logger.info("--observer flag not provided; assuming remote observer.")
