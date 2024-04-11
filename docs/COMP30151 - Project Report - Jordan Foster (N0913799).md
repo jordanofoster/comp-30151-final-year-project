@@ -1,8 +1,16 @@
+---
+output: word_document
+---
+
 # COMP30151: Project Report - Jordan Foster (N0913799)
 
 ## i. Abstract
 
+TODO
+
 ## ii. Acknowledgements
+
+TODO
 
 ## iii. Table of Contents
 
@@ -10,14 +18,23 @@
 
 ## iv. List of Figures and Tables
 
+TODO
+
 ## 1 Introduction
+
 <!-- 
 Select an area of knowledge for investigation and identify an existing method(s), technique(s), algorithm(s), or system(s) suitable for improvement. Plan, and therefore timetable, a program of research and development, as laid out below. 
 -->
 
+TODO
+
 ### 1.1 Research into existing solutions
 
+TODO
+
 ### 1.2 Plan
+
+TODO: **can we take this from PPD?**
 
 ## 2 Context
 <!-- 
@@ -56,7 +73,9 @@ The DMS concept is generally known as a 'deadman switch' in this area; one examp
 
 An example of the DMS in an actual design is seen through the use of an *Active Constraint Robot* (ACROBOT) for the purposes of performing knee surgery with a rotary cutter (Davies et al., 1997). Within the paper, it is seen that the operating surgeon must continually depress a force sensor while operating the device. This, in combination with the surgeon only being allowed to backdrive the mechanism within certain regions, helps improve the safety of the device - while still allowing for more complex procedures than those allowed by passive powered robots and unpowered systems.
 
-<!-- picture here. -->
+![](assets/acrobot_figure.png)
+
+**(If I cite this as being from Davies et al., 1997 for demonstrative purposes, is this fine?)**
 
 Stop mechanisms also see usage in mobility & rehabilitation systems. One open electric network standard for wheelchairs, M3S (Linmann S., 1996), uses a dead man's switch associated with a joystick that activates *any time* it returns to a netural position; something that may be quite common when powering an electric wheelchair. The system takes care to allow for delay so that components with inertia such as motors may stop smoothly, and the author particularly notes the improved safety of 'failure-by-default' DMS systems compared to those that require action that may be difficult for disabled persons to perform in a timely manner.
 
@@ -95,6 +114,9 @@ Due to the nature of 'fail-deadly' systems being used for specific purposes duri
 <!-- Massive Retaliation/Mutually Assured Destruction, Launch on Warning 
 also see blackmail, assange/snowden
 -->
+
+**Do I need a citation for the definition of MAD?**
+
 The typical example of a fail-deadly system being used for deterrence purposes is the military doctrine of *Mutually Assurred Destruction* (MAD); Wherein a nation-state with nuclear second-strike capability can theoretically deter a rational agent with the same capacity from attacking them through the threat of apocalyptic outcome. It could be argued that much of modern political theory and action is only possible due to the chilling effect of such doctrine, but this is not foolproof; the doctrine assumes all agents are rational - an area in which humans are falliable - and even assuming perfect rationality, the model of MAD is such that actors are incentivised neither to initiate a conflict *or* disarm themselves; something that can easily lead to lockstep.
 
 It is not unrealistic to say that the social and political dynamics that undermine the validity of such concepts are complex enough to be outside of the scope of this report. Indeed, some nation states use second-strike procedures that would entirely be digital if not for the requirement of senior approval, and this in and of itself has lead to nuclear close calls that have only been prevented due to human intervention and doubt (See Wikipedia, 2023). The 'rationality' of actually firing back once confirmed that a nuclear armament is imminent is difficult to determine as at such a point the underlying 'pre-war' state has been discarded by a theoretically irrational action (firing at all).
@@ -117,11 +139,11 @@ The underlying idea itself here is that an actor capable of ensuring retaliation
 <!-- Commitment devices, social contracts, etc. -->
 This is the primary form of 'fail-deadly' application that is applied in morally benign and/or acceptable contexts; a person desiring to push themselves towards an action that is helpful long-term but painful in the short-term may lock themselves into a 'contract' to compell them towards an action that is ultimately good for them, or to prevent a self-sabotaging act; the latter being classically known as 'akrasia'. In the context of behavioural psychology, mechanisms that prevent akrasia are known as 'commitment devices'.
 
-Commitment devices encompass a wide range of strategies, but leverage the concept of reward and punishment as a driving force. There are primarily two approaches; removing or reducing the possibility for unwanted acts (deterrence), or threatening consequence for failure to perform an action (compellance). The latter, being 'active', is the closest to the DMS concept; contemporary deterrence measures are often passive (e.g., locking away junk food) and not reactive, such as seen with the kSafe (2023), which locks items away on a timer.
+Commitment devices encompass a wide range of strategies, but leverage the concept of reward and punishment as a driving force. There are primarily two approaches; removing or reducing the possibility for unwanted acts (deterrence), or threatening consequence for failure to perform an action (compellance). The latter, being 'active', is the closest to the DMS concept; contemporary deterrence measures are often passive (e.g., locking away junk food) and not reactive, such as seen with the kSafe (2024), which locks items away on a timer.
 
 Commitment devices that are reactive ('compellant') in nature tend to be on either side of the 'carrot-and-stick' divide. The concept of gamification (and by extension, persuasive design) focuses heavily on the idea of rewards ('carrots') for performing desired behaviour, and is prevalent across many industries and areas such as education, crowdsourcing, health and gambling - all with varying morality, on the basis that aspects of human psychological behaviour can be 'hacked' to steer someone towards a different outcome. Thus, the line between assistance and coercion in such cases is a thin one - if the user and provider/designer's desired outcomes do not align to the same 'optimal' path, these systems necessarily stray from ethicality by sabotaging the user, potentially in a way that remains undetected if the user is still enjoying themselves.
 
-Far more transparent are services and tools that act as the 'stick' - in the typical 'fail-deadly' sense - though this transparency makes them less likely to see uptake. Providers such as StickK and Beeminder have users pledge to a goal or habit, where failing to meet requirements results in a financial penalty. Some conflict of interest is unfortunately inherent, as the provider seems to profit on failure of the user. Non-financial punishments may fare better, but are often bespoke, such as sites that delete everything written if nothing is typed in a given period, to overcome writer's block - the integration of such ideas with the DMS concept entirely could produce interesting outcomes. The introduction of a human referee in such cases acts to enforce commitments, though to be ethical the user must initially consent to the commitment and have options for potential flexibility (such as in the case of an emergency).
+Far more transparent are services and tools that act as the 'stick' - in the typical 'fail-deadly' sense - though this transparency makes them less likely to see uptake. Providers such as StickK (2024) and Beeminder (2024) have users pledge to a goal or habit, where failing to meet requirements results in a financial penalty. Some conflict of interest is unfortunately inherent, as the provider seems to profit on failure of the user. Non-financial punishments may fare better, but are often bespoke, such as sites that delete everything written if nothing is typed in a given period, to overcome writer's block - the integration of such ideas with the DMS concept entirely could produce interesting outcomes. The introduction of a human referee in such cases acts to enforce commitments, though to be ethical the user must initially consent to the commitment and have options for potential flexibility (such as in the case of an emergency).
 
 Most current solutions on the market tend to target a very specific 'area' of commitment that needs a solution. As stated before, the kSafe entirely focuses upon deterring actions that are exclusively performed through an item for that purpose - for example, locking away items such as games controllers or food. Handling less tangible 'actions' or those that are tied to objects that see frequent use in general life (such as the computer) is more difficult. Digital services like StickK are limited to what they can observe, and as such often use analogue means of accountability (like referees) instead, which (as an effective employee of the service) are expensive; as such most solutions in this space are for a bespoke purpose and are inflexible to personal minutiae.
 
@@ -260,7 +282,7 @@ TFDA primarily refers to the leverage of existing communications, location and n
 
 In the same review it appears that many aspects of mesosystemic abuse and coercion are present as extensions of their use in non-technological contexts; harassment is conducted over social media and through other users, whereas coercion is performed in the context of - for example - threatening to release intimate content, or threats of revealing Personally Identifiable Information (PII); an action colloquially known as 'doxing'. For the purposes of harm through harassment and coercion, technology augments existing 'offline' methods by allowing them to grow in reach and consequence.
 
-In addition, the abuser need not rely on the mesosystem or offline apparatus to gather intelligence, as these methods can leave a trace that can alert the victim to their presence; through the use of anonymization tools, social media and *open-source intelligence* (OSINT) tools and techniques, a determined or skilled adversary can obtain information and query it using modern data analysis techniques, all while remaining anonymous or psuedonymous. For this reason, TFDA appears to be difficult for police to prosecute for, based on lack of evidence (see George and Harris, 2014). 
+In addition, the abuser need not rely on the mesosystem or offline apparatus to gather intelligence, as these methods can leave a trace that can alert the victim to their presence; through the use of anonymization tools, social media and *open-source intelligence* (OSINT) tools and techniques, a determined or skilled adversary can obtain information and query it using modern data analysis techniques, all while remaining anonymous or psuedonymous. For this reason, TFDA appears to be difficult for police to prosecute for, based on lack of evidence (see George and Harris, 2014).
 
 To properly model TFDA-based threats to the victim however, defining abuser capability in terms of *competence* and *access* rather - as Freed et al (2018) does - is more useful; the vast majority of abusers have a limit to their technical capabilities, being 'UI-bound' - but *do* often have 'ownership-based access' through being a device provider, and can compromise credentials by coercing the victim or attempting to 'brute force' into accounts. Effectively, in cybersecurity terminology, they are an 'authenticated adversary' - with the 'insider threat' being the most similar organizational equivalent. On this basis from a design context it might be best to assume the victim's computing environment as a 'low-trust' one, and design accordingly.
 
@@ -330,7 +352,7 @@ Despite all this, Lempert notes that in the studies, there appears to be a noted
 
 Within this, then, the narrative is constructed that DV victims going from 'pre-separation' to 'mid-separation' are not passive *or* powerless - indeed, Lempert warns against this as disempowering - and so it might be considered that the movement from a 'pre-separation' ("invisible") state to a 'mid-separation' ("visible", open) state of play is one that the victim reaches themselves.
 
-Though the DMS might not be able to operate in the capacity of 'ensuring communications' here, it could be applied to *assist* the victim in a way that will never 'kiss and tell'; its usage in this context *should* be explicitly as a tool for use, observation and benefit of the victim *alone*, by their definition. Perhaps technology, in this sense, can help the victim along the 'assistance pipeline' where humans and services cannot, much like a journal or first aid kit might - the victim has complete autonomy over it, and so can trust it wholly. Such cases by necessity empower the victim by assuming they are the authority on the accuracy of their own 'threat model', and perhaps this assumption of 'engineer knows best' is what prevents current technological aids from helping in all circumstances.
+Though the DMS might not be able to operate in the capacity of 'ensuring communications' here, it could be applied to *assist* the victim in a way that will never 'tell' on its user; its usage in this context *should* be explicitly as a tool for use, observation and benefit of the victim *alone*, by their definition. Perhaps technology, in this sense, can help the victim along the 'assistance pipeline' where humans and services cannot, much like a journal or first aid kit might - the victim has complete autonomy over it, and so can trust it wholly. Such cases by necessity empower the victim by assuming they are the authority on the accuracy of their own 'threat model', and perhaps this assumption of 'engineer knows best' is what prevents current technological aids from helping in all circumstances.
 
 ###### 2.1.2.7.2 Formal services and assistance
 
@@ -384,7 +406,7 @@ It is known that TFDA (See section 2.1.2.5.3) is easily facilitated by abusers, 
 
 Such measures appear to be fuelled by fear and low technical expertise; Freed et al (2018) notes in their study that the establishment of abuser 'omnipresence' (through spyware) resulted in what the authors refer to as belief in the abuser being "magical" (to disambiguate, having the perceived untracable/undefinable ability of the abuser to find them). Cybersecurity experts familiar with threat modelling might consider such countermeasures as excessive in all threat models except for state-targeted whistleblowers, but rather than dismiss this as paranoia, a common thread is identfiable between the (perceived) threat model of the unexpertised IPV victim and (actual model of) the whistleblower on-the-run; that being lack of knowledge regarding adversarial 'reach' (what can the adversary compromise), meaning they must fall back to 'undeniable truths' based on expertise. One that works for both would be 'broken technology is unusable', for example.
 
-Thankfully, for the victim's threat model, more measured responses can be made based on data that allows awareness of the abuser as a profilable adversary; given what Freed et al (2018) notes about the average abuser (see Section 2.1.2.5.3), a useful proxy for a 'secure' system in the context of TFDA might be defined as to whether someone can 'compromise' assets only using UI-based tools or services. This is not a high bar to reach by any means; most organizational efforts focus on securing against career criminals and state actors (Advanced Persistent Threats, or APTs) rather than UI-bound attackers who might, usefully, be considered archetypically similar to 'script kiddies' (the latter being a colloquialism present in hacker and cybersecurity language that pejoratively refers to persons - often juvenile - that lack the ability to write their own exploits).
+Thankfully, for the victim's threat model, more measured responses can be made based on data that allows awareness of the abuser as a profilable adversary; given what Freed et al (2018) notes about the average abuser (see Section 2.1.2.5.3), a useful proxy for a 'secure' system in the context of TFDA might be defined as to whether someone can 'compromise' assets only using UI-based tools or services. This is not a high bar to reach by any means; most organizational efforts focus on securing against career criminals and state actors (Advanced Persistent Threats, or APTs) rather than UI-bound attackers who might, usefully, be considered archetypically similar to 'script kiddies' (the latter being a colloquialism present in hacker and cybersecurity language that pejoratively refers to persons - often juvenile - that lack the ability to write their own exploits and must rely on prepackaged tools).
 
 Knowing this adversary archetype allows us to create a more measured threat model, which is crucial for re-establishing trust in technology for the victim as a tool of empowerment that allows for things such as helplines, legal assistance, and a life away from the abuser, and that thus, a safe life is very much possible through good cybersecurity practice alone. Unfortunately, this means that the 'big guns' of technological solutions aren't needed, and indeed likely increase the risk of abuser misuse more than they assist the post-separation victim - though a DMS could be useful for alerting during automated counterintelligence efforts against the abuser, such as evaluating whether the abuser might be able to discover a new location.
 
@@ -488,13 +510,13 @@ In addition, removal of technology that violates trust might generally be consid
 
 The lack of victim trust in technologies, services and their environment is one that has been consistently documented throughout this literature review's sections; dependant on situation, some victims, psychologically-speaking, cannot place trust in family (2.1.2.2.1), society (2.1.2.2.2), justice (2.1.2.3.1, 2.1.2.3.2), responders (2.1.2.3.3), their communities (2.1.2.5.2, 2.1.2.7.3), support services (2.1.2.7.2), technology (2.1.2.7.5), or even - in the best case scenario for the abuser - themselves (2.1.2.7.1, in the context of *avoidant* coping). Whether the distrust is well-placed or not is not the focus of this section; in some cases that facet of the problem has been discussed extensively prior, and in others commentary has been spared on tacit admittance of having to limit the scope of research surrounding the complex psychological, sociological and legal minutiae that lead to some phenomena observed.
 
-What can be noted without author expertise on the subject is that the problem of trust appears to be a big one in the field, and not one that has any universal solution; for some areas mentioned, a solution is certainly not within the scope of what academics can influence alone, requiring attention and compassion regarding the problem from authorities in law, the courts, welfare, and the state. Roads to 'one-and-done' solutions are nonexistent; next steps are based on incomplete information ever changing in veracity, and long-term improvements the product of generational effort. In the short term, areas and studies that interface directly with victims have far more effect, simply by listening to and documenting victim experiences - the voices of many a participant in the samples used are crucial to construction of underlying arguments to push for the changes needed in society at large to continually shine light on the issue and reduce its prevalence, publically and in the privacy of homes.
+What can be noted without author expertise on the subject is that the problem of trust appears to be a big one in research of and support for the issue, and not one that has any universal solution; for some areas mentioned, a solution is certainly not within the scope of what academics can influence alone, requiring attention and compassion regarding the problem from authorities in law, the courts, welfare, and the state. Roads to 'one-and-done' solutions are nonexistent; next steps are based on incomplete information ever changing in veracity, and long-term improvements the product of generational effort. In the short term, areas and studies that interface directly with victims have far more effect, simply by listening to and documenting victim experiences - the voices of many a participant in the samples used are crucial to construction of underlying arguments to push for the changes needed in society at large to continually shine light on the issue and reduce its prevalence, publically and in the privacy of homes.
 
 Perhaps where more obvious changes can be made are within the scope of technology itself, as it has a lot to answer for in the context of TFDA. The assumption can reasonably be made that for some victims, technology *is an adversary unto itself* - it is riskier to use it compared to the benefits it can bring, in some instances. The reliance of society on technology makes this calculation of risk that victims must constantly make a hidden one, as some aspects of technology are so thoroughly intertwined with societal participation that they fundamentally cannot be avoided (inexhaustively; banking, health & medicine, welfare and procurement of goods). Things like an e-mail, address and phone number are mandatory for some services at minimum.
 
 Technical countermeasures to the issue of DV must thus consider this aspect when 'selling' their usefulness to victims, and the best way this can be done from the start is by considering every potential angle of misuse; what data is collected and what inferences can be derived from them? How can sensors be used to gather information that might be used by an abuser? How can - if at all - the system protect against access by a credentialed adversary, or access by the victim in a state of coercion? The kind of information that can be gathered from a device depends not only on the context of its use, but any potential 'chatter' from the device in an idle state; sometimes mere knowledge that a device is on from questioning - i.e., "what is this device on my network? Why is this plug in use?" and other such questions - can be enough for a pre-separation victim to be especially harassed.
 
-It is recalled from prior readings (section 2.1.2.2.2, 2.1.2.4) that despite earlier mention of "intellectualizing the abuser" via *coercive control theory* to try and build counteractive stratagem, the abuser *can* act irrationally with impunity - due to lack of consequence - and so even suspicion of 'foul play' (from the abuser's perspective) is dangerous. Thus, the designer of the technical DV countermeasure must be transparent with the victim not only in expressing any attack surface, as mentioned prior, but in design and, importantly, *form*; what does the device do, what are its dimensions and appearance; how are inputs collected and processed; for *what purpose/output*, and the *generalised* security implications of any implementation details and countermeasures taken. Bluntly, the pre-separation victim is the expert on their own threat model and so researchers and engineers can only claim what is *best practice*; what is effectively being proposed here is a non-technical portrayal of the methodology Slupska and Tanczer (2021) has put forth, as has been cited frequently throughout discussion of current limitations.
+It is recalled from prior readings (section 2.1.2.2.2, 2.1.2.4) that despite earlier mention of "intellectualizing the abuser" via *coercive control theory* to try and build counteractive stratagem, the abuser *can* act irrationally with impunity - due to lack of consequence - and so even suspicion of 'foul play' (from the abuser's perspective) is dangerous. Thus, the designer of the technical DV countermeasure must be transparent with the victim not only in expressing any attack surface, as mentioned prior, but in design and, importantly, *form*; what does the device do, what are its dimensions and appearance; how are inputs collected and processed; for *what purpose/output*, and the *generalised* security implications of any implementation details and countermeasures taken. Bluntly, the long-term pre-separation victim is the expert on the specifics of their own threat model and so researchers and engineers can only claim what is *best practice*; what is effectively being proposed here is a non-technical portrayal of the methodology Slupska and Tanczer (2021) has put forth, as has been cited frequently throughout discussion of current limitations.
 
 #### 2.2.8 Lack of research into solutions identifying the need for 'covert' support of the victim in pre-separation stages of abuse
 
@@ -504,7 +526,7 @@ Because this factor appears to have been left unconsidered, it is uncertain how 
 
 Thankfully, models of architectural design present in the IoT industry can help with producing effective solutions; the pre-separation victim's environment is one considered insecure and thus untrusted, and perhaps to some extent the external services they access, if the victim directly authenticates to them (see section 2.1.2.8.2) and so can be coerced by the abuser. However in terms of physical, endpoint-based security, external servers and services ('the cloud') are mostly ironclad against a UI-bound attacker; the subsequent architectural narrative made visible is that devices within the victim's domain might benefit from being treated similarly to devices that would be present in 'fog' or 'edge' computing architectures. The focus of the IoT industry in these regards is mainly one of optimizing latency, throughput, and power consumption, but the consideration of these 'zones' - the fog, the edge and the cloud - in the security-centric context of 'trust zones' might be an appreciable framework upon which to limit the attack surface the abuser can exploit.
 
-Even considering that the context of IoT work and the threat model of the victim have a lot in common - shared requirement for low-power devices, problems with endpoint security, a progressive lack of 'environmental control' as things stray further from heavily secured, connected datacenters, and a primary usecase of 'collecting input' - it is crucial to note that above all else, having *covert* implementations (both in terms of any devices implanted, and the nature of any processing or result thereof) is more important for the victim than typical metrics of efficacy. If a device fails to record an incident that occurs, this can be bad (and reduces victim trust in the system), but if the incident is along the expected norm for what the victim suffers on a day-to-day basis, there may be other opportunities. If the device is reliable, but not covert, an angered retaliation to any kind of 'surveillance' of the abuser could prove dangerous.
+Even considering that the context of IoT work and the threat model of the victim have a lot in common - shared requirement for low-power devices, problems with endpoint security, a progressive lack of 'environmental control' as things stray further from heavily secured, connected datacenters, and a primary usecase of 'collecting input' - it is crucial to note that above all else, having *covert* implementations (both in terms of any devices implanted, and the nature of any processing or result thereof) is more important for the victim than typical metrics of efficacy. If a device fails to record an incident that occurs, this can be bad (and reduces victim trust in the system), but if the incident is along the expected norm for what the victim suffers on a day-to-day basis, there may be other opportunities. If the device is reliable, but not covert, an amplified, angered retaliation to any kind of 'surveillance' of the abuser could prove dangerous.
 
 Since covert, embedded surveillance devices are the favoured technologies of classified industries, finding current, open-access research on much of this might prove difficult or even impossible. Despite this, modelling aspects of the victim's situation as similar to those of an agent (scaled down for a less funded, less skilled, one-man adversary) seems to be a useful direction for further work; Stark (2009)'s *coercive control theory* creates the implict idea of the victim as the subversive, as has been touched upon in section 2.1.2.6, and so long as his theory holds weight, so too might a similar model; researching historical aspects of both state and civilian surveillance (even that used by the abuser) might show insights as to where typically 'organizational' or 'bigger actor' methods of assistance might be helpfully inversed to assist the victim (who will be more aligned with 'underdog' types, such as investigative journalists and other vulnerable persons).
 
@@ -523,6 +545,8 @@ In the more rigid context of the trigger scenario for a DMS being representative
 Of note is that all of these are written for a specific use-case, be it to monitor processes, the insertion or removal of an unknown USB device, or whether an SMS message is left unreceived, despite the aforementioned hardware design limitations being loosened significantly in a general computing environment, which might allow for some sort of homogenization of implementation and thus allow for larger amounts of trust (within the scope of what well-written, well-reviewed computer software can mitigate against). Why this might not have been done is difficult to ascertain, due to the variety of reasons for their development; hobbyists might simply have not wanted to take their projects in that direction, while persons who needed high assurance might have found themselves writing their dead man's switches independently to ensure trustworthiness, assuming their own competence (and thus, we cannot cite them as sources). In the further context of antiforensics, current software DMSs take a coercive stance by projecting a cost to incapacitation by 'threat of dire consequence' - a symptom of the restrictive threat models such persons self-operate under.
 
 There is clearly a gap in the area of DMS systems in availability and assured quality; producing and configuring one requires significant technical competence at minimum, and they are often written as one-off, fit-for-purpose (but not retrofittable) solutions. This is problematic from several angles; persons who might benefit from the protection of a DMS but are not minded towards software development and security must find analogue alternatives, which are even costlier to set up, maintain, and ensure robustness, for one. Systems themselves (due to their bespoke nature) are not modular in the slightest, meaning that consistencies between all permutations of a DMS (as said before, the trigger -> reaction procedure and securing against its subversion) are not leveraged to the extent that they should be. DMS use cases vary wildly by their very nature, but the cost of 'change' in this instance can be made cheaper in terms of time and security by modularizing constituent parts and ensuring their individual soundnesss and robustness.
+
+**Sections 3.1.1 to 3.1.3 can likely be removed.**
 
 #### 3.1.1 Breaking the DMS concept down into modular components to allow for retrofittability
 
@@ -552,7 +576,7 @@ In establishing this case study, several fictional characters will be created. N
 
 Given the origin of these naming conventions in evaluating the security of cryptosystems, current usage of such archetypes intentionally focus more on the *role* of each participant to fit the generic requirement of secure communication, and so some elaboration is required. When a statement is made about an actor, it will be in regards to what prior review indicates is consensus around archetypical DV situations, and so it will be qualified with a relevant citation.
 
-![](./assets/dv_case_study.jpg)
+![](./assets/dv_case_study.png)
 
 **Alice** is a victim of domestic violence in the situation this report has previously referred to as the 'pre-separation' phase, also known as the invisibility (see Lempert 1996; Øverlien & Holt, 2019) or physical control, 'beginning escape' (see Matthews et al., 2017; Sluspka and Tanczer, 2021) phase. **Mike** (`TA01`) is her abuser, and is actively using tactics of *Economic, Mesosystemic and Technological* abuse (see sections 2.1.2.5.1, 2.1.2.5.2 and 2.1.2.5.3) and has made efforts to keep her *socially and physically isolated* from peers (see section 2.1.2.5.4) through the former. Mike and Alice are in a society where domestic abuse is considered culturally and legally unacceptable, and so Stark (2009)'s *coercive control theory* can be thought to apply, and Mike **wants to keep the situation unknown to others.**
 
@@ -630,7 +654,7 @@ Taking this 'high-level' approach to things helps construct an understanding of 
      - By extension, her continued, unknown and safe access to independant credentials to services (online and offline), as stated.
    - Her physical and mental health & safety.
    - Any autonomy she currently has under Mike, since further measures of control could make it harder to escape.
-     - (Sources of autonomy not reliant on Mike's mercy are naturally preferred and obtaining and keeping them safe is more important).
+     - (Sources of autonomy not reliant on Mike's goodwill are naturally preferred and obtaining and keeping them safe may take priority for Alice).
    - Her contacts (from manipulation by Mike)
    - Her ability to autonomously interact with the following based on safety:
      - Formal services and the law (in regards to her situation).
@@ -643,7 +667,7 @@ Protecting against adversarial knowledge can be considered as a form of data pro
 
 Alice's physical and mental health are not assets that the DMS can realistically protect against in entirety. What can be acknowledged is that a false positive *or* negative from the DMS may carry heavy consequences in this regard, and this will be something acknowledged in risk management. In accordance with this, Alice's current autonomy is something that is better suited to OPSEC countermeasures in how Alice goes about her escape plan rather than relying on the DMS, and is thus considered out of scope for protection by the solution.
 
-A partial caveat to this however is the protection of Alice's contacts, both from manipulation from Mike and as a method to increase her autonomy. As noted with protection of digital resources, some requirements of the DMS might be considered under the context that this is something that Alice desires. Autonomous interaction with systems, services and the law is something the DMS can protect in the context of ensuring the possibility *cannot be taken away* from Alice, but it cannot assist her if someone has legal obligation to report on her behalf ('forced participation'). The suggested countermeasure, as described prior, would then be to advise Alice to practice OPSEC in terms of what she decides to divulge to whom; this might include whether she chooses to show her face, her surroundings or even her voice based on individual trust. Such decisions are complex and on a specific basis; no expert can advise Alice on this aspect better than herself, but *could* point out where certain bits of 'metadata' could leak (for example, her location while on a call). Regardless, this aspect of Alice's threat model is firmly out of scope for what the DMS can provide.
+A partial caveat to this however is the protection of Alice's contacts, both from manipulation from Mike and as a method to increase her autonomy. As noted with protection of digital resources, some requirements of the DMS might be considered under the context that this is something that Alice desires. Autonomous interaction with systems, services and the law is something the DMS can protect in the context of ensuring the possibility *cannot be taken away* from Alice, but it cannot assist her if someone has legal obligation to report on her behalf. The suggested countermeasure, as described prior, would then be to advise Alice to practice OPSEC in terms of what she decides to divulge to whom; this might include whether she chooses to show her face, her surroundings or even her voice based on individual trust. Such decisions are complex and on a specific basis; no expert can wholly advise Alice on this problem as some aspects are best known by herself, but OPSEC *could* point out where certain bits of 'metadata' could leak (for example, her location while on a call). Regardless, this aspect of Alice's threat model is firmly out of scope for what the DMS can provide.
 
 Because an ideal technical countermeasure Alice implements should not increase risk unneccessarily, the list might thus be categorized into what the DMS is *unlikely* to affect, what it *could* affect, and what it can explicitly *protect*.
 
@@ -715,7 +739,7 @@ The initial list of requirements defined in the project planning document were a
 
 The original context in which `DV-HLR-2` was written was surrounding the idea that contacts within the support network are to some extent more trustworthy than the victim's internal suroundings, and prioritises this over victim autonomy in such cases. This was a naiive approach caused by the lack of knowledge, and through the literature review it is reasonable (see Sections 2.1.2.7.1, 2.1.2.7.2 and Bailey 2012) to instead derive the idea that maintenance of victim autonomy over all else is paramount to adoption of useful tools due to the low risk appetite pre-separation victims have by necessity of survival.
 
-While it is true that some level of trust is required for Alice to receive outside support in the first place - and that the end goal is to help Alice to transition to a 'default trusted' environment - a willingness to accept some risks has been assumed, both implicitly (via the case study) and explicitly (See sections 3.3.2.2, 3.3.2.4). The working theory underlying the necessity of pre-separation technical solutions is that 'inherent trustworthiness' of services and tools alone is not acceptable at the pre-separation phase, due to the risk of unintentional harm (See sections 2.1.2.7.3, 2.1.2.7.5; 2.2.2, 2.2.7, 2.2.8), and that tools should either yield to the user or be (*accessibly*) opinionated in implementation and documentation so that the victim can easily assess risk (e.g., previous discussions of existing solutions in sections 2.1.1, 3.1 and 3.2). There is a significant gap in the 'market' of tools that *yield* to user intervention of the triggering process, and this will be a significant focus of the DMS solution provided.
+While it is true that some level of trust is required for Alice to receive outside support in the first place - and that the end goal is to help Alice to transition to a 'default trusted' environment - a willingness to accept some risks has also been assumed, both implicitly (via the case study) and explicitly (See sections 3.3.2.2, 3.3.2.4). The working theory underlying the necessity of pre-separation technical solutions is that 'inherent trustworthiness' of services and tools alone is not acceptable at the pre-separation phase, due to the risk of unintentional harm (See sections 2.1.2.7.3, 2.1.2.7.5; 2.2.2, 2.2.7, 2.2.8), and that tools should either yield to the user or be (*accessibly*) opinionated in implementation and documentation so that the victim can easily assess risk (e.g., previous discussions of existing solutions in sections 2.1.1, 3.1 and 3.2). There is a significant gap in the 'market' of tools that *yield* to user intervention of the triggering process, and this will be a partial focus of the DMS solution provided.
 
 In line with the above, `DV-HLR-2` is not entirely misguided, but requires rewriting in accordance with the countermeasure associated with 3. The rest of the in-scope countermeasures as defined in section 3.3.2.4 can be reasonably mapped to requirements, allowing for a new list:
 
@@ -723,16 +747,212 @@ In line with the above, `DV-HLR-2` is not entirely misguided, but requires rewri
 | :-: | :---------- |
 | `DMS-HLR-1` | The observer component **MUST** communicate any trigger events to the payload component. |
 | `DMS-HLR-2` | The DMS setup utility **MUST** operate independently from any component processes so that the tool can be set up and left to work in the background. |
-| `DMS-HLR-3` | The payload component **MUST** alert other components to the outcome of an activation. |
+| `DMS-HLR-3` | The payload component **MUST** provide information regarding the outcome of an activation. |
 | `DMS-HLR-4` | Any given DMS component that dies unexpectedly **MUST** show this to components that depend on it to allow for failure state handling. |
 | `DMS-HLR-5` | Both *trigger* and *payload* mechanisms within the DMS **SHOULD** prefer to use existing, low-level functionality of its execution enviromment where reasonable, to limit the possibility of byzantine failure to the OS and hardware layers. |
 | `DV-HLR-1` | The scenario-specific observer ‘trigger prevention mechanism’ **MUST** be reasonably accessible for the victim to use in terms of availability, setup and technical ability required. |
 | `DV-HLR-2` | The scenario-specific payload **COULD** provide the **optional, default-disabled** ability to communicate its activation to outside parties within the victim’s support network. |
-| `DV-HLR-3` | The DMS **SHOULD** have a configurable 'grace-period' between a trigger event and activation of the subsequent payload that allows for a manual, **authenticated** override via the 'trigger prevention mechanism'. |
+| `DV-HLR-3` | The DMS **SHOULD** have a configurable 'grace-period' between a trigger event and activation of the subsequent payload that allows for a manual override via the 'defusal mechanism'. |
 | `DV-HLR-4` | The DMS and its individual components **SHOULD** make reasonable efforts to *limit the amount of metadata it produces* in both unactivated and 'triggered' states, based on forensic ability of adversaries, known and unknown. |
 | `DV-HLR-5` | The *programmatic flow* of a triggered DMS in terms of the triggering 'event' and subsequent payload 'response' **SHOULD** be **reasonably abstractable** to the user in order to allow for manual replication of the process to faciliate understanding of its operation. |
 
-##  4 Implementation & Investigation
+### 3.4 Generic design architecture of the Dead Man's Switch system
+
+**Do we move these to implementation? What replaces it in new ideas?**
+**Do we need to retroactively put new requirements in to accomodate for the observer/payload?**
+
+As shown in reviews of previous literature and solutions, many contemporary DMS systems are designed bespoke for purpose; something that in the DV context of use would appear to be a barrier, if the assumptive nature of existing solutions alongside the shown need for victims to be able to engage with a system in a manner that maintains autonomy is any indicator. We take the assumption that the victim is aware of the concept of a *dead man's switch* and has decided that as a tool it would be useful, but in a manner that is likely to be unique enough given varying situations that whatever solution is provided must be retrofittable for purpose. To achieve this aim we take a 'layered' approach to architecture, consisting of universal components required in *all* DMS systems that operate *usecase-configurable* observer and payload 'functions'. To our knowledge this has not been done as part of an enclosed ecosystem prior - though similar results are definitely achievable within a limited scope via the retrofitting of various automation tooling, which similarly operates on concepts of events, conditions and responses.
+
+To fit this abstract requirement, we break down the basic requirements of *any* DMS system thus:
+
+1. All DMS systems necessarily require some *observation of state* in order to ascertain whether triggering criteria have been met.
+2. All DMS systems require a *payload* that results in a *desired outcome* when the *trigger criteria* has been met.
+3. All DMS systems that are deployed in coexistence with current architecture and/or environments must be designed so as to not *hinder typical operation* outside of 'failure' scenarios.
+4. All DMS systems must be designed such that the catastrophic failure of one given subsection of the system is signalable to, at minimum, *critical components required for the DMS to be effective in a failure scenario.*
+
+To achieve these aims alongside with some of the generic requirement above, the DMS 'architecture' consists of several decoupled processes: the 'observer' (which *tracks state and alerts based on select criteria*); the 'payload' (which *triggers* upon alert to achieve a desired outcome), and the *launcher* (which starts up both payload and observer to allow the system to run in the background). The payload and observer are linked via a *lifeline*, which is *severed* (disconnected and/or abandoned) when a trigger event or sign of failure is evident --- this pulls from the design philosophy behind the *kill-cord,* which works on the basis that a failure scenario is likely to lead in loss of access or control to the device in use.
+
+#### 3.4.1 Lifeline
+
+As stated prior, the main weakness to the 'kill-cord' or similar signalling concepts (such as early dead-man's pedals in transport cars) is the failure mode wherein the trigger 'action' is not performed, or -- in the case of situations where a continual input prevents the trigger -- a 'resetting' action is repeatedly performed during said failure state. While we leave the decision for *why* the lifeline itself is severed (on trigger event -- the kill-cord -- or without preventative measure -- e.g., the pedal) to the observer function itself on the basis that what constitutes a 'failure scenario' will differ dependant on the environment being monitored, the lifeline itself is used to simplify the trigger process; the lifeline is either explicitly severed, or does not see channel activity.
+
+In regards to the latter statement about channel activity, this secondary means of the DMS being triggered is noted to detect the aforementioned failure mode of the 'kill-cord' method of activation wherein the 'severing' action is not explicitly performed. This is done through use of a heartbeat - fixed-length data is sent across the wire in a back-and-forth fashion by both the observer and payload:
+
+![Program flow diagram depicting the 'liveness' loop for the lifeline thread.](./assets/liveness-loop.png)
+
+This heartbeat is theoretically practiced in a 'ping-pong' fashion; one side sends a heartbeat and immediately awaits a response on a timeout, done to ensure both the observer -> payload and payload -> observer lines are still live. If the attempt to send or recieve either times out or faces a *non-fatal* error, this process is retried for a set period until either a response is received (resetting the retry counter) or no retries are left. Upon the latter, the lifeline is explicitly 'severed' (to, where possible, prevent delays in activation that merely relying on timeouts would result in) and the cleanup/trigger procedure for the observer/payload is executed.
+
+Between retries, a grace period is entered; this is to allow 'rate-limiting' of the line such that it does not accidentally result in Denial-of-Service (DoS) to other, non-DMS processes in the OS (such as the network stack). Dependant on the medium of communication used in the lifeline, some errors that occur when sending or listening for heartbeats may be known to be unrecoverable; in this instance it is encouraged that the lifeline is immediately severed as though no retries were left, as the outcome of continued attempts is known to end in failure, and fatal errors may be a sign of external tampering efforts.
+
+In regards to reliance on the lifeline as a proxy for application state, it is noted that the OS can be considered somewhat unreliable regarding protocol guarantees; TCP keepalive functionality was initially tested as a candidate for heartbeat functionality, but results on the development machine (a *Windows 10* system) showed that the handling of keepalive functionality at the kernel-level raised problems when processes were terminated by the OS -- since the link at that level of the network stack had technically not been severed, Wireshark captures indicated that keepalive packets were still being sent. As such application-level heartbeat functionality was implemented, and from a security perspective it is considered that heartbeats (or lack thereof) are the only trustworthy sign of application state. There are limitations to our approach (see *conclusions and future work*) as we only send single-byte packets with no sequence indicator beyond what TCP provides; but such issues were considered of minimal risk, due to the DMS being entirely deployed on a singular machine in the context of the case study chosen.
+
+##### 3.4.1.1 Establishing the Lifeline
+
+The observer and the payload operate as separate classes, where instances consist of a *trigger function* and *lifeline liveness function* at minimum (both as separate subprocesses). *observer* processes contain their own *observer function* which checks for trigger conditions (to sever the lifeline and activate their own trigger, which is a pre-defined cleanup procedure); *payload* processes consist of only the trigger function and the lifeline, and *only* monitor the state of the lifeline to see if the DMS has been triggered:
+
+![process-initialization](./assets/process-initialization.png)
+
+The initialisation of an observer or payload object itself facilitates the estalishment of a lifeline and continual monitoring of any relevant subprocesses. In the event of a failure, an exception (`lifelineInitException`) is raised for the visibility of the program that called it; the reason for a connection being established or dropped is not communicated across the lifeline at any point. This is because doing so would introduce a control flow, which may be an exploitation vector for an adversary.
+
+<!-- A separate comunications channel may be useful for future work in distributed DMS deployments, but it may be stronger security practice to keep the lifeline separate -->
+
+#### 3.4.2 Startup Sequence
+
+Functionally in terms of resilience to tampering, the startup sequence for the DMS can be delineated into five separate phases:
+
+1. Pre-creation of processes by the launcher (inert)
+2. Creation of the processes by the launcher (pre-arming)
+3. Lifeline handshake complete (partially armed, phase 1)
+4. All subprocesses *started* (partially armed, phase 2)
+5. Process liveness loop *begins* (partially armed, phase 3)
+6. All subprocesses *running* (fully armed).
+
+From the creation of the processes, the termination of a subprocess is recognizable to the DMS *launcher* (discussed later), but not to its peer, since a handshake has not been established; if the observer and payload have been set up using separate launchers (for example, to set up the DMS across machines in a network), then a given launcher is only ever aware of the failure of the processes it itself has spawned.
+
+For the payload, any startup required by execution of the payload function is delayed until activation due to it being part of the trigger procedure - and due to this it spends less time in the 'partially-armed' phase since only the lifeline liveness loop needs to have started. Within a given observer-payload pairing, one half cannot be terminated without alerting the other from phase 1 of startup, as the loss of connection would mean that heartbeats cannot be returned in phase 3 (when the liveness loop starts). The other window of vulnerability in terms of startup attacks is on the observer-side between the initialisation of the lifeline and the beginning of the observer process. The observer process itself cannot be killed outright (as this is checked for -- see Figure X), but the environment it observes can be manipulated before startup such that the trigger conditions are never reached.
+
+Mitigation of this would be dependant on the observer function that has been provided for use, and so specific countermeasures cannot be accomodated within design at this level, though generally applicable checks may involve confirmation that provided dependencies have not been modified (e.g. via file hashes) and triggering when access to resources required for assessing conditions is unavailable. The usecase-specific observer function provided in this implementation will provide some robustness to this type of attack, apparent in the relevant sections (4.1.3.1 for the observer via `--reject-noframe`; 4.2.2.4 for the payload via verification).
+
+#### 3.4.3 Trigger/Teardown Sequence
+
+![](assets/Trigger%20Procedures.png)
+
+Similarly to the startup sequence of the DMS, the teardown sequence itself may provide disruptive opportunity to an adversary, executed as follows:
+
+1. Teardown of lifeline
+   1. Closure of lifeline socket
+   2. Termination of lifeline liveness process
+   3. Confirmation of termination and cleanup of process resources
+2. Payload teardown procedure
+   1. Opportunity window for defusal of payload in case of inadverant triggering (Defusal Phase, Optional)
+   2. Initial attempt to achieve intended outcome (Execution Phase)
+   3. Attempt to signal successful execution (Alerting, optional)
+   4. Confirmation of apparent execution success as actual (Verification)
+3. Termination of 'root' process (observer/payload objects)
+4. Termination of associated 'launcher' processes
+
+Two main attacks vectors in prevention of the execution of a triggered DMS payload are identifiable: attacks against the lifeline, and attacks against the payload, both with the intended goal of preventing the intended payload outcome from being realized.
+
+Attacks on the lifeline must necessarily take advantage of the asynchronous nature of a modularized DMS by preventing the payload process from knowing that a lifeline has been severed. This is easier in connectionless protocols than connection-based ones, since merely continuing to send heartbeat signals would be sufficient deception in the case of the former. In connection-based protocols however, an adversary must successfully execute a man-in-the-middle attack during lifeline establishment during startup, such that the connection never appears to close. TCP is thus used as the transport protocol for the lifeline within the implementation due to this fact, alongside its existing OS integrations and security features hopefully providing basic protections. However in the use-case provided, the observer and payload processes would both be running on Alice's secure computing environment via the loopback/localhost network adapter, and as such, we consider attacks on the lifeline to be mostly **out of scope** within this project (though is an area for future work, discussed in the relevant section).
+
+Attacks on the payload are more of a concern, with some risks being unmitigatable; SIGKILL on Unix systems explicitly forbids processes to use an interrupt handler (citation needed) and so an adversary with such permissions could easily neutralize the DMS entirely. Similarly, any attacks that prevent the payload from performing its job properly at the OS level are difficult to mitigate, as blocked execution attempts can only be retried. However both types of attack are theoretically unsubtle, and so logging mechanisms are enabled to provide a trace of this kind of abrupt tampering.
+
+We note the edge case where some theoretically producible payload trigger functions may be subject to sophisticated attacks that alter the execution environment, such that the payload appears to succeed at the application-level but the underlying operations are not executed, and that this vector is achievably exploitable by a user that has limited privileges that prevent outright termination of the payload; and so implement the verification phase so that a payload can "check its own work" after operating. Unfortunately, countermeasures against adversaries with access to the endpoint running the payload process are potentially undermined by poor endpoint security, and so ultimately the problem of payload tampering must be considered somewhat  unsolvable by the DMS itself -- machines running  processes must necessarily be considered highly trusted and so efforts should be made to harden deployment environments as part of defence in depth. Within the case study in which the DMS would be deployed, Alice's hypothetical 'live OS' is highly trustable in relation to her own resources and those of her adversaries; and so this is considered to be an acceptable shortcoming of the solution provided.
+
+##### 3.4.4 Failure Modes & Exceptions
+
+![](assets/Exceptions.png)
+
+In line with attacks presentable on the payload and observer as discussed during the setup and teardown sequence, various exceptions are used to report the reasoning for why an observer or process thread exits. Exceptions are categorised into two types; those that can be captured upstream by the main observer function in multithreaded components, and those that provide an exit code for the launcher, which cannot capture exceptions for the observer/payload processes it launches due to implementation caveats (See section 3.4.5).
+
+Whether exceptions *within* observer or payload *functions* are fatal (i.e., resulting in a trigger event) or recoverable is dependant on context of use, as it is not unknown (as can be seen in our usecase-specific observer function) for python library functions to throw exceptions such as `ValueError` to indicate nothing was returned. Despite this, any exception from the `dms` library produced during operation is considered a sign of unrecoverable failure, as these new exception classes are provided to cover specific edge cases that are likely to require specific explanation during the runtime of a given DMS instance.
+
+#### 3.4.5 Use of a 'launcher' system to permit headless setup of DMS components as background processes
+
+![](assets/Launcher.png)
+
+Though both payload and observer processes can be easily run as part of one program, the limitations of the programming language used for the implementation (Python) means that performance for such situations is lacking; multi*threading* in python merely allows for context switching across *one physical core* due to the Global Interpreter Lock (GIL) having such restrictions, and cannot be considered 'truly' concurrent. The GIL is bypassable through use of the  `multiprocessing` module, which provides objects that follow the threading API but spawn individual python sessions -- but unfortunately, these cannot be run without a parent process being alive due to the design of the module (presumably to prevent 'zombie' threads that have no terminating parent and do not terminate cleanly, taking up resources without explcit termination). This presented challenges for the requirement for the DMS to be obscured from view by being allowed to run in the background, as starting these as `multiprocessing` processes meant that they would be immediately killed after their parent process exits.
+
+The solution provided was to make use of the `subprocessing` module, which allows for raw executables to be launched using a pythonic wrapper, and which the `multiprocessing` module itself uses; the specific observer and payload functions are defined within separate `.py` files, which are launched as separate scripts using the python interpreter. While by default these subprocesses share the same reliant property as multiprocessing, passing the `DETACHED_PROCESS` creation flag (provided when the launcher is run headlessly within the implementation) allows for the launcher to exit after the lifeline is established without killing either payload or observer, effectively 'daemonizing' the DMS system in a manner that is portable across platforms -- though this lacks the 'good practices' enforced by non-portable services or daemon processes in systems, and is something that must be accomodated for in the DMS processes, including their usecase-specific functions. In practice, 'hanging' of processes was encountered during development, but as exception handling was implemented this issue became a non-concern.
+
+The primary downside of the `DETACHED_PROCESS` creation flag is that processes spawned using it cannot propagate logs to `stdout` or `stderr`, and are not able to communicate via pipes. As such, the state of the program itself is the only way that a headless launcher process can determine whether a handshake attempt was successful, such as via returncodes on failure (hence why some root-level exceptions inherit the `SystemExit` class rather than the `Exception` class, to allow for a returncode). In practice, this means that by design the launcher is blind to the ongoing status of the DMS' components beyond whether they are still alive or not, and so the success of the lifeline handshake attempt is approximated as follows, and illustrated above: the launcher spawns both subprocesses with their relevant arguments, waits a set period of time (ideally the handshake timeout), and checks to see if either process has died in that timeframe; if one has, the handshake is presumed to have failed, both processes *killed* (distinct from termination in that the process cannot 'trigger' in response) and the process restarted until no retries or left or the handshake succeeds.
+
+From this point, a headless DMS exits and leaves the DMS to run normally. With the `--headless` flag unset, the launcher simply waits and prints logs to console (if file logging has not been employed for the observer/payload) until either both processes or the *payload* process is dead -- since at this point the DMS is inert -- and ensures cleanup.
+
+Due to the reliance on the *subprocessing* module and the lack of communication in detached processes, regular means of passing arguments are not available. Instead, `argparse` is used as a proxy and the payload and observer arguments are provided to the launcher as individual 'command' strings, as follows:
+
+```bash
+.\dms-launcher.py -p ".\payload.py [PAYLOAD_ARGS] [PAYLOAD_OPTARGS...]" -o ".\observer.py [OBSERVER_ARGS] [OBSERVER_OPTARGS...]" [LAUNCHER_TIMEOUT] [RETRIES] [VIRTUALENV]
+```
+
+The `virtualenv` argument is optional, and permits the use of a specific `virtualenv` directory to use that environment's python executable instead of the one installed on the OS (if present), allowing for clean usage of a given DMS 'package'. This is notably *not* portable to other operating systems however, requiring the manual setup of a virtual environment for each system it is deployed -- designing and implementing a solution that *is* portable would be a goal for future work and was not pursued in this instance due to its irrelevance to the case study's requirements (alongside the usual excuse of time constraints).
+
+##### 3.4.5.1 Arguments for the DMS launcher
+
+The DMS launcher has some arguments that are required in order to facilitate the connection and shared environment of DMS components:
+
+| Argument | Type | Description | Additional Assertions |
+| :------: | :--: | :---------- | :--------- |
+| `-p`,`--payload` | `str` | Space-separated list of *quoted* payload function source files with arguments. Not required to allow for the launcher to be used in circumstances where the asynchronous setup of payload and observer might be required (such as when running the DMS in a distributed manner). | N/A |
+| `-o`,`--observer` | `str` | Space-separated list of *quoted* observer function source files with arguments. Not required to allow for the launcher to be used in circumstances where the asynchronous setup of payload and observer might be required (such as when running the DMS in a distributed manner). | N/A |
+| `--timeout` | `float` | Length of time required to wait before assuming a lifeline handshake has failed. Default 0 ('never timeout'). | N/A |
+| `--retries` | `int` | Maximum number of retry attempts for lifeline handshakes before the launcher exits completely. Default 0 ('never retry'). | N/A |
+| `--env` | `str` | Path to a *virtualenv* environment from which to use as the chosen python executor. When unspecified, the OS' default Python environment is used. | - Must be a valid directory. |
+| `--log-level` | `str` | level used by the `logging` library to determine what events are logged within both the observer/payload function and the process itself. Default `INFO`. | Must be a valid log level used by the `logging` library (DEBUG, INFO, WARNING, ERROR, CRITICAL) |
+| `--log-file` | `str` | Optional. Filepath to which logs for the file's observer/payload function and process must be written. If not provided, `stdout` and `stderr` are used instead; on a launcher with the `--headless` option enabled this will ensure no logs are left behind. | Must be a valid filepath. |
+
+##### 3.4.5.2 Template format for observer and payload function source files
+
+The implementation detail of the launcher also means that observer and payload 'scripts' that the launcher uses must follow a specific template, provided as follows:
+
+```python
+import argparse
+import dms
+
+parser = argparse.ArgumentParser()
+# Ordering does not matter, merely presence
+parser.add_argument('host', action='store', type=str)
+parser.add_argument('port', action='store', type=int),
+parser.add_argument('--heartbeat-grace-period', action='store', type=float)
+parser.add_argument('--heartbeat-max-retries', action='store', type=int)
+parser.add_argument('--heartbeat-timeout', action='store', type=float)
+parser.add_argument('--handshake-timeout', action='store', type=float)
+
+# _log_level merely maps the string to a 'number' - not mandatory but encouraged for usability
+parser.add_argument('--log-level', choices=[logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL], default="INFO", type=_log_level)
+parser.add_argument('--log-file', action="store", default=None)
+
+args = parser.parse_args()
+
+def helperFunction(...)
+"""Optional helper functions are to be defined above the main observer/payload function."""
+
+def observerOrPayloadFunction(args):
+  """
+  Main observer or payload function.
+  
+  :param args: Arguments, optionally other than those provided by argparse.
+  
+  All code provided before the definition of a given function OR the exec guard (see below) are availbale to any processes spawned via `multiprocessing` within a given payload or observer function, by necessity of the module's dependency on the `subprocesing` module.
+
+  :returns: None (should always raise exception)
+
+  :raises dms.relevantException: See section X.
+  """
+  try:
+    <<<main observer/payload function code>>>
+  except <<<non-dms exception>>> as e:
+    raise dms.relevantException()
+
+if __name__ == "__main__":
+  dms.relevantProcess(
+    args.host,
+    args.port,
+    func=observerOrPayloadFunction,
+    args=relevantArgs
+    ...
+  )
+```
+
+This implementation template will be used as a basis on which to explain aspects of the usecase-specific observer and payload functions that were implemented for this case study.
+
+##### 3.4.5.3 Required arguments for all observer and payload function source files
+
+The following arguments must be implemented in all source file templates:
+
+| Argument | Type | Description | Additional Assertions |
+| :------: | :--: | :---------- | :--------- |
+| `host` | `str` | hostname/IP to connect on | Required (positional). |
+| `port` | `int` | port number to connect on | Required (positional). |
+| `--heartbeat-grace-period` | `float` | Grace period to wait between heartbeat signals. | N/A |
+| `--heartbeat-max-retries` | `int` | Maximum number of heartbeat failures to tolerate before severing the lifeline. | N/A |
+| `--heartbeat-timeout` | `float` | Time to wait between each heartbeat send/receive attempt before raising a timeout error. | N/A |
+| `--handshake-timeout` | `float` | Time to wait when attempting to establish lifeline before raising `lifelineInitException`. | N/A |
+| `--log-level` | `str` | level used by the `logging` library to determine what events are logged within both the observer/payload function and the process itself. Default `INFO`. | Must be a valid log level used by the `logging` library (DEBUG, INFO, WARNING, ERROR, CRITICAL) |
+| `--log-file` | `str` | Optional. Filepath to which logs for the file's observer/payload function and process must be written. If not provided, `stdout` and `stderr` are used instead; on a launcher with the `--headless` option enabled this will ensure no logs are left behind. | Must be a valid filepath. |
+
+## 4 Implementation & Investigation
+
 <!--
 DEVELOP AND IMPLEMENT suitable software, hardware, database or other 'tools' for testing the validity of the newly proposed ideas. This must be performed in a professional manner using the correct tools and techniques for the problem in hand.
 
@@ -741,23 +961,1098 @@ OR
 a properly conducted INVESTIGATION based on scientific principles and demonstrates the use of appropriate tools, techiques and standards.
 -->
 
-### 4.1 Design
+### 4.1 Implementation of usecase specific observer function
 
-![](./assets/Class%20Diagram.png)
-![](./assets/Program%20Flow.png)
-![](./assets/Sequence%20Diagram.png)
-![](./assets/Use%20Case%20Diagram.png)
+#### 4.1.1 Unique Arguments
+
+| Argument | Type | Description | Additional Assertions |
+| :------: | :--: | :---------- | :--------- |
+| `--reject-noframe` | `bool` | Flag. Sets whether this observer function should trigger when failing to obtain a frame from the video device. | - At least one trigger condition must be provided. | 
+| `--min-faces` | `int` | Trigger when the number of faces enumerated in a frame is *less* than the provided value. Default `0` (disabled). | - At least one trigger condition must be provided. - `--min-faces` must not be greater than or equal to `--max-faces`. - Value cannot be less than 0. |
+| `--max-faces` | `int` | Trigger when the number of faces enumerated in a frame *exceeds* the provided value. Not provided by default. | - At least one trigger condition must be provided. - `--max-faces` must not be less than or equal to `--min-faces`. - Value cannot be less than 0. |
+| `--known-faces` | `str` | Space-separated list of identity paths, with each representing a directory of images (that all match to one identity) or file (exclusively associated). Identities provided with the `--known-faces` argument are not directly associated with a trigger condition, but are distinguishable for the purposes of duress detection of a given person (using `--reject-emotions`). | - Arguments provided must resolve to a valid directory or path. |
+| `--require-faces` | `str` | Space-separated list of identity paths, with each representing a directory of images (that all match to one identity) or image file (exclusively associated). Triggers when one or more required identities are *not* present in a given frame. | - At least one trigger condition must be provided. - Arguments provided must resolve to a valid directory or path. - Paths provided to `--require-faces` and `--reject-faces` must be mutually exclusive. |
+| `--reject-faces` | `str` | Space-separated list of identity paths, with each representing a directory of images (that all match to one identity) or image file (exclusively associated). Triggers when one or more forbidden identities *are* present in a given frame. | - At least one trigger condition must be provided. - Arguments provided must resolve to a valid directory or path. - Paths provided to `--require-faces` and `--reject-faces` must be mutually exclusive. |
+| `--reject-unknown` | `bool` | Flag. Sets whether this observer function should trigger when a given face in frame cannot be recognized as a provided identity. | - At least one trigger condition must be provided. |
+| `--reject-emotions` | `str:float` (in format `emotion:min_confidence`). | Space-separated list of forbidden emotions and the minimum averaged score to trigger upon, distinguished via `:`. Triggers when one or more identities hold a forbidden emotion with an averaged score *greater than or equal* to the minimum provided, calculated over a sliding window of the last $x$ frames the identity was recognized in (with $x$ provided by `--sliding-window-size`). | - At least one trigger condition must be provided. - Arguments must be in the format `emotion:score`. - `emotion` must be a valid `deepface` library emotion (happy, neutral, surprise, sad, angry, fear, disgust). - `min_score` must be within acceptable bounds (0-100). |
+| `--noblock` | `bool` | Flag. If set, subprocesses (see section X) will not block waiting to put new data into queues that are full, and will instead drop the data. This eliminates bottlenecks that may delay certain trigger conditions from firing under heavy load, and (in combination with `--max-buffer-size`) minimizes the number of frames 'behind' the camera the observer process is (at the cost of potentially dropping trigger-causing frames). | N/A |
+| `--detector-backend` | `str` | Defines which *face detection* backend is used by the `deepface` library used in the observer function. Uses `opencv` by default. | - Must be a valid `deepface` face detector (opencv, ssd, dlib, mtcnn, retinaface, mediapipe, yolov8, yunet, fastmtcnn) |
+| `--model-name` | `str` | Defines which *face recognition/FER* model is used by the `deepface` library used in the observer function. Uses `GhostFaceNet` by default. | - Must be a valid `deepface` model (VGG-Face, Facenet, Facenet512, OpenFace, DeepFace, DeepID, ArcFace, Dlib, SFace, GhostFaceNet) |
+| `--sliding-window-size` | `int` | Defines the size of the 'sliding window' upon which FER averaging is performed for a given identity (across the last $x$ frames in which the identity was recognized). Smaller values result in forbidden emotions being checked more often, but increases false positive risk. Higher values are read less often but are more likely to be accurate. Default 10. | `--sliding-window-size` cannot be less than `--max-buffer-size`. |
+| `--max-buffer-size` | `int` | Defines maximum size of non-sliding window buffers used to pass information between threads. Smaller values ensure that subprocesses (see section x) are more tightly aligned on what frame is currently being checked for triggers, but causes heavy bottlenecking. Default 0 ('unlimited'). | `--sliding-window-size` cannot be less than `--max-buffer-size`. |
+| `--dump-frames` | `str` | If set, the facial recognition subprocess will dump cropped images of faces in the *current* frame to the provided directory for debugging purposes. Unknown faces are saved as `unknown.jpg`, known faces as `known/<identity>.jpg`, required faces as `required/<identity>.jpg`, and forbidden (`--reject-faces`) faces as `forbidden/<identity>.jpg`. | Argument must be a valid directory. |
+
+#### 4.1.2 Main observer function and thread pipeline
+
+![](assets/Main%20Observer%20Function.png)
+
+The main observer function facilitates the setup and monitoring of the various *subprocesses* and *threads* (distinguished due to implementation details in the `multiprocessing` module that introduce sufficient overhead so as to remove efficiency advantages of GIL bypass, explained further in later paragraphs) that allow the observer function to operate efficiently, including creation of various data structures used to pass information between them. The various subprocesses and threads of the main observer function act as parts of a pipeline, as can be seen below:
+
+![](assets/Observer%20Thread%20Pipeline.png)
+
+If not required based on the trigger conditions set, some processes/threads can be seen to be irrelevant and so are not added to the process pool to be started in the main observer function; the above diagram provides a somewhat simplified visual of the chain of dependencies in the pipeline. Because of some of the reliance on previous parts of the chain, the benefits of concurrency have bottlenecking limits; namely, processes later in the pipeline (towards the right in figure X) will have more significant impact on the 'latency' of a DMS deployed with this observer function due to the dependency on earlier threads in the pipeline. This can have knock-on effects during long runtimes in the form of blocking queue operations holding up threads earlier in the pipeline, meaning that trigger conditions tied to that thread *specifically* may be checked for less frequently. This has been mitigated through the addition of the `--noblock` and `--max-buffer-size` command line arguments, though this itself is a trade-off (see section 4.1.1).
+
+A `multiprocessing.Event()` object in the form of `triggerEvent` is used for subprocesses within the observer function to tell if a sibling subproceess has triggered; all processes within the observer function (primary and child) must set `triggerEvent` upon receiving an exception, alongside the raising of `observerTriggerException`. `triggerEvent` is checked at the start of every subprocess loop; if set, the current 'round' of processing is aborted and the thread itself cleans up, sets the event, and raises the trigger exception also; this ensures that each process has adequate time to exit cleanly and ensures reasonably 'synchronized' teardown procedures are followed.
+
+Functionalities relating to the use of face detection, facial verification and facial emotion recognition (FER) are explicitly invoked using `Thread` constructs within the `threading` module instead of the `Process` constructs provided by the `multiprocessing` module; this is because on *Windows* machines, the only available option for creating new `Process` options is to 'spawn' them as brand new processes rather than forking them from a parent process (as is supported in Unix-based systems); this means that memory (including module imports) are *not* shared between `Process` objects, or with their parent. Current documentation for the `multiprocessing` module (2024) indicates an intent to move towards exclusively supporting the 'spawn' method of `Process` creation, and so taking this approach is more portable and accomodating of future dependency changes.
+
+The `deepface` module (Serengil, 2024) used for these operations loads the relevant detector and verification models upon import, and itself appears to use the `multiprocessing` module; this effectively meant that the same models needed to be loaded thrice, tripling the time taken for an already long import process and heavily affecting performance (as these models had to fight with each other for processor time, alongside the existing DMS subprocesses and the rest of the OS). Restricting these functionalities to `Thread` objects means that they all compete on one thread alongside the main function due to Python's *Global Interpreter Lock* (GIL) -- a major limitation of Python, as touched upon prior -- but considering that neither DeepFace nor OpenCV (upon which it depends, and we use to crop frames) are thread-safe, thread locks had to be employed regardless and so these processes were already somewhat bottlenecked from the start.
+
+`Thread` and `Process` objects share the same API from the programmer's perspective, and `multiprocessing` constructs (such as `multiprocessing.Manager` for thread-safe data structure proxying and `multiprocessing.Queue` for a thread-safe queue) are compatible with the former also; this functionally means that we mostly do not have to treat these processes any differently when starting them, checking for state, or powering them down (with the exception that `Thread` objects cannot be told explicitly to terminate, instead exiting with the parent process). As a result, both will henceforth be collectively referred to as *subprocedures* unless a specific property of either object needs to be referered to.
+
+#### 4.1.3 Observer function subproceedures
+
+![](assets/Thread%20Exception%20Diagram.png)
+
+All subprocess and thread functions within this use-case specific implementation adhere to two rules; *triggerEvent* is observed at the start of each cycle, and the main 'loop' code is embedded within a try-catch statement; any exceptions that occur within the main loop that are not explicitly caught and handled by a nested try-except statement as a non-fatal error propagate outside of the loop and are treated as trigger events. The simple *thread exception handler* (shown above) is used at the top-level *try-except* statement in every subprocess/thread function, ensuring that a trigger event propagates quickly to both the main thread and any sibling threads/processes.
+
+##### 4.1.3.1 Frame Acquisition Process
+
+![](assets/Frame%20Acquisition%20Process.png)
+
+The frame acquisition process is the simplest subprocedure in the observer function's pipeline, and not much nuance can be written about besides what is already evident in Figure X. We note that *all* instances of the observer function require this subprocedure as a dependency however, and the only instance in which it is the *only* subprocedure is when `--reject-noframe` is the only trigger condition provided. In such cases, the observer will only trigger if this subprocedure is unable to acquire a frame from the device for whatever reason. In informal incremental testing during development, this typically only occurred when another application had seized control of the default video device before the observer started.
+
+Unfortunately this can be noted to work both ways, meaning that in the current implementation, when the DMS is running, the main webcam cannot be used for video calling or other purposes:
+
+![](assets/device-grabbing-example.png)
+
+This is an issue with the implementation of peripheral devices at the OS level and so concurrent access to the camera is unfeasible. Workarounds are possible however, to be noted in future work.
+
+##### 4.1.3.2 Face Detection Thread
+
+![](assets/Face%20Detection%20Thread.png)
+
+The face detection thread is the first thread that involves the use of the `deepface` library, and thus uses the model lock to ensure thread safety. Frames provided by the *Frame Acquisition* process are checked using the `detect_faces` function to obtain a list of detected faces, and the length of this list is checked against the `--min-faces` and `--max-faces` parameters to determine whether the number enumerated is within an acceptable range. Of note is that not finding any faces raises a `ValueError`; though not modelled in the flowchart, we functionally capture this possibility using a try-catch statement and operate as though an empty list was returned in such cases. When no faces are detected, an entry is not put into the list, as such an outcome does not affect trigger outcomes further down the pipeline and would thus needlessly fill up the queue.
+
+In the instance that other subprocedures in the pipeline are not enabled (i.e., only the `--max-faces`, `--min-faces`, or `--reject-noframe` trigger conditions are provided) the queue is always skipped -- this is a design pattern present throughout the entire pipeline past the frame acquisition process and is implemented to reduce resource usage if unneeded. Given that the faces detected are needed for verification and/or FER purposes however, both the *frame* in which a face was located and the *coordinates* for said face are placed within the output queue to be consumed by the *Face Verification Thread.*
+
+##### 4.1.3.3 Face Verification Thread
+
+![](assets/Face%20Verification%20Thread.png)
+
+The face verification thread is perhaps the most computationally involved component of the entire process pipeline, involving the matching of a detected face to an identity within the list produced during the initialisation phase of the main observer function. Identities exist in the form of a singular image file or a directory, and which `deepface` function is used depends on whether the identity provided is a single image or a directory of images all mapped to the same face.
+
+One problem encountered during development was the issue of managing the different formats used between `deepface`'s `verify` function and `find` function, used for comparing whether two images are the same person (images) and whether *any* images in a *directory* match to a face respectively. `find` was used instead of a repeated `verify` loop over each image in the directory under the presumption that the latter would be extremely non-performative and that the library function was likely optimised to some extent, but instead of a data structure consisting of dictionaries (the data type returned by `verify`), `find` returned a list of pandas dataframes for *each face* detected in the frame. This meant that we had to implement some safeguards within the code that don't directly contribute to the functionality of the FYP, such as confirming that only one face was detected and that said dataframe was not empty (indicating no match). A slightly less abstracted explanation is present within the implementation itself (observer.py, extractFaceAndFVerify, L284 - L386) for readers who wish to see this in greater detail and compare with the DeepFace library (Serengil, 2024).
+
+After the outcome of either operation for a given identity, we compare it against trigger conditions; we note the order of checking is the same as the order in which items are placed into the identities list in the main observer function (section 4.1.2), and this is important; we initially checked over *every identity provided* for *each face in the frame* to check for trigger conditions -- the inefficiency of this is evident, but undetected during development due to us not using a large set of identities. The code and the ordering of the list was thus changed to accomodate for this and improve efficiencies, and are described as follows, as we assume our new ordering of forbidden faces first, followed by required faces, known faces and unknown faces (identity of `None`):
+
+The first identities checked are always the *forbidden identities* (`--reject-faces`) that have been provided, since these would immediately cause a trigger event if verified. After this, next in the sequence are any *required identities* (`--require-faces`) that must be present in the face, and then any faces that are merely *known*. We break our loop on the *first identity the face matches with* except for one instance -- when required faces have been provided, but we have not yet detected that all required identities are yet *in this frame*. This is to prevent false positives that might occur if we break too early  -- for example, if several identities are similar enough that a face is mistaken as several, or the inverse (several people match to the same identity, such as identical twins).
+
+In reality both are an unlikely edgecase, but certainly possible - since this is not part of the main literature review a deep dive into the 'twinning' problem in the field was not done. But to lightly address the significance of the latter concern, we note Hsu and Tai (2023)'s work indicates that the model (FaceNet) our default verification model (GhostFaceNet) was based upon has fairly respectable (majority accurate) performance on the existing LFW/SLLFW datasets, yet all models tested struggle to break 'better-than-chance' accuracy (~0.5) over all spaces calculated (cosine/euclidean/euclidean_l2) on the researchers own 'twin' datasets, implicating classification bias. Though FaceNet was chosen by the researchers for its general superior performance for a pre-trained and fine-tuned model that *did* outperform humans in said paper, said model certainly isn't available in the library used for this implementation, and so we assume that *any* model in the library will struggle to distinguish such cases in the wild and accomodate as best we can in the implementation.
+
+After breaking on a given 'identity checking loop' -- which again occurs if we match to an identity and all required identities have already been seen in this frame, or when we run out of faces -- we check for our next trigger condition; if the identity provided is `None` (indicating that no identity could be matched to this face) and `--reject-unknown` is set. If this is not the case, we simply repeat the process for all faces in frame; when outcomes for all faces have been noted, we check the final trigger condition; if `--require-faces` has been checked, but not all required identities have been detected in this frame. We thus have three trigger conditions that can occur within the face verification thread:
+
+1. A detected face was verified with a forbidden identity.
+2. A face could not be verified as an identity (the identity is 'unknown').
+3. All faces have been checked in this frame, but not all required faces were verified to a face.
+
+Though we check for one trigger condition at the 'frame' level rather than the 'face' level, we add to the next queue *whenever we finish the verification procedure for a face*, but *only* if duress detection -- alternatively 'Facial Emotion Recognition' (FER, in our flowcharts), or `--reject-emotions` (as an argument) -- is enabled. This also includes unknown faces since they have an 'identity' of `None` in our code, which has knock-on implications for FER; namely, that all 'unknown' faces are treated as one person for the purposes of duress detection. We consider that with the usecase present in our case study and how the observer is likely to be configured, that this is an acceptable (or even desirable) property, since in most situations this device might be deployed we would consider any 'unknown' faces to likely be a crowd or group, and thus averaging of FER values across several faces is likely to be more useful (i.e., to detect an 'angry mob') - however it stands to reason for devices that might see use by lots of people that this would be a hinderance. In such cases we would probably (via an optional argument, perhaps `--learn-unknown`) save the cropped frame of the face as a new identity file with a GUID as filename, followed by adding this filename as a 'known face', since this affects no pre-FER trigger conditions. We did not implement this as 'fixing' this quirk was considered extraneous and irrelevant to project objectives in the face of time constraints, and put potential risk of additional debugging overhead that time did not allow. However, it does deserve further consideration as part of future work.
+
+##### 4.1.3.4 Duress detection (`--reject-emotions`)
+
+Our duress detection -- at a high level of abstraction -- works in the following chain:
+
+1. Take an identity and associated cropped face and perform Facial Emotion Recognition (FER) on it to acquire confidence values across seven emotional 'areas':
+   - `happy`
+   - `neutral`
+   - `surprise`
+   - `sad`
+   - `angry`
+   - `fear`
+   - `disgust`
+2. Associating these values with the identity, put them in the buffer of FER scores mapped to this identity, where the size of the buffer represents the last X frames in which they were identified.
+3. When the FER buffer of a given identity is full, lock access to it and take out all the values into a temporary 'sliding window' list. Release the lock so the buffer can be filled once more.
+4. With the new set of FER values, calculate the average of each FER score for each area.
+5. Associate these averaged values with the identity and put them in the *forbidden emotion queue.*
+6. Take the set of averaged FER emotions associated with an identity and, if any of the areas are forbidden, determine if the averaged score for that area exceeds the maximum allowable score. If so, trigger.
+
+Perhaps evidently, very little of the duress detection feature is tied to the *act* of Facial Emotion Recognition itself. This means that from the perspective of the observer function's 'pipeline', at this point we can once again free ourselves from Python's GIL and return to true concurrency after the FER values for a given identity have been calculated and put into the identity-specfiic FER buffer. There is still a performance bottleneck in the amount of time it takes the *FER Averaging Process* to empty a full sliding window buffer, since a FER Thread without the `--noblock` flag set will have no choice but to wait until the lock for a specific identity's sliding window buffer is present. In practice, though, since an identity is unlikely to appear twice in a frame (caveats described in section 4.1.3.3 notwithstanding), this pragmatically *never occurs*, since the process of identifying every face in a frame *and* calculating FER values for said faces would have to somehow be less computationally intensive than the process of removing items from a queue and averaging a series of numbers. An exceedingly large sliding window size may cause it, but this would be countered by the comparative free access the FER thread has to put new emotions in the sliding buffer, and such bottlenecking would be intermittent and at reasonably consistent and large intervals.
+
+###### 4.1.3.4.1 Facial Emotion Recognition (FER) Thread
+
+![](assets/FER%20Thread.png)
+
+Following on from discussion in section 4.1.3.4, the FER process is entirely self-constrained to the FER process itself, and itself does not have any trigger conditions. Due to the design of the pipeline and the reliance of duress detection on matching to an identity in the current implementation, the FER Thread is bottlenecked by the facial verification queue it pulls from. This decision was made due to the main risk identified in threat modelling that duress detection was intended to mitigate; that being the scenario in which an otherwise authorised person (i.e., Alice) is present, but clearly being influenced or coerced to do something. We consider such a scenario is likely in a pre-separation domestic violence situation, and assumed to be guaranteed to occur in our case study if Alice's secure PC is discovered by Mike, since as a threat actor he would *likely* force Alice to provide access to both the PC and any secrets or credentials required to see what is being done (and even if not, it is ethically unacceptable to not account for this possibility given prior literature review and our knowledge of Stark's *coercive control theory*).
+
+As a result, the face verification thread and the FER thread are *always* running together, or not at all, meaning even if the GIL was not a concern, there is a current overhead at the architectural level in the form of having facial verification running when we have not provided any of the facial verification arguments (`--reject-faces`, `--require-faces`, `--known-faces` or `--reject-unknown`), but we *have* requested FER be performed via `--reject-emotions`. Pragmatically if no identities are provided to the facial verification thread it will immediately consider all faces in a frame as unknown without much runtime overhead in a given loop, but the middleman could still be cut out. An attempt was made during the development period to try and decouple FER from the facial verification thread so that it could attach directly to the face detection thread if face verification was not required, but this would have required significant changes in program flow in both the FER thread and Face Detection thread determinant on whether the face verification thread was in use, since the queue item structure would change accordingly. Though possible to change, at this point in development other deadlines loomed close and ongoing debugging and refactoring efforts for this feature had eaten up time; as this was not considered part of the critical path and the current implementation is sufficiently performant for demonstration purposes, this issue was dropped, the git branch reset, and the optimization considered as potential future work.
+
+###### 4.1.3.4.2 FER Averaging Process
+
+![](assets/FER%20Avg%20Process.png)
+
+One FER averaging process is run for each identity provided to the observer function, with the addition of the 'unknown collective' (`None`). Each averaging process associated with an identity continually checks to ssee if its associated FER queue has been filled, at which point the associated lock within the dictionary is acquired and the FER Queue drained into the sliding window buffer. This lock is in place so that the FER Thread cannot put entries into the identity-specific queue between the acquisition of items; if it could, then this would mean that the sliding window buffer would never empty, and would be out of order due to the FER Thread putting new entries in after the averaging process has removed it. This introduces a momentary bottleneck as noted in section 4.1.3.4. When the FER Queue has been 'drained' into the sliding window buffer, the lock is released and a dictionary is created with an identity key and an emotions key containing subkeys with associated averages for each emotion area (see section 4.1.3.4), like so:
+
+```python
+{
+  "identity": identity,
+  "emotion": {
+    "anger": 0.31241233123,
+    "disgust": 0.312312446,
+    "fear": 56.231231123,
+    "sad": 24.23212322,
+    "surprise": 34.3423232,
+    "neutral": 15.023232
+  }
+}
+```
+
+This dictionary is finally put into the forbidden emotions queue to be assessed against the arguments provided by `--reject-emotions` (see section 4.1.1).
+
+###### 4.1.3.4.3 Forbidden Emotion Detection Process
+
+![](assets/Forbidden%20Emotion%20Process.png)
+
+The *Forbidden Emotion* detection process is the only part of the FER sub-pipeline (consisting of the FER Thread, FER Averaging Process and itself) that checks for an explicit trigger condition in the form of `--reject-emotions` (besides the usual trigger of an unhandled exception, as we mentioned back in section 4.1.3 and reflected in the try-catch structure of all subprocedures in the observer function). The `identity` key is not strictly required for functionality, as can be seen in the flowchart above - but it is provided so that the identity that went over the score threshold for a given forbidden emotion can be provided in the relevant log for the trigger event. Rather, the introduction of the identity is a useful distinguisher for the FER Averaging Processes, so that averages are bound to specific faces, as has been alluded to in different words in sections As briefly touched upon in section 4.1.3.4.1, this is a further consideration in design that would need to be revisted in trying to allow the FER pipeline to exist without the face verification thread, as the design assumption that FER values are associated with identities (and thus a process which *must* attempt to identify faces) is prevalent throughout the FER sub-pipeline itself.
+
+### 4.2 Implementation of usecase specific payload function
+
+For all payload specific functions, program flow can be roughly categorized into four phases:
+
+1. Defusal Phase (raise `payloadDefusalException` when payload is defused)
+2. Execution Phase (raise `payloadExecutionException` on failure)
+3. Alert Phase (Optional - failure does not affect payload execution, so no associated exception)
+4. Verification Phase (raise `payloadVerificationException` if outcome of Execution Phase cannot be confirmed as successful)
+
+We hand these over to be defined and handled as the function developer sees fit in the current implementation. For this example, Phases, 1,2 and 4 are roughly isolated into their own subfunctions as `defuse()`, `fire()`, and `verify()` respectively. Specifically, the defusal *procedure* is handled within the `defuse()` function, but the GUI prompt provided *as a defusal opportunity* itself is contained within the main observer function instead of a defined subfunction. The alert phase is handled within `fire()` as a check for whether `--alert` argument has been provided, and if it fails is considered a `payloadExecutionException`. `fire()` executes the payload, sends an e-mail alert if enabled, and then notes the outcome of `verify()` (True/False) to 'check' its own work.
+
+We note that this is certainly an odd way of doing things, and complicates code reuse -- for example, if a developer wishes to have defusal occur by answering security questions rather than clicking a button, or does not desire a timeout, they must import this as part of the main payload function. There is certainly room for the payload 'phase-based' architecture to be further modularized via integration into the general payload *component* of the DMS as a series of functions with arguments, much like how the *observer function* and its arguments are provided to the observer component via a separate thread; although these would likely be called as part of the component's `trigger` function -- rather than concurrently. There is at least a partial dependency chain here (verification cannot occur before execution concludes), and some issues with determining state would arise such as:
+
+1. What would the exact state of a payload defused mid-execution be? `verify()` could detect some 'progress' indicators but not all (such as partial file deletes, or file handlers left unfreed).
+2. What if the alert functionality finishes early, but the execution payload fails or is diffused afterwards? This would be a soft 'false positive', which could be damaging for some users.
+3. What other, not-immediately-evident effects could the inherent non-deterministic nature of concurrent execution of payload phases cause?
+
+The usecase-specific payload function of the dead man's switch is far more 'proof-of-concept' than the observer side - while it is applicable to Alice's usecase and preferable to the 'instant shutdown' functionality of existing tools if she is trying to avoid suspicion from Mike due to its comparative conspicuousness (if defusal is disabled), we note that though the means of *detecting* domestic violence appears reasonably widely applicable in existing reviews of technological countermeasures (see section 2.1.2.7.5, Kouzani 2023), the specific outcome(s) that users (victims of DV) want is more individualized due to the myriad factors that mean that some actions (i.e., calling the police) could backfire. This contrasts with the observer function, which we believe could be applicable to a wide range of usecases, both within and outside of the scope of our fictional case study. Thus, rather than focusing on making this function 'more sophisticated', future work should make it easier to construct new payload functions from existing parts (in line with our previous statement regarding further modularization potential for each of the payload phases).
+
+#### 4.2.1 Arguments
+
+| Argument | Type | Description | Additional Assertions |
+| :------: | :--: | :---------- | :--------- |
+| `secrets` | `str` | Space separated list of files, directories and symbolic links to delete upon triggering of the payload. These entries are checked to see if they still exist during the verification phase of the payload's execution. | All secrets must resolve to valid paths. |
+| `--alert` | `bool` | Flag. When set, an e-mail alert is sent to a specified address using environment variables from the .env file in the directory the payload is executed. | - a `.env` file is present. - The `.env` file can be loaded into environment variables. - `SMTP_HOST` is defined as an environment variable. - `SMTP_FROM` is defined as an environment variable. - `SMTP_PASS` is defined as an environment variable. - `SMTP_TO` is defined as an environment variable. - `MSG_CONTENTS` is defined as an environment variable. |
+| `--defuse` | `int` | Activates defusal grace period for the payload. When provided, a 'defusal' pop-up appears for the number of seconds provided. If the defuse button is not clicked in this time, the payload triggers as usual. | N/A |
+
+#### 4.2.2 Main payload function and general payload execution phases
+
+![](assets/Main%20Payload%20Function.png)
+
+Following the standard file template (see section 3.4.5.2), the payload function starts up the payload component of the DMS with the arguments provided to it via the launcher, alongside an internally defined function and argument subset (again, derived from the launcher). When triggered, the main observer function is executed, resulting in the aforementioned four-phase sequence as described in the previous section. Abstractly, the usecase-specific implementation does the following:
+
+1. If `--defuse` has been provided, spawn a GUI with the defusal prompt for the set grace period, and a defusal button. If this button is clicked, then the payload does not trigger and `payloadDefusedException` is raised.
+2. Execute the initial payload (deletion of `secrets`). Raise `payloadExceutionException` if this fails.
+3. If `--alert` has been provided:
+   1. Load in the `.env` file with the environment variables to be used for the message and delete it.
+   2. Make a connection to our SMTP server using the secrets provided in `.env`.
+   3. If a separate PGP *private signing key* has been provided via the `PGP_PRIVKEY` environment variable, then use this to sign the e-mail message contents and delete the key.
+   4. If a separate PGP *public encryption key* for the recipient has been provided via the `PGP_PUBKEY` environment variable, then use this to *encrypt* the e-mail message contents and delete the key.
+   5. Send the message.
+   6. Close the SMTP session.
+4. Verify that the execution and alert cleanup procedures were correct:
+   1. For each secret, check whether it still exists. If so, raise `payloadVerificationException`.
+   2. If alerts are enabled and `PGP_PRIVKEY` was provided, check if the key still exists. If so, raise `payloadVerificationException`.
+   3. If alerts are enabled and `PGP_PUBKEY` was provided, check if the key still exists. If so, raise `payloadVerificationException`.
+   4. Check if `.env` still exists. If so, raise `payloadVerificationException`.
+5. If `verify()` returned `True`, raise `triggerFinishedException` to be handled in the main payload component's `trigger()` function and propagated to the launcher.
+
+##### 4.2.2.1 Defusal Mechanism
+
+![](assets/Payload%20Defusal%20Phase.png)
+
+The proof of concept defusal mechanism presented here is a basic one, consisting of a pop-up that appears for a set period of time with an optional 'defuse' button:
+
+![](assets/Payload%20Defusal%20Pop-up.png)
+
+The defusal pop-up iself is part of the main payload function and uses `tkinter` as the backend. If the user clicks the defuse button before the timeline elapses, then logs show that the payload component exits cleanly without executing the payload:
+
+![](assets/Payload%20Defused.png)
+
+If the grace period expires without the defuse button being clicked, then the payload continues to execute normally:
+
+![](assets/Payload%20Not%20Defused.png)
+
+##### 4.2.2.2 Execution Phase
+
+![](assets/Payload%20Execution%20Phase.png)
+
+When the payload is fired, each secret provided as an argument, be it a directory, file or symbolic link, is deleted. This is recursive, so the contents of a directory are also deleted - though symbolic links themselves are not followed. Using an example of a secrets folder:
+
+![](assets/Secrets.png)
+
+We can see in the logs that when the payload is executed, we attempt to delete all arguments provided:
+
+![](assets/Payload%20Executed.png)
+
+##### 4.2.2.3 Alert Phase
+
+![](assets/Payload%20Alert%20Phase.png)
+
+If the `--alert` option has been provided, then an additional alert phase is included after the execution phase to notify an external confidant. It relies on various environment variables provided in a `.env` file where the payload source file is executed from:
+
+| Variable | Implicit Type | Required? | Description |
+| :------: | :-----------: | :-------: | :---------- |
+| `SMTP_HOST` | `str` | Yes | Hostname of the SMTP server to connect to. |
+| `SMTP_PORT` | `int` | Yes | Port upon which the SMTP server is running. |
+| `SMTP_FROM` | `str` | Yes | E-mail address from which the alert is to be sent. |
+| `SMTP_PASS` | `str` | Yes | Password of the e-mail account that will send the address, as defined in `SMTP_FROM`. |
+| `SMTP_TO` | `str` | Yes | Recipient address of the e-mail alert. |
+| `MSG_CONTENTS` | `str` | Yes | Message contents of the e-mail to be sent. |
+| `PGP_PUBKEY` | `os.path` | No | Public PGP key of the recipient address (`SMTP_TO`). Optional. |
+| `PGP_PRIVKEY` | `os.path` | No | Private PGP signing key of the sending address (`SMTP_FROM`). Optional. |
+
+The subject of the e-mail is hardcoded, being in the format of `DMS Triggered (<Timestamp>)`.
+
+Efforts are made to remove traces of the alert also, as these are considered secrets; this consists of the `.env` file and any PGP keys provided by relevant arguments. They are deleted as soon as the operations for which they are required are completed.
+
+The e-mail can be unsigned and unencrypted, signed but unencrypted, encrypted but unsigned or signed *and* encrypted dependant on which (if any) PGP keys have been provided:
+
+![](assets/Unsigned+Unencrypted%20E-mail.png)
+
+![](assets/Signed+Unencrypted%20E-mail.png)
+
+![](assets/Unsigned+Encrypted%20E-mail.png)
+
+![](assets/Signed+Encrypted%20E-mail.png)
+
+Finally, we note the issue of whether a given alert should be encrypted or signed first. A signed ciphertext (encrypt-then-sign) can have its signature swapped, such that the message appears to be from another sender - resulting in an attack on authenticity. Signing a message and then encrypting it (sign-then-encrypt) preserves authenticity, but this means that untrusted ciphertext must first be decrypted by the receiver's PGP implementation, which can present attack surface; if the cryptosystem in place does not use *authenticated encryption* to detect tampering of ciphertext -- PGP doesn't -- then there are theoretically some subset of modifications that can be made to a given ciphertext that may decrypt to a different plaintext and/or signature. GnuPG performs sign-then-encrypt (Erat 2015), and is the defacto standard implementation of PGP due to its widespread use, though PGP can also support encrypt-then-sign (Krawczyk 2001). The true fix to this problem is signcryption, which simultaneously signs and encrypts a plaintext as a single cryptographic operation. PGP, being a legacy solution, was created during a time when cryptographic tools were still considered munitions subject to export restrictions in the U.S., and so open academic discussion of such issues, if present, was likely not a primary concern at the time over working towards the academic field's future existence. We stick to sign-then-encrypt as this is the most often expected format, and consider that such attacks against PGP are likely outside of Alice's specific threat model in this instance due to Mike being modelled as a UI-bound adversary.
+
+##### 4.2.2.4 Verification Phase
+
+![](assets/Payload%20Verification%20Phase.png)
+
+Finally, the verification phase of the payload function is used to confirm that the actions performed during the execution phase led to the intended outcome of the payload. Verification may be optional for execution functions where there is reasonable confidence that an 'invisible failure' cannot occur from the executor side when actions are performed, such as for library functions can either be reasonably assumed to raise exceptions upon failure, or subsequent verification of outcomes is impossible -- we consider the latter to be the case for checking that the SMTP alert e-mail was sent, as some failures cannot be seen by the DMS - for example, recipient-side delivery failures caused by dropped mail due to spam filtering or network failure. This means that there is a possibility that this usecase-specific function may execute properly but fail to alert a confidant; solving this is a complex problem that was considered to be functionally unsolvable given the requirement for reliance on and trust in external network infrastructure to send the e-mail. Though in code we treat the failure of the alert as a failure of execution (by raising `payloadExecutionException`), other implementations may wish for the alert to be 'decoupled' from the main payload trigger functionality.
+
+Given this caveat, the goal of this verification function is to ensure that the secrets (including those used for the alert) cannot be recovered from Alice's machine by Mike, and this is done by confirming that all `secret` arguments, keys and the `.env` files were deleted. From a forensic perspective, this would not hold up to professional scrutiny -- but we note that the current implementation's use of `os.remove` does not leave traces in the Recycle Bin on our test machine (Windows 10):
+
+![](assets/Payload%20Verification%20Forensic%20State.png)
+
+However, it can be seen that traces are left in Visual Studio Code, since it caches files that are deleted, as can be seen above; saving these files would subsequently restore them. We can thus consider this implementation to be safe and verifiable for deletion of files that are *not* cached by programs long-term (since Mike would not be able to find anything in the recycle bin), but not suitable for adversaries that would know potential areas where secrets might be cached, or that would have the ability to perform advanced forensic analysis -- though this is likely outside of Alice's threat model due to Mike potentially lacking this ability, and even if he *did*, were her secure OS a forensically 'traceless' one such as TAILS, the scope of this risk would be limited to her machine remaining on if Mike caught her. If Alice's threat model were such that this would still be a concern, it could be fixed with a different payload function that instead powered off the system, thus activating TAILS' anti-forensics procedures (see Section 2.1.1.1.2, Anon., 2023). The launcher and/or payload process would have to run as a privileged user to do this, but doing so is perfectly achievable.
 
 ## 5 Results & Discussion
+
+### 5.1 Test Definitions & Results
+
+#### 5.1.1 DMS Launcher
+
+##### 5.1.1.1 Standard launch is successful
+
+- **Given** that I have an observer and payload function source file
+- **And** that the observer source file contains the observer function relevant to the usecase provided
+- **And** that those source files have valid arguments provided to them
+- **And** that those source files do not have dedicated log files provided
+- **And** that the DMS launcher has valid arguments provided
+- **Then** when I start the DMS launcher
+  - **Then** an observer and payload subprocess should be started
+  - **And** they should successfully handshake
+  - **And** heartbeats should be seen to be working
+  - **And** the DMS launcher should be seen to assume the handshake was successful after the allocated `--timeout` period
+  - **And** the observer subprocess should be seen to setup successfully
+  - **And** I should see ongoing logs indicating the DMS is armed and running
+
+| Step | Instruction | Test Data | Expected Outcome | Actual Outcome | Result |
+| :--: | :---------- | :-------- | :--------------- | :------------- | :----: |
+| 1 | Start the DMS launcher program with valid arguments. |
+| 2 | Confirm that the observer and payload subprocesses have started. | 
+| 3 | Confirm that the observer and payload successfully handshake. | TEST |
+| 4 | Confirm that the DMS launcher has noted that both observer and payload are still alive. |
+| 5 | Confirm that heartbeats are being sent from the observer to the payload. | TEST |
+| 6 | Confirm that heatbeats are being received by the observer from the payload. | TEST |
+| 7 | Confirm that heartbeats are being sent from the payload to the observer. | TEST | 
+| 8 | Confirm that heartbeats are being received by the payload from the observer. | 
+| 9 | Confirm that the observer process is actively running. |
+
+##### 5.1.1.2 Headless launch completes successfully
+
+- **Given** that I have an observer and payload function source file
+- **And** that the observer source file contains the observer function relevant to the usecase provided
+- **And** that those source files have valid arguments provided to them
+- **And** that those source files had dedicated log files provided via the `--log-file` argument
+- **And** that the DMS launcher has valid arguments provided
+- **And** that the `--headless` flag has been set
+- **Then** when I start the DMS launcher
+  - **Then** an observer and payload subprocess should be started
+  - **And** they should successfully handshake (according to logs)
+  - **And** heartbeats should be seen to be working (according to logs)
+  - **And** the DMS launcher should be seen to assume the handshake was successful after the allocated `--timeout` period
+  - **And** the DMS launcher should be seen to have exited successfully
+  - **And** the observer subprocess should be seen to setup successfully (according to logs)
+  - **And** I should see ongoing logs indicating the DMS is armed and running
+  - **And** via manual inspection of the observer and payload log files I should be able to confirm that the observer and payload processes are still running after the launcher has exited
+
+| Step | Instruction | Test Data | Expected Outcome | Actual Outcome | Result |
+| :--: | :---------- | :-------- | :--------------- | :------------- | :----: |
+| 1 | Start the DMS launcher program with valid arguments,  the `--headless` flag set, and with the --log-file argument provided to both observer and payload processes. |
+| 2 | Confirm that the observer and payload subprocesses have started through inspection of logfiles. | 
+| 3 | Confirm that the observer and payload successfully handshake through inspection of logfiles. | TEST |
+| 4 | Confirm that the DMS launcher has noted that both observer and payload are still alive. |
+| 5 | Confirm that heartbeats are being sent from the observer to the payload through inspection of logfiles. | TEST |
+| 6 | Confirm that heatbeats are being received by the observer from the payload through inspection of logfiles. | TEST |
+| 7 | Confirm that heartbeats are being sent from the payload to the observer through inspection of logfiles. | TEST | 
+| 8 | Confirm that heartbeats are being received by the payload from the observer through inspection of logfiles. | 
+| 9 | Confirm that the observer process is actively running through inspection of logfiles. |
+
+##### 5.1.1.3 Handshake retry functionality works
+
+- **Given** that I have an observer and payload function source file
+- **And** that the observer source file contains the observer function relevant to the usecase provided
+- **And** that those source files have *invalid* arguments provided to them
+- **And** that those source files do not have dedicated log files provided
+- **And** that the DMS launcher has valid arguments provided
+- **And** that `--retries` has been set to a valid value
+- **And** that `--timeout` has been set to a valid value
+- **Then** when I start the DMS launcher
+  - **Then** while there are still retries left
+    - **Then** an observer and payload subprocess should be started
+    - **And** they should fail to handshake
+    - **And** the dms launcher should notice this failure after the provided `--timeout` value
+  - **Then** the DMS launcher should exit unsuccesfully after the allocated number of retries
+
+| 1 | Start the DMS launcher program with *subprocess* arguments that are intentionally invalid, such that the handshake will never succeed. |
+| 2 | Confirm that the observer and payload subprocesses have started. |
+| 3 | Confirm that the observer fails to connect to the payload. |
+| 4 | Confirm that the payload fails to receive a connection from the observer. |
+| 5 | Confirm that the DMS launcher notices that at least one subprocess has prematurely returned after the provided `--timeout` period. |
+| 6 | Confirm that steps 2-5 repeat for the number of retries allocated via the `--retries` argument. |
+| 7 | Confirm that the DMS launcher notes a failure to initialise and exits after all retry attempts have been exhausted. |
+
+##### 5.1.1.4 Manual interrupt functionality works
+
+- **Given** that I have an observer and payload function source file
+- **And** that the observer source file contains the observer function relevant to the usecase provided
+- **And** that those source files have valid arguments provided to them
+- **And** that those source files do not have dedicated log files provided
+- **And** that the DMS launcher has valid arguments provided
+- **And** that the DMS launcher does NOT have the --headless flag passed
+- **Then** when I start the DMS launcher
+  - **Then** an observer and payload subprocess should be started
+  - **And** they should successfully handshake
+  - **And** heartbeats should be seen to be working
+  - **And** the observer subprocess should be seen to setup successfully
+  - **And** I should see ongoing logs indicating the DMS is armed and running
+- **Then** when I send a keyboard interrupt (Ctrl-C) to the DMS launcher
+  - **Then** I should see that the observer is shutting down in the logs
+  - **And** I should see that the payload is shutting down in the logs
+  - **And** the DMS launcher should exit successfully
+
+#### 5.1.2 Observer Function
+
+##### 5.1.2.1 Frame Acquisition Process
+
+###### 5.1.2.1.1 `--reject-noframe` trigger condition works
+
+- **Given** that I have an observer and payload function source file
+- **And** that the observer source file contains the observer function relevant to the usecase provided
+- **And** that those source files have valid arguments provided to them
+- **And** an application entirely unrelated to the DMS is currently using the test device's camera
+- **And** that the `--reject-noframe` argument has been provided to the observer function
+- **Then** when I start the DMS launcher
+  - **Then** an observer and payload subprocess should be started
+  - **And** the observer subprocess should be seen to setup successfully
+  - **And** the frame acquisition process should be seen to setup successfuly
+  - **Then** when the frame acquisition process fails to acquire a frame due to the other application's usage of the camera
+    - **Then** the frame acquisition process should trigger
+    - **And** the main observer function should be seen to notice that a trigger event has occurred
+    - **And** the observer process should be seen to sever the lifeline
+    - **And** the payload process should be seen to notice the lifeline has failed
+
+| 1 | Open up an application that requires active use of the test device's main camera
+| 2 | Start the DMS launcher program with valid arguments, ensuring that the `--reject-noframe` argument has been provided to the payload subprocess. |
+| 3 | Confirm that the observer function has started successfully. |
+| 4 | Confirm that the frame acquisition process starts successfully. |
+| 5 | Confirm that the frame acquisition process fails to acquire a frame from the test device's main camera. |
+| 6 | Confirm that the inability to acquire a frame causes a trigger event in the frame acqusition process. |
+| 7 | Confirm that the main observer function notices the trigger event and attempts a teardown. |
+| 8 | Confirm that the observer *process* notes the observer function has exited and attempts to sever the lifeline. |
+| 9 | Confirm that the payload *process* notes that the lifeline has been *explicitly* closed via the connection being reset |
+
+##### 5.1.2.2 Face Detection Thread
+
+###### 5.1.2.2.1 `--min-faces` trigger condition works
+
+- **Given** that I have an observer and payload function source file
+- **And** that the observer source file contains the observer function relevant to the usecase provided
+- **And** that those source files have valid arguments provided to them
+- **And** that the `--min-faces` argument has been provided
+- **And** that the argument provided to `--min-faces` is such that a trigger condition will occur during testing
+- **Then** when I start the DMS launcher
+  - **Then** an observer and payload subprocess should be started
+  - **And** the observer subprocess should be seen to setup successfully
+  - **And** the frame acquisition process should be seen to setup successfully
+  - **And** the face detection thread should be seen to setup successfully
+  - **Then** when a frame has been obtained
+  - **And** all faces within a frame have been detected
+    - **Then** the face detection process should trigger
+    - **And** the main observer function should be seen to stop other processes and trigger
+    - **And** the observer process should be seen to sever the lifeline
+    - **And** the payload process should be seen to notice the lifeline has failed
+
+| 1 | Start the DMS launcher program with valid arguments, ensuring that the `--min-faces` argument has been provided with a value that will fail in the current test environment. |
+| 2 | Confirm that the observer function has started successfully. |
+| 3 | Confirm that the frame acquisition process starts successfully. |
+| 4 | Confirm that the face detection thread starts successfully. |
+| 5 | Confirm that the face detection thread finds a number of faces in a frame accurate to the test environment. |
+| 6 | Confirm that the number of faces in the frame causes a trigger event in the face detection thread. |
+| 7 | Confirm that the main observer function notices the trigger event and attempts a teardown. |
+| 8 | Confirm that the observer *process* notes the observer function has exited and attempts to sever the lifeline. |
+| 9 | Confirm that the payload *process* notes that the lifeline has been *explicitly* closed via the connection being reset. |
+
+###### 5.1.2.2.2 `--max-faces` trigger condition works
+
+- **Given** that I have an observer and payload function source file
+- **And** that the observer source file contains the observer function relevant to the usecase provided
+- **And** that those source files have valid arguments provided to them
+- **And** that the --max-faces argument has been provided
+- **And** that the argument provided to --max-faces is such that a trigger condition will occur during testing
+- **Then** when I start the DMS launcher
+  - **Then** an observer and payload subprocess should be started
+  - **And** heartbeats should be seen to be working
+  - **And** the observer subprocess should be seen to setup successfully
+  - **And** the frame acquisition process should be seen to setup successfully
+  - **And** the face detection process should be seen to setup successfully
+  - **Then** when a frame has been obtained
+  - **And** all faces within a frame have been detected
+    - **Then** the face detection process should trigger
+    - **And** the main observer function should be seen to stop other processes and trigger
+    - **And** the observer process should be seen to sever the lifeline
+    - **And** the payload process should be seen to notice the lifeline has failed
+
+| 1 | Start the DMS launcher program with valid arguments, ensuring that the `--max-faces` argument has been provided with a value that will fail in the current test environment.
+| 2 | Confirm that the observer function has started successfully. |
+| 3 | Confirm that the frame acquisition process starts successfully. |
+| 4 | Confirm that the face detection thread starts successfully. |
+| 5 | Confirm that the face detection thread finds a number of faces in a frame accurate to the test environment. |
+| 6 | Confirm that the number of faces in the frame causes a trigger event in the face detection thread. |
+| 7 | Confirm that the main observer function notices the trigger event and attempts a teardown. |
+| 8 | Confirm that the observer *process* notes that the observer function has been exited and attempts to sever the lifeline.
+| 9 | Confirm that the payload *process* notes that the lifeline has been *explicitly* closed via the connection being reset.
+
+##### 5.1.2.3 Face Verification Thread
+
+FACE RECOGNITION
+
+###### 5.1.2.3.1 `--reject-faces` trigger condition works
+
+- **Given** that I have an observer and payload function source file
+  - **And** that the observer source file contains the observer function relevant to the usecase provided
+  - **And** that those source files have valid arguments provided to them
+  - **And** that the --reject-faces argument has been provided to the observer function
+  - **And** that I have provided at least one forbidden identity that can be recognized by the DMS
+- **Then** when I start the DMS launcher
+  - **Then** an observer and payload subprocess should be started
+  - **And** the observer subprocess should be seen to setup successfully
+  - **And** the frame acquisition process should be seen to setup successfully
+  - **And** the face detection thread should be seen to setup successfully
+  - **And** the face verification thread should be seen to setup successfully
+  - **Then** when a frame has been obtained
+  - **And** all faces within a frame have been detected
+  - **And** a face within the frame is verified as matching with a forbidden identity
+    - **Then** the face verification process should trigger
+    - **And** the main observer function should be seen to stop other processes and trigger
+    - **And** the observer process should be seen to sever the lifeline
+    - **And** the payload process should be seen to notice the lifeline has failed
+
+| 1 | Start the DMS launcher program with valid arguments, ensuring that the `--reject-faces` argument has been provided with a value that will fail in the current test environment. |
+| 2 | Confirm that the observer function has started successfully. |
+| 3 | Confirm that the frame acqusition process starts successfully. |
+| 4 | Confirm that the face detection thread starts successfully. |
+| 5 | Confirm that the face verification thread starts successfully. |
+| 6 | Confirm that the frame acquisition process is obtaining frames. |
+| 7 | Confirm that the face detection thread is detecting faces. |
+| 8 | Confirm that the face verification thread identifies a face as matching with a forbidden identity. |
+| 9 | Confirm that the identity that the face is verified as causes a trigger event in the face verification thread. |
+| 10 | Confirm that the observer *process* notes that the observer function has been exited and attempts to sever the lifeline. |
+| 11 | Confirm that the payload *process* notes that the lifeline has been *explicitly* closed via the connection being reset. |
+
+###### 5.1.2.3.2 `--require-faces` trigger condition is not met when all faces are present.
+
+- **Given** that I have an observer and payload function source file
+  - **And** that the observer source file contains the observer function relevant to the usecase provided
+  - **And** that those source files have valid arguments provided to them
+  - **And** that the `--require-faces` argument has been provided to the observer function
+  - **And** that I have provided exactly one required identity that can be recognized by the DMS
+- **Then** when I start the DMS launcher
+  - **Then** an observer and payload subprocess should be started
+    - **And** the observer subprocess should be seen to setup successfully
+    - **And** the frame acquisition process should be seen to setup successfully
+    - **And** the face detection thread should be seen to setup successfully
+    - **And** the face verification thread should be seen to setup successfully
+  - **Then** when a frame has been obtained
+    - **And** all faces within a frame have been detected
+    - **And** it is noted that a required face has been detected in this frame
+    - **And** all required identities have been detected in this frame
+    - **Then** the face should not be checked to see if it matches with any other identities
+      - **And** it is noted that all required faces have been detected in the frame
+      - **And** the face verification process should be seen to continue as normal for this frame
+
+| 1 | Start the DMS launcher program with valid arguments, ensuring that the `--reject-faces` argument has been provided with a value that will pass in the current test environment. |
+| 2 | Confirm that the observer function has started successfully. |
+| 3 | Confirm that the frame acqusition process starts successfully. |
+| 4 | Confirm that the face detection thread starts successfully. |
+| 5 | Confirm that the face verification thread starts successfully. |
+| 6 | Confirm that the frame acquisition process is obtaining frames. |
+| 7 | Confirm that the face detection thread is detecting faces. |
+| 8 | Confirm that the face verification thread identifies a face as matching with a required identity. |
+| 9 | Confirm that the face verification thread identifies that all required identities are present in this frame. |
+| 10 | Confirm that the face verification thread continues onto the next frame as expected. |
+
+###### 5.1.2.3.3 `--require-faces` triggers when not all faces present in frame
+
+- **Given** that I have an observer and payload function source file
+- **And** that the observer source file contains the observer function relevant to the usecase provided
+- **And** that those source files have valid arguments provided to them
+- **And** that the `--require-faces` argument has been provided to the observer function
+- **And** that I have provided more than one required identity that can be recognized by the DMS
+- **Then** when I start the DMS launcher
+  - **Then** an observer and payload subprocess should be started
+    - **And** the observer subprocess should be seen to setup successfully
+    - **And** the frame acquisition process should be seen to setup successfully
+    - **And** the face detection thread should be seen to setup successfully
+    - **And** the face verification thread should be seen to setup successfully
+  - **Then** when a frame has been obtained
+    - **And** all faces within a frame have been detected
+    - **And** all faces within a frame have gone through the verification process
+    - **And** not all required faces provided were detected in the frame
+  - **Then** the face verification process should trigger
+    - **And** the main observer function should be seen to stop other processes and trigger
+    - **And** the observer process should be seen to sever the lifeline
+    - **And** the payload process should be seen to notice the lifeline has failed
+
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --require-faces argument has been provided to the observer function
+And that I have provided more than one required identity that can be recognized by the DMS
+And one of the required identities provided is not present in the environment in which the test is being conducted
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+  And heartbeats should be seen to be working
+  And the observer subprocess should be seen to setup successfully
+  And the frame acquisition process should be seen to setup successfully
+  And the face detection process should be seen to setup successfully
+  And the face verification process should be seen to setup successfully
+  Then when a frame has been obtained
+   And all faces within a frame have been detected
+  Then when a face within the frame is verified as matching with a required identity
+  Then when it is noted that a required face has been detected in this frame
+   And not all required identities have been detected in this frame
+   Then the observer process should be seen to continue checking to see if this face matches with other required identities
+  Then when all faces in the frame have gone through a verification process
+   Then it is noted that not all required faces have been detected in the frame
+   And the face verification process should trigger
+   And the main observer function should be seen to stop other processes and trigger
+   And the observer process should be seen to sever the lifeline
+   And the payload process should be seen to notice the lifeline has failed
+
+KNOWN FACES
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --known-faces argument has been provided to the observer function
+And that I have provided at least one known identity that can be recognized by the DMS
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+  And heartbeats should be seen to be working
+  And the observer subprocess should be seen to setup successfully
+  And the frame acquisition process should be seen to setup successfully
+  And the face detection process should be seen to setup successfully
+  And the face verification process should be seen to setup successfully
+  Then when a frame has been obtained
+   And all faces within a frame have been detected
+   Then when a face within the frame is verified as matching with a known identity
+    Then it is noted that a known face has been detected in this frame
+  Then when all faces in the frame have gone through a verification process
+   The face verification process SHOULD NOT trigger
+
+REJECT UNKNOWN
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --reject-unknown argument has been provided to the observer function
+And that I have provided no identities that can be recognized by the DMS
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+  And heartbeats should be seen to be working
+  And the observer subprocess should be seen to setup successfully
+  And the frame acquisition process should be seen to setup successfully
+  And the face detection process should be seen to setup successfully
+  And the face verification process should be seen to setup successfully
+  Then when a frame has been obtained
+   And all faces within a frame have been detected
+   Then when a face within the frame does not match with any identities provided
+    Then it is noted that this face did not match with any identities
+    And the face verification process should trigger
+    And the main observer function should be seen to stop other processes and trigger
+    And the observer process should be seen to sever the lifeline
+    And the payload process should be seen to notice the lifeline has failed
+
+FER
+
+REJECT_EMOTIONS
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --reject-emotions argument has been provided to the observer function
+And that a valid emotion:score pairing low enough to easily trigger has been provided
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+  And heartbeats should be seen to be working
+  And the observer subprocess should be seen to setup successfully
+  And the frame acquisition process should be seen to setup successfully
+  And the face detection process should be seen to setup successfully
+  And the face verification process should be seen to setup successfully
+  And the facial emotion recognition process should be seen to setup successfully
+  And the FER Averaging process should be seen to setup successfully
+  And the Forbidden Emotion Detection Process should be seen to setup successfully
+  Then when a frame has been obtained
+   And all faces within a frame have been detected
+   Then when a face within the frame does not match with any identities provided
+    Then it is noted that this face did not match with any identities
+    And the face verification process should trigger
+    And the main observer function should be seen to stop other processes and trigger
+    And the observer process should be seen to sever the lifeline
+    And the payload process should be seen to notice the lifeline has failed
+
+
+REJECT-EMOTIONS INVALID EMOTION
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --reject-emotions argument has been provided
+And that an emotion that is not measured is provided with a valid score pairing
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+REJECT-EMOTIONS INVALID SCORE (too low)
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --reject-emotions argument has been provided
+And that a valid emotion is provided, but with a score below the lower bound (0)
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+REJECT-EMOTIONS INVALID SCORE (too high)
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --reject-emotions argument has been provided
+And that a valid emotion is provided, but with a score above the upper bound (100)
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+EDGE CASES
+
+NO TRIGGER CONDITIONS
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --reject-emotions argument has been provided
+And that a valid emotion is provided, but with a score at the lower bound (0)
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+MAX BUFFER SIZE LESS THAN SLIDING WINDOW
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that the --sliding-window-size and --max-buffer-size arguments have been provided
+And that the value provided to --sliding-window-size is greater than the value provided to --max-buffer-size
+And that those source files have otherwise valid arguments provided to them
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+PROVIDED FACE DOES NOT EXIST
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that the --known-faces argument has been provided, with a file that does not exist
+And that those source files have otherwise valid arguments provided to them
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+Then, Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that the --required-faces argument has been provided, with a file that does not exist
+And that those source files have otherwise valid arguments provided to them
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+Then, Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that the --reject-faces argument has been provided, with a file that does not exist
+And that those source files have otherwise valid arguments provided to them
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+
+FACE DETECTION BOUNDS LESS THAN 0
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that the --min-faces argument has been provided, with a value less than 0
+And that the --min-faces argument is less than --max-faces
+And that those source files have otherwise valid arguments provided to them
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+Then, Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that the --max-faces argument has been provided, with a value less than 0
+And that the --min-faces argument is less than --max-faces
+And that those source files have otherwise valid arguments provided to them
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+INVALID LOG LEVEL PROVIDED
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that the --log-level argument has been provided, with a level that does not exist
+And that those source files have otherwise valid arguments provided to them
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+IDENTITY IS BOTH REQUIRED AND FORBIDDEN
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that the --require-faces and --reject-faces arguments have been provided
+And that the same identity FILE path has been provided for both
+And that those source files have otherwise valid arguments provided to them
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+Then, Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that the --require-faces and --reject-faces arguments have been provided
+And that the same identity DIRECTORY path has been provided for both
+And that those source files have otherwise valid arguments provided to them
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+##### 5.1.2.X Edge Cases
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --min-faces argument has been provided
+And that the argument provided to --min-faces is invalid (below 0)
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+MAX-FACES
+
+INVALID MAX-FACES
+
+Given that I have an observer and payload function source file
+And that the observer source file contains the observer function relevant to the usecase provided
+And that those source files have valid arguments provided to them
+And that the --max-faces and --min-faces arguments have been provided
+And that the argument provided to --max-faces is invalid (less than --min-faces)
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And the observer process should fail due to invalid arguments
+ And this should be evident in the DMS launcher's output
+ And after the specified number of retries, the DMS launcher notes that a lifeline could not be established
+ And the DMS launcher exits
+
+#### 5.1.3 Payload Function
+
+PAYLOAD TESTS
+
+SECRETS
+
+Given that I have an observer and payload function source file
+And that the payload source file contains the payload function relevant to the usecase provided
+And that all required arguments have been provided and are valid
+And that the observer process' trigger conditions have been setup such that they should be immediately met
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And heartbeats should be seen to be working
+ And the observer function should be noted to have setup successfully
+ Then when the observer function is triggered
+ The main observer function should be seen to stop other processes and trigger
+ And the observer process should be seen to sever the lifeline
+ And the payload process should be seen to notice the lifeline has failed
+ Then when the payload process is noted to trigger
+ The execution phase of the payload is noted to have succeeded
+ And the verification phase of the payload is noted to have suceeded
+ And the payload function is noted to have exited successfully
+ And the payload process is noted to have attempted to sever the lifeline
+ And the payload process appears to exit cleanly
+Then the secrets directory should be manually observed
+And it should be confirmed that they have been deleted
+
+ALERT, UNSIGNED+UNENCRYPTED
+
+Given that I have an observer and payload function source file
+And that the payload source file contains the payload function relevant to the usecase provided
+And that all required arguments have been provided and are valid
+And that a .env file with all required environment variables has been provided
+And that the observer process' trigger conditions have been setup such that they should be immediately met
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And heartbeats should be seen to be working
+ And the observer function should be noted to have setup successfully
+ Then when the observer function is triggered
+ The main observer function should be seen to stop other processes and trigger
+ And the observer process should be seen to sever the lifeline
+ And the payload process should be seen to notice the lifeline has failed
+ Then when the payload process is noted to trigger
+ The execution phase of the payload is noted to have succeeded
+ And the alert phase of the payload is noted to have succeeded
+ And the verification phase of the payload is noted to have suceeded
+ And the payload function is noted to have exited successfully
+ And the payload process is noted to have attempted to sever the lifeline
+ And the payload process appears to exit cleanly
+Then the recipient e-mail's inbox should be manually observed
+And the receipt of the e-mail should be confirmed
+And the contents of the e-mail should be verified to be the same as provided in MSG_CONTENTS
+And it should be verified that the e-mail has NOT been signed with a PGP key
+And it should be verified that the e-mail has NOT been encrypted with a PGP key
+
+Alert, SIGNED+UNENCRYPTED
+
+Given that I have an observer and payload function source file
+And that the payload source file contains the payload function relevant to the usecase provided
+And that all required arguments have been provided and are valid
+And that a .env file with all required environment variables has been provided
+And that the .env file contains the PGP_PRIVKEY environment variable
+And that the value of the PGP_PRIVKEY environment variable represents a filepath to a valid private PGP key
+And that the observer process' trigger conditions have been setup such that they should be immediately met
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And heartbeats should be seen to be working
+ And the observer function should be noted to have setup successfully
+ Then when the observer function is triggered
+ The main observer function should be seen to stop other processes and trigger
+ And the observer process should be seen to sever the lifeline
+ And the payload process should be seen to notice the lifeline has failed
+ Then when the payload process is noted to trigger
+ The execution phase of the payload is noted to have succeeded
+ And the alert phase of the payload is noted to have succeeded
+ And the verification phase of the payload is noted to have suceeded
+ And the payload function is noted to have exited successfully
+ And the payload process is noted to have attempted to sever the lifeline
+ And the payload process appears to exit cleanly
+Then the recipient e-mail's inbox should be manually observed
+And the receipt of the e-mail should be confirmed
+And the contents of the e-mail should be verified to be the same as provided in MSG_CONTENTS
+And it should be verified that the e-mail HAS been signed with a PGP key
+And it should be verified that the e-mail has NOT been encrypted with a PGP key
+
+Alert, UNSIGNED+ENCRYPTED
+
+Given that I have an observer and payload function source file
+And that the payload source file contains the payload function relevant to the usecase provided
+And that all required arguments have been provided and are valid
+And that a .env file with all required environment variables has been provided
+And that the .env file contains the PGP_PUBKEY environment variable
+And that the value of the PGP_PUBKEY environment variable represents a filepath to a valid public PGP key
+And that the observer process' trigger conditions have been setup such that they should be immediately met
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And heartbeats should be seen to be working
+ And the observer function should be noted to have setup successfully
+ Then when the observer function is triggered
+ The main observer function should be seen to stop other processes and trigger
+ And the observer process should be seen to sever the lifeline
+ And the payload process should be seen to notice the lifeline has failed
+ Then when the payload process is noted to trigger
+ The execution phase of the payload is noted to have succeeded
+ And the alert phase of the payload is noted to have succeeded
+ And the verification phase of the payload is noted to have suceeded
+ And the payload function is noted to have exited successfully
+ And the payload process is noted to have attempted to sever the lifeline
+ And the payload process appears to exit cleanly
+Then the recipient e-mail's inbox should be manually observed
+And the receipt of the e-mail should be confirmed
+And the contents of the e-mail should be verified to be the same as provided in MSG_CONTENTS
+And it should be verified that the e-mail has NOT been signed with a PGP key
+And it should be verified that the e-mail HAS been encrypted with a PGP key
+
+Alert, SIGNED+ENCRYPTED
+
+Given that I have an observer and payload function source file
+And that the payload source file contains the payload function relevant to the usecase provided
+And that all required arguments have been provided and are valid
+And that the --alert argument flag has been has in the payload function
+And that a .env file with all required environment variables has been provided
+And that the .env file contains the PGP_PRIVKEY environment variable
+And that the value of the PGP_PRIVKEY environment variable represents a filepath to a valid private PGP key
+And that the .env file contains the PGP_PUBKEY environment variable
+And that the value of the PGP_PUBKEY environment variable represents a filepath to a valid public PGP key
+And that the observer process' trigger conditions have been setup such that they should be immediately met
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And heartbeats should be seen to be working
+ And the observer function should be noted to have setup successfully
+ Then when the observer function is triggered
+ The main observer function should be seen to stop other processes and trigger
+ And the observer process should be seen to sever the lifeline
+ And the payload process should be seen to notice the lifeline has failed
+ Then when the payload process is noted to trigger
+ The execution phase of the payload is noted to have succeeded
+ And the alert phase of the payload is noted to have succeeded
+ And the verification phase of the payload is noted to have suceeded
+ And the payload function is noted to have exited successfully
+ And the payload process is noted to have attempted to sever the lifeline
+ And the payload process appears to exit cleanly
+Then the recipient e-mail's inbox should be manually observed
+And the receipt of the e-mail should be confirmed
+And the contents of the e-mail should be verified to be the same as provided in MSG_CONTENTS
+And it should be verified that the e-mail HAS been signed with a PGP key
+And it should be verified that the e-mail HAS been encrypted with a PGP key
+
+Defuse works
+
+Given that I have an observer and payload function source file
+And that the payload source file contains the payload function relevant to the usecase provided
+And that all required arguments have been provided and are valid
+And that the --defuse argument has been provided to the payload function with a reasonable defusal period in seconds
+And that the observer process' trigger conditions have been setup such that they should be immediately met
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And heartbeats should be seen to be working
+ And the observer function should be noted to have setup successfully
+ Then when the observer function is triggered
+ The main observer function should be seen to stop other processes and trigger
+ And the observer process should be seen to sever the lifeline
+ And the payload process should be seen to notice the lifeline has failed
+ Then when the payload process is noted to trigger
+ The payload trigger function should be noted to detect that the --defuse argument has been provided
+ And a GUI prompt should appear, providing a defusal opportunity
+ Then, when I click the 'defuse' button,
+ The payload trigger function notes that it has been clicked
+ And the payload process notes that the payload has been defused
+ And the payload process is noted to have attempted to sever the lifeline
+ And the payload process appears to exit cleanly
+
+Then the secrets directory should be manually observed
+And it should be confirmed that they have NOT been deleted
+
+Defuse ignorance works
+
+Given that I have an observer and payload function source file
+And that the payload source file contains the payload function relevant to the usecase provided
+And that all required arguments have been provided and are valid
+And that the --defuse argument has been provided to the payload function with a reasonable defusal period in seconds
+And that the observer process' trigger conditions have been setup such that they should be immediately met
+Then when I start the DMS launcher
+ Then an observer and payload subprocess should be started
+ And heartbeats should be seen to be working
+ And the observer function should be noted to have setup successfully
+ Then when the observer function is triggered
+ The main observer function should be seen to stop other processes and trigger
+ And the observer process should be seen to sever the lifeline
+ And the payload process should be seen to notice the lifeline has failed
+ Then when the payload process is noted to trigger
+ The payload trigger function should be noted to detect that the --defuse argument has been provided
+ And a GUI prompt should appear, providing a defusal opportunity
+ Then, when I wait the period of time provided with the --defuse argument
+ The execution phase of the payload is noted to have succeeded
+ And the verification phase of the payload is noted to have suceeded
+ And the payload function is noted to have exited successfully
+ And the payload process is noted to have attempted to sever the lifeline
+ And the payload process appears to exit cleanly
+Then the secrets directory should be manually observed
+And it should be confirmed that they have been deleted
+
+LIFELINE
+
+Lifeline severs when socket is explicitly closed
+
+Given that I have an existing DMS instance that is actively armed and running
+Then when the observer meets a trigger condition
+Then the observer process should be seen to sever the lifeline
+And the payload process should notice that the connection has been closed when attempting a socket operation
+
+Retries when lifeline is implicitly closed (process killed)
+
+Given that I have an existing DMS instance that is actively armed and running
+Then when the observer is explicitly killed without being allowed to trigger
+The payload process should repeatedly fail to complete a heartbeat the maximum number of retries allotted
+And the payload process should be seen to sever the lifeline on its end
+
+
+Result PASS/FAIL/BLOCKED
+
+| Step | Instruction | Test Data | Expected Outcome | Actual Outcome | Result |
+| :-: | :--------- | :--- | :--------------- | :------------- | :----: |
 <!--
 Use these tools to obtain RESULTS to show the quality of the new ideas. Results may be grpahs, tables or pictures that require DISCUSSION to explain their significance.
 -->
+
+### 5.2 Test Results
+
+TODO
 
 ## 6 Conclusions & Future Work
 <!--
 Summarise the project achievements as a set of CONCLUSIONS and suggest how they may lead to FUTURE WORK. Discuss the impact of **all four areas** of LSEPIs relevant to the project as implemented and for the future plans. Explain why some areas have high or low impact and how you addressed the impact in each area. You should also include a synoptic assessment in this chapter. This will comprise a reflection on the project in relation to employment aspirations and the skills developed toward this through engagement with the project.
 -->
 
+TODO
+
 ## 7 References
 
+TODO
+
 ## 8 Bibliography
+
+TODO: Check that all cited references are accounted for within zotero
