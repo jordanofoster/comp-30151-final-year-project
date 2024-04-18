@@ -61,7 +61,7 @@ parser.add_argument('--handshake-timeout', action='store', type=float)
 # Trigger when a frame cannot be returned from cv2.VideoCapture.
 parser.add_argument('--reject-noframe', action="store_true")
 
-parser.add_argument('--min-faces', default=0, action="store", type=_lim_faces)
+parser.add_argument('--min-faces', action="store", type=_lim_faces)
 parser.add_argument('--max-faces', action="store", type=_lim_faces)
 
 # Enforcing verification of faces necessarily implies rejection of unknown faces
@@ -97,22 +97,20 @@ if args.reject_faces: args.reject_faces = { file for entry in args.reject_faces 
 if (args.require_faces and args.reject_faces):
     for face in args.require_faces: assert (face not in args.reject_faces), f"Identity ({face}) provided in both --auth-faces and --reject-faces arguments"
 
-if not (
-    args.reject_noframe or \
-    args.min_faces or \
-    args.max_faces or \
-    args.require_faces or \
-    args.reject_faces or \
-    args.reject_unknown or \
-    args.reject_emotions
-): raise argparse.ArgumentTypeError("No trigger conditions have been specified!")
+if  (args.reject_noframe is None) and \
+    (args.min_faces is None) and \
+    (args.max_faces is None) and \
+    (args.require_faces is None) and \
+    (args.reject_faces is None) and \
+    (args.reject_unknown is None) and \
+    (args.reject_emotions is None): raise argparse.ArgumentTypeError("No trigger conditions have been specified!")
 
 if args.reject_emotions:
     forbidden_emotions = {}
     for emotion,score in args.reject_emotions:
         forbidden_emotions[emotion] = score
 
-if (args.max_buffer_size != 0): # This is the default value for multiprocessing.Manager().Queue, and signifies an 'uncapped' queue size.
+if (args.max_buffer_size != 0) and (args.reject_emotions is not None): # This is the default value for multiprocessing.Manager().Queue, and signifies an 'uncapped' queue size.
     assert (args.sliding_window_size <= args.max_buffer_size), "Sliding window size larger than queue buffer!" 
 
 if args.log_file: logging.basicConfig(filename=args.log_file, level=args.log_level, format=dms.logfmt, datefmt=dms.datefmt)
@@ -123,7 +121,11 @@ def getFrameFromWebcam(triggerEvent, frameQueue):
     try:
         logger = logging.getLogger(__file__).getChild(__name__)
 
+        logging.info("thread started.")
+
+        logging.info("loading imports...")
         from cv2 import VideoCapture
+        logging.info("imports loaded.")
 
         video_capture = VideoCapture(0)
 
@@ -134,7 +136,7 @@ def getFrameFromWebcam(triggerEvent, frameQueue):
 
             logger.debug("trying to get frame from webcam...")
             ret, frame = video_capture.read()
-            logger.debug("got frame from webcam.")
+    
             if not ret:
                 logger.warning("Could not get frame from webcam.")
                 if args.reject_noframe:
@@ -143,6 +145,7 @@ def getFrameFromWebcam(triggerEvent, frameQueue):
                 else:
                     pass
             else:
+                logger.debug("got frame from webcam.")
                 if args.noblock:
                     try:
                         logger.debug("trying to put frame into frameQueue (--noblock)...")
@@ -195,7 +198,7 @@ def enumFacesInFrame(triggerEvent, detectorLock, frameQueue, faceDetectionQueue=
                 logger.debug("released detectorLock.")
                 logger.info(f"Enumerated {len(face_locations)} face(s) in this frame.")
 
-                if (len(face_locations) < args.min_faces) or ((args.max_faces != None) and (len(face_locations) > args.max_faces)):
+                if ((args.min_faces != None) and (len(face_locations) < args.min_faces)) or ((args.max_faces != None) and (len(face_locations) > args.max_faces)):
                     logger.critical(f"TRIGGER: Number of faces outside of accepted bounds. Min: {args.min_faces} Max: {args.max_faces} Found: {len(face_locations)}")
                     raise dms.observerTriggerException()
                 
@@ -424,11 +427,13 @@ def extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQu
                 else:
                     logger.debug("FER disabled. Skipping queue.")
                     
-            if args.require_faces and (list(args.require_faces) != requiredFacesPresent):
+            if (args.require_faces is not None) and (list(args.require_faces) != requiredFacesPresent):
                 logger.critical("TRIGGER: --require-faces: Not all identities provided were present in this frame.")
                 raise dms.observerTriggerException()
+            elif args.require_faces is not None:
+                logger.info("--require-faces: All identities provided were present in this frame.")
 
-            logger.info("Moving onto next face in queue.")
+            logger.info("Moving onto next frame in queue.")
 
     except BaseException as e:
         triggerEvent.set()
@@ -642,30 +647,30 @@ def observerFunction():
                         
         identities = tuple(identities)
         
-        if (args.reject_noframe or args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
-            if (args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
+        if (args.reject_noframe is not False) or (args.min_faces is not None) or (args.max_faces is not None) or (args.require_faces is not None) or (args.reject_faces is not None) or (args.known_faces is not None) or (args.reject_unknown is not False) or (args.reject_emotions is not None):
+            if (args.min_faces is not None) or (args.max_faces is not None) or (args.require_faces is not None) or (args.reject_faces is not None) or (args.known_faces is not None) or (args.reject_unknown is not False) or (args.reject_emotions is not None):
                 frameQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             else: frameQueue = None
             asyncList.append(multiprocessing.Process(target=getFrameFromWebcam, args=(triggerEvent, frameQueue)))
             logger.debug("added getFrameFromWebcam(triggerEvent, frameQueue) to asyncList.")
 
 
-        if (args.max_faces or args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
-            if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
+        if (args.min_faces is not None) or (args.max_faces is not None) or (args.require_faces is not None) or (args.reject_faces is not None) or (args.known_faces is not None) or (args.reject_unknown is not False) or (args.reject_emotions is not None):
+            if (args.require_faces is not None) or (args.reject_faces is not None) or (args.known_faces is not None) or (args.reject_unknown is not False) or (args.reject_emotions is not None):
                 faceDetectionQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             else: faceDetectionQueue = None
             asyncList.append(threading.Thread(target=enumFacesInFrame, args=(triggerEvent, detectorLock, frameQueue, faceDetectionQueue)))
             logger.debug("added enumFacesInFrame(triggerEvent, detectorLock, frameQueue, faceDetectionQueue) to asyncList.")
         
-        if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
-            if args.reject_emotions: 
+        if (args.require_faces is not None) or (args.reject_faces is not None) or (args.known_faces is not None) or (args.reject_unknown is not False) or (args.reject_emotions is not None):
+            if args.reject_emotions is not None: 
                 faceVerifResultsQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             else: 
                 faceVerifResultsQueue = None
             asyncList.append(threading.Thread(target=extractFaceAndVerify, args=(triggerEvent, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue)))
             logger.debug("added extractFaceAndVerify(triggerEvent, detectorLock, identities, faceDetectionQueue, faceVerifResultsQueue) to asyncList.")
         
-        if args.reject_emotions:
+        if args.reject_emotions is not None:
             FERAvgQueue = multiprocessing.Manager().Queue(maxsize=args.max_buffer_size)
             logger.debug("created FERAvgQueue.")
 
@@ -687,7 +692,7 @@ def observerFunction():
             logger.debug("added calcForbidden(triggerEvent, FERAvgQueue, forbidden_emotions) to asyncList.")
 
         # We still have to run this when not verifying faces to extract the faces for FER.
-        if (args.require_faces or args.reject_faces or args.reject_unknown or args.reject_emotions):
+        if args.reject_emotions is not None:
             logger.debug("added extractFaceAndVerify(faceDetectionQueue,faceVerifResultsQueue) to asyncList.")
 
 
@@ -702,8 +707,7 @@ def observerFunction():
                     logger.critical("thread exited - terminating pool workers!")
                     raise dms.observerTriggerException()
                 else:
-                    logger.debug("Process appears to be still alive...")
-            logger.debug("all processes appear to still be running...")
+                    continue
             
     except BaseException as e:
         logger.debug("exception received!")
