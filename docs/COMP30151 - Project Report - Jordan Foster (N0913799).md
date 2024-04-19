@@ -157,6 +157,8 @@ To finish, Chapter 6 will note the observations made in previous chapters to dra
 
 By the historical nature of DMS systems being used to deterr and intimidate, we must consider the state of their usage in both a protective and aggressive context, to understand the context in which our tool might be used.
 
+This chapter will firstly cover current uses of the DMS concept, including fail-safe/secure systems, Vigilance Monitoring Devices (VMDs), Kill-cords, Stop mechanisms, Systems that operated based on ‘proxies’ of input/intent and non-operator bound systems such as watchdog timers. We will then move onto the applications of the systems themselves, including their historical use in aspects of game theory and as part of warfare. We then move onto performing a complete review of the domestic violence literature to gain an understanding of the scope of the field such that a context of use for the DMS concept can be implemented.
+
 ##### 2.1.1.1 Uses of the DMS concept as a defensive measure (*'fail-safe/secure' systems*)
 
 We will make the distinct definition that a *fail-safe* system is one that protects the user from a given threat by responding accordingly in a way that *neutralises the impacts of a realised risk. to the operator, the environment, or others.* A *fail-secure* system is one that protects *access* to a resource, building or area in the event of it being triggered, rather than protection of envrionments or person(s).
@@ -806,7 +808,7 @@ Wendy's motivations might simply be to spread gossip about Alice to others withi
 
 Since the DMS may directly affect Alice's access to communications based on the need to protect her operations from Mike, its triggering might provide some form of trace over this channel in the form of how it affects associated metadata, such as when she was last online, when she read a message or how long she has been inactive. To limit the amount of risks we note to those with a certain amount of relevance to the DMS, only adversarial threats relevant to the scope of what design can affect are considered, being: any traces the DMS leaves behind that may cause a risk, alongside any risks relating to Mike's discovery of her secure computing environment or any relevant COMINT that Wendy might derive from Alice being *unable* to use her computing environment due to the DMS triggering.
 
-##### 3.2.2.4 Risks, Likelihood and Impact
+##### 3.3.2.4 Risks, Likelihood and Impact
 
 5. What can go wrong?
 6. How likely is it to happen?
@@ -2942,13 +2944,13 @@ Table 44. Test script for checking `--defuse` functionality in usecase specific 
 | 14 | Confirm that the payload process' trigger procedure begins. | The payload process logs indicate the main trigger function has been started. | N/A | As expected. | PASS |
 | 15 | Confirm that the payload function notices that the `--defuse` argument has been set. | The payload function logs indicate that the `--defuse` flag has been set. | N/A | As expected. | PASS |
 | 16 | Confirm that a GUI prompt providing the opportunity to defuse the payload is spawned. | A GUI defusal prompt with button is spawned. | N/A | As expected. | PASS |
-| 17 | Wait the period of time specified in the `--defuse` payload function argument as defined in step 1 WITHOUT clicking the 'defuse' button. | N/A | As expected. | PASS |
-| 15 | Confirm that the execution phase of the payload succeeds without error. | The payload function logs indicate that the execution phase succeeds without error. | N/A | As expected. | PASS |
-| 16 | Confirm that the verification phase of the payload succeeds without error. | The payload function logs indicate that the verification phase succeeds without error. | N/A | As expected. | PASS |
-| 17 | Confirm that the payload **function** appears to exit successfully. | The payload function logs indicate it has finished all phases successfully. | N/A | As expected. | PASS |
-| 18 | Confirm that the payload **process** has exited cleanly. | The payload process logs indicate it has exited with `triggerFinishedException`. | N/A | As expected. | PASS |
-| 19 | Confirm that the `secret` directory provided in step 1 no longer exists. | The `secret` directory provided in step 1 no longer exists. | N/A | As expected. | PASS |
-| 20 | Confirm that neither the `secret` directory nor its contents have  been put in the recycling bin (or 'trash'). | Neither the `secret` directory or its contents are locatable within the recycling bin. | N/A | As expected. | PASS |
+| 17 | Wait the period of time specified in the `--defuse` payload function argument as defined in step 1 WITHOUT clicking the 'defuse' button. | The GUI prompt disappears and logs indicate that the defusal period has expired. | N/A | As expected. | PASS |
+| 18 | Confirm that the execution phase of the payload succeeds without error. | The payload function logs indicate that the execution phase succeeds without error. | N/A | As expected. | PASS |
+| 19 | Confirm that the verification phase of the payload succeeds without error. | The payload function logs indicate that the verification phase succeeds without error. | N/A | As expected. | PASS |
+| 20 | Confirm that the payload **function** appears to exit successfully. | The payload function logs indicate it has finished all phases successfully. | N/A | As expected. | PASS |
+| 21 | Confirm that the payload **process** has exited cleanly. | The payload process logs indicate it has exited with `triggerFinishedException`. | N/A | As expected. | PASS |
+| 22 | Confirm that the `secret` directory provided in step 1 no longer exists. | The `secret` directory provided in step 1 no longer exists. | N/A | As expected. | PASS |
+| 23 | Confirm that neither the `secret` directory nor its contents have  been put in the recycling bin (or 'trash'). | Neither the `secret` directory or its contents are locatable within the recycling bin. | N/A | As expected. | PASS |
 
 Table 45. Test script for checking `--defuse` expiry in usecase specific payload function.
 
